@@ -1,0 +1,17 @@
+destination: docs
+template:
+  params:
+    bootswatch: cosmo
+authors:
+  Krzysztof Joachimiak:
+    href: https://krzjoa.github.io
+reference:
+- title: Models
+  contents:
+  - deep_factor_rnn
+- title: Transformations
+  contents:
+  - as_tensor
+  - numeric_date
+  - equal_years
+  - equal_months
