@@ -29,6 +29,7 @@ as_tensor.default <- function(.data, ...){
 #' * creates a n-dimensional tensor with the following shape
 #' (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)
 #'
+#'
 #' @examples
 #' # Simple data.frame-to-torch_tensor transformation
 #' as_tensor(mtcars)
@@ -43,17 +44,27 @@ as_tensor.default <- function(.data, ...){
 #'
 #' euro_stock
 #'
-#' euro_stock %>%
+#' euro_stock_tensor <-
+#'   euro_stock %>%
 #'   as_tensor(name, idx)
+#'
+#' euro_stock_tensor$shape
 #'
 #' @export
 as_tensor <- function(.data, ...,
                       dtype = NULL,
                       device = NULL,
-                      requires_grad = TRUE,
+                      requires_grad = FALSE,
                       pin_memory = FALSE){
 
-  # TODO: a case when colun name matches a torch_tensor arg
+  #' TODO: a case when column name matches a torch_tensor arg
+  #' TODO: number of all the elements in tensor vs
+  #' case as_tensor(euro_stock, name)
+  #' TODO: accept formulas?
+  #' Something like value ~ wday + month
+  #' but we need to handle shapes for such output tensors
+
+  #
   # special_names <- c(
   #   "dtype", "device",
   #   "requires_grad", "pin_memory"
