@@ -1,0 +1,128 @@
+---
+title: "Preparing data for RNN models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Preparing data for RNN models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(magrittr)
+library(dplyr)
+library(torch)
+library(torchts)
+```
+
+## Downloading M5 challenge data set
+```{r downloading.data}
+# Downloading Walmart data
+# Walmart data
+```
+
+The M5 challenge data set is quite large, so it will be good to reduce
+the input data frame.
+
+```{r preparing.data}
+walmart_foods_ca1_prepared <-
+  fst::read_fst("../data/walmart/walmart_foods_ca1_prepared.fst")
+
+experiment_data <-
+  walmart_foods_ca1_prepared %>%
+  filter(dept_id == "FOODS_1") %>%
+  select(-snap_TX, -snap_WI) %>%
+  select(item_id, d, wm_yr_wk, id, dept_id, value,
+         date, wday, month, year, event_name_1,
+         event_type_1, event_name_2, event_type_2, snap_CA,
+         sell_price)
+
+experiment_data <-
+  experiment_data %>%
+  mutate(date = lubridate::as_date(date)) %>%
+  mutate(across(where(is.factor), as.character))
+
+experiment_data <-
+  experiment_data %>%
+  select(item_id, date,value, wday,
+         month, year, snap_CA, sell_price) %>% 
+    arrange(item_id, date)
+```
+
+We assume that we want to create a **three-dimensional tensor**, the each dimension of 
+presents:
+
+* **item**
+* **time steps**
+* **features**
+
+This assumption makes us to keep the data "complete", i.e. every single item time series 
+has to have the same **length**. The first dimension is "free", and the completeness of 
+the last dimension is guaranteed by the data.frame structure itself (each row has the same number of columns).
+
+## Adding missing item-date entities
+```{r filling.data}
+# print(nrow(experiment_data))
+# 
+# experiment_data <- 
+#   experiment_data %>% 
+#   span_time(item_id, date)
+# 
+# print(nrow(experiment_data))
+# 
+# filter(experiment_data, is.na(value))
+```
+```{r tensor.mask}
+
+```
+
+We can transform data directly from a `data.frame` to `torch_tensor`,
+using a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
+is a `data.frame` object, which we want to transform into a `torch_tensor`.
+
+
+## Ways to handle missing data
+
+```{r prepare.tensor}
+
+## TODO: handling missing data as a separate vignette
+## See: https://www.tensorflow.org/guide/keras/masking_and_padding
+## https://www.nature.com/articles/s41598-018-24271-9
+
+X_tensor <-
+  experiment_data %>%
+  select(
+    item_id, date, wday, month,
+    year, snap_CA, sell_price
+  ) %>%
+  as_tensor(item_id, date, dtype = torch_long())
+
+print(class(X_tensor))
+print(X_tensor$shape)
+
+# y_tensor <-
+#   experiment_data %>%
+#   select(item_id, date, value) %>%
+#   as_tensor(item_id, date, requires_grad = FALSE) # because is not float
+# 
+# 
+# # Osobny embedding per cecha + konkatenacja
+# 
+# # debugonce(as_tensor)
+# 
+# d_size <-
+#   experiment_data %>%
+#   select(
+#     wday, month,
+#     year, snap_CA, sell_price
+#   ) %>%
+#   dict_size()
+
+```
+

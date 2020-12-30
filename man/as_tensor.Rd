@@ -9,7 +9,7 @@ as_tensor(
   ...,
   dtype = NULL,
   device = NULL,
-  requires_grad = TRUE,
+  requires_grad = FALSE,
   pin_memory = FALSE
 )
 }
@@ -59,7 +59,10 @@ euro_stock <-
 
 euro_stock
 
-euro_stock \%>\%
+euro_stock_tensor <-
+  euro_stock \%>\%
   as_tensor(name, idx)
+
+euro_stock_tensor$shape
 
 }

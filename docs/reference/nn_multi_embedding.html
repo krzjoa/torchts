@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • torchts</title>
+<title>Create multiple embeddings at once — nn_multi_embedding • torchts</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,9 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Create multiple embeddings at once — nn_multi_embedding" />
+<meta property="og:description" content="It is especially useful, fo dealing with multiple
+categorical features" />
 
 
 
@@ -58,7 +60,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -112,123 +114,62 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Create multiple embeddings at once</h1>
+    
+    <div class="hidden name"><code>nn_multi_embedding.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>It is especially useful, fo dealing with multiple
+categorical features</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>nn_multi_embedding</span><span class='op'>(</span><span class='va'>num_embeddings</span>, <span class='va'>embedding_dim</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-models" class="hasAnchor"><a href="#section-models" class="anchor"></a>Models</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="deep_factor_rnn.html">deep_factor_rnn()</a></code> </p>
-        </td>
-        <td><p>Deep Factor Model with RNN model</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-modules" class="hasAnchor"><a href="#section-modules" class="anchor"></a>modules</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="nn_multi_embedding.html">nn_multi_embedding()</a></code> </p>
-        </td>
-        <td><p>Create multiple embeddings at once</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-preparing-tensors" class="hasAnchor"><a href="#section-preparing-tensors" class="anchor"></a>Preparing tensors</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="as_tensor.html">as_tensor()</a></code> </p>
-        </td>
-        <td><p>Convert a data.frame-like object to tensor</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-data-wrangling" class="hasAnchor"><a href="#section-data-wrangling" class="anchor"></a>Data wrangling</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="span_time.html">span_time()</a></code> </p>
-        </td>
-        <td><p>Span a time range each</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="numeric_date.html">numeric_date()</a></code> </p>
-        </td>
-        <td><p>Converts a date column to numeric-only format</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="equal.html">equal_years()</a></code> <code><a href="equal.html">equal_months()</a></code> </p>
-        </td>
-        <td><p>Adds a phantom 29th of February to data.frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dict_size.html">dict_size()</a></code> </p>
-        </td>
-        <td><p>Dictionary size per column</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dict_replace.html">dict_replace()</a></code> </p>
-        </td>
-        <td><p>Replace values usong dictionary</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>num_embeddings</th>
+      <td><p>(int vector): size of the dictionary of embeddings</p></td>
+    </tr>
+    <tr>
+      <th>embedding_dim</th>
+      <td><p>(int): the size of each embedding vector</p></td>
+    </tr>
+    <tr>
+      <th>padding_idx</th>
+      <td><p>(int, optional): If given, pads the output with
+the embedding vector at padding_idx (initialized to zeros) whenever it encounters the index.</p></td>
+    </tr>
+    <tr>
+      <th>max_norm</th>
+      <td><p>(float, optional): If given, each embedding vector with norm larger
+than max_norm is renormalized to have norm max_norm.</p></td>
+    </tr>
+    <tr>
+      <th>norm_type</th>
+      <td><p>(float, optional): The p of the p-norm to compute for the max_norm option. Default 2.</p></td>
+    </tr>
+    <tr>
+      <th>scale_grad_by_freq</th>
+      <td><p>(boolean, optional): If given, this will scale gradients by
+the inverse of frequency of the words in the mini-batch. Default FALSE</p></td>
+    </tr>
+    <tr>
+      <th>sparse</th>
+      <td><p>(bool, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.</p></td>
+    </tr>
+    <tr>
+      <th>.weight</th>
+      <td><p>(Tensor) embeddings weights (in case you want to set it manually)</p></td>
+    </tr>
     </table>
-  </div>
 
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

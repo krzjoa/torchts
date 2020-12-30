@@ -9,9 +9,17 @@ reference:
 - title: Models
   contents:
   - deep_factor_rnn
-- title: Transformations
+- title: modules
+  contents:
+  - nn_multi_embedding
+- title: Preparing tensors
   contents:
   - as_tensor
+- title: Data wrangling
+  contents:
+  - span_time
   - numeric_date
   - equal_years
   - equal_months
+  - dict_size
+  - dict_replace
