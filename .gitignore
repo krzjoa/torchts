@@ -40,3 +40,5 @@ data/*
 # R Environment Variables
 .Renviron
 inst/doc
+doc
+Meta

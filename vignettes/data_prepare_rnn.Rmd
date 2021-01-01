@@ -30,6 +30,8 @@ library(torchts)
 The M5 challenge data set is quite large, so it will be good to reduce
 the input data frame.
 
+
+## Data Wrangling
 ```{r preparing.data}
 walmart_foods_ca1_prepared <-
   fst::read_fst("../data/walmart/walmart_foods_ca1_prepared.fst")
@@ -66,63 +68,130 @@ This assumption makes us to keep the data "complete", i.e. every single item tim
 has to have the same **length**. The first dimension is "free", and the completeness of 
 the last dimension is guaranteed by the data.frame structure itself (each row has the same number of columns).
 
-## Adding missing item-date entities
-```{r filling.data}
-# print(nrow(experiment_data))
-# 
-# experiment_data <- 
-#   experiment_data %>% 
-#   span_time(item_id, date)
-# 
-# print(nrow(experiment_data))
-# 
-# filter(experiment_data, is.na(value))
-```
-```{r tensor.mask}
+For simplicity's sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we'll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we'll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.
 
+
+```{r filtering.data}
+data_summary <- 
+  experiment_data %>% 
+    group_by(item_id) %>% 
+    summarise(
+      len = n(),
+      first_date = min(date),
+      last_date  = max(date)
+    ) %>% 
+    ungroup() %>% 
+    group_by(len, first_date, last_date) %>% 
+    summarise(
+      n = n(),
+      item_id = list(item_id)
+    ) %>% 
+    arrange(desc(n))
+
+print(head(data_summary))
+```
+We choose a subset consisting of 101 products - each product has:
+
+ * lenght: 1913 days
+ * first_date: 2011-01-29
+ * last_date: 2016-04-24
+
+If we check the tme difference between these two dates
+
+```{r time.diff}
+as.Date('2016-04-24') - as.Date('2011-01-29')
 ```
 
-We can transform data directly from a `data.frame` to `torch_tensor`,
-using a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
+we'll can see that there are no gaps in the subset we've just selected, so 
+we have not to do any additional filtering or aligning.
+
+```{r data.subset}
+selected_items <- 
+  data_summary[1, ] %>% 
+  pull(item_id) %>% 
+  unlist()
+
+experiment_data <- 
+  experiment_data %>% 
+  filter(item_id %in% selected_items)
+
+print(nrow(experiment_data))
+```
+
+Let's take a look on the data we've already prepared.
+
+## Transorming to tensor
+
+```{r prepared.data}
+head(experiment_data)
+```
+The first column, `item_id`, describes the item we already the item and the second one (`date`) - a current time step. These two columns will be used to create a data "fold", i.e. form a 3D tensor. As we mentioned above, the completness of the time moments is crucial to obtain a proper result from this transformation.
+
+If it comes, to the rest of columns:
+
+* `value` is a target we want to predict
+* `wday` is a categorical variable
+* `month` is a categorical variable
+* `year` *can* be treated as categorical, but in this case we may remove this variable and introduce a counter instead
+* `snap_CA` is a categorical variable
+* `sell_price` is a real-valued variable
+
+Summarizing, we have three categorical variables, which should be represented in some way.
+The most efficient manner to represent categorical variables in neural network is **embedding** layer.  
+In fact, it works similar to a **linear** (**dense**)  layer. The difference is that instead of performing resource-consuming dot product between weight matrix and the input one-hot encoded sparse matrix, we just use an index to select "right" row from the weight matrix.
+
+Because of this index-based nature of embedding, we need to transform all the categorical features to 1-n to range.
+```{r unique.cat}
+experiment_data %>% 
+  select(wday, month, snap_CA) %>% 
+  sapply(unique)
+```
+In this case the only variable we need to recode is snap_Ca.
+
+```{r recode.var}
+experiment_data <- 
+  experiment_data %>% 
+  mutate(snap_CA = ifelse(snap_CA == 0, 1, 2))
+```
+
+```{r dict.size}
+d_size <-
+  experiment_data %>%
+  select(
+    wday, month,
+    year, snap_CA, sell_price
+  ) %>%
+  dict_size()
+```
+
+Let's transform tabular data into tensor. A good way to do it is to use 
+a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
 is a `data.frame` object, which we want to transform into a `torch_tensor`.
 
 
-## Ways to handle missing data
-
 ```{r prepare.tensor}
-
-## TODO: handling missing data as a separate vignette
-## See: https://www.tensorflow.org/guide/keras/masking_and_padding
-## https://www.nature.com/articles/s41598-018-24271-9
-
-X_tensor <-
+X_tensor_cat <-
   experiment_data %>%
   select(
     item_id, date, wday, month,
-    year, snap_CA, sell_price
+    snap_CA
+  ) %>%
+  as_tensor(item_id, date, dtype = torch_long())
+
+X_tensor_rest <- 
+  experiment_data %>%
+  select(
+    item_id, date, wday, month,
+    snap_CA
   ) %>%
   as_tensor(item_id, date, dtype = torch_long())
 
 print(class(X_tensor))
 print(X_tensor$shape)
 
-# y_tensor <-
-#   experiment_data %>%
-#   select(item_id, date, value) %>%
-#   as_tensor(item_id, date, requires_grad = FALSE) # because is not float
-# 
-# 
-# # Osobny embedding per cecha + konkatenacja
-# 
-# # debugonce(as_tensor)
-# 
-# d_size <-
-#   experiment_data %>%
-#   select(
-#     wday, month,
-#     year, snap_CA, sell_price
-#   ) %>%
-#   dict_size()
-
+y_tensor <-
+  experiment_data %>%
+  select(item_id, date, value) %>%
+  as_tensor(item_id, date)
 ```
 
