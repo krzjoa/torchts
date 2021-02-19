@@ -101,7 +101,6 @@ If we check the tme difference between these two dates
 ```{r time.diff}
 as.Date('2016-04-24') - as.Date('2011-01-29')
 ```
-
 we'll can see that there are no gaps in the subset we've just selected, so 
 we have not to do any additional filtering or aligning.
 
@@ -117,7 +116,6 @@ experiment_data <-
 
 print(nrow(experiment_data))
 ```
-
 Let's take a look on the data we've already prepared.
 
 ## Transorming to tensor
@@ -159,7 +157,7 @@ d_size <-
   experiment_data %>%
   select(
     wday, month,
-    year, snap_CA, sell_price
+    snap_CA
   ) %>%
   dict_size()
 ```
@@ -167,7 +165,6 @@ d_size <-
 Let's transform tabular data into tensor. A good way to do it is to use 
 a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
 is a `data.frame` object, which we want to transform into a `torch_tensor`.
-
 
 ```{r prepare.tensor}
 X_tensor_cat <-
@@ -186,12 +183,82 @@ X_tensor_rest <-
   ) %>%
   as_tensor(item_id, date, dtype = torch_long())
 
-print(class(X_tensor))
-print(X_tensor$shape)
+print(class(X_tensor_cat))
+print(X_tensor_cat$shape)
 
 y_tensor <-
   experiment_data %>%
   select(item_id, date, value) %>%
-  as_tensor(item_id, date)
+  as_tensor(item_id, date, dtype = torch_float())
+```
+
+### Embedding for categorical variables
+
+First, let's create **a multiple embedding module**.
+A causal **embedding module** is a simple, but memory efficient operation, which allows us to transform a sequence of categorical features into sequence of embedding vectors.
+
+```{r network}
+
+embedding <- 
+  nn_multi_embedding(
+    num_embeddings = d_size,
+    embedding_dim  = rep(3, length(d_size))
+  )
+
+X_tensor_cat_processed <-  embedding(X_tensor_cat)
+```
+
+### Feature concatenation
+
+```{r concat}
+X_transformed <- torch_cat(
+  list(X_tensor_rest, X_tensor_cat_processed), dim = -1
+)
+```
+
+```{r recurrent.layer}
+recurrent_layer <- nn_gru(12, 48)
+out <- recurrent_layer(X_transformed)
+out 
+
+nn_linear(48, 1)(out[[1]])
+
+
+simple_rnn <- nn_module(
+  "nn_simple_rnn",
+  initialize = function(num_embeddings, embedding_dim, rnn_input_size, output_size){
+    self$embedding <- nn_multi_embedding(num_embeddings, embedding_dim)
+    self$recurrent_layer <- nn_gru(rnn_input_size, output_size)
+    self$linear <- nn_linear(output_size, 1)
+  },
+  forward = function(input_cat, input_rest){
+    X_tensor_cat_processed <- self$embedding(X_tensor_cat)
+    X_transformed <- torch_cat(
+        list(X_tensor_rest, X_tensor_cat_processed), dim = -1
+    )
+    out <- recurrent_layer(X_transformed)
+    nnf_relu(self$linear(nnf_relu(out[[1]])))
+  }
+)
+
+simple_rnn_instance <- simple_rnn(d_size, rep(3, length(d_size)), 12, 48)
+simple_rnn_instance(X_tensor_cat, X_tensor_rest)
+```
+
+### Training Recurrent Neural Network
+
+```{r train.network}
+
+optim <- optim_adagrad(simple_rnn_instance$parameters)
+
+for (i in 1:100) {
+  simple_rnn_instance$zero_grad()
+  fcast <- simple_rnn_instance(X_tensor_cat, X_tensor_rest)
+  loss <- nnf_mse_loss(fcast, y_tensor)
+  loss$backward()
+  print(loss)
+  optim$step()
+}
+
 ```
 

@@ -21,7 +21,7 @@
 #'
 #' @note
 #' [Deep Factors for Forecasting](https://arxiv.org/abs/1905.12417) by Wang Y. et al.
-deep_factor_rnn <- function(freq, h, num_hidden_global = 50, num_layers_global = 1,
+deep_factor <- function(freq, h, num_hidden_global = 50, num_layers_global = 1,
                         num_factors = 10, num_hidden_local = 5, num_layers_local = 1,
                         cell_type = c('lstm', 'gru'), optim = torch::optim_adam,
                         context_length = h, num_parallel_samples = 100,

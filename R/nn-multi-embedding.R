@@ -1,7 +1,7 @@
 #' Create multiple embeddings at once
 #'
-#' @description It is especially useful, fo dealing with multiple
-#' categorical features
+#' @description It is especially useful, for dealing with multiple
+#' categorical features.
 #'
 #' @param num_embeddings (int vector): size of the dictionary of embeddings
 #' @param embedding_dim	(int): the size of each embedding vector
@@ -14,6 +14,8 @@
 #' the inverse of frequency of the words in the mini-batch. Default FALSE
 #' @param sparse (bool, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.
 #' @param .weight (Tensor) embeddings weights (in case you want to set it manually)
+#'
+#' @details
 #'
 #' @importFrom torch nn_module
 #'
@@ -45,14 +47,12 @@ nn_multi_embedding <- nn_module(
   forward = function(input){
     embedded_features <- list()
 
-    browser()
-
     for (idx in seq_along(self$num_embeddings)) {
       embedded_features[[glue("embedding_{idx}")]] <-
         self[[glue("embedding_{idx}")]](input[.., idx])
     }
 
-    torch_cat(embedded_features)
+    torch_cat(embedded_features, dim = -1)
   }
 )
 
