@@ -242,7 +242,7 @@ simple_rnn <- nn_module(
 )
 
 simple_rnn_instance <- simple_rnn(d_size, rep(3, length(d_size)), 12, 48)
-simple_rnn_instance(X_tensor_cat, X_tensor_rest)
+# simple_rnn_instance(X_tensor_cat, X_tensor_rest)
 ```
 
 ### Training Recurrent Neural Network
@@ -251,14 +251,14 @@ simple_rnn_instance(X_tensor_cat, X_tensor_rest)
 
 optim <- optim_adagrad(simple_rnn_instance$parameters)
 
-for (i in 1:100) {
-  simple_rnn_instance$zero_grad()
-  fcast <- simple_rnn_instance(X_tensor_cat, X_tensor_rest)
-  loss <- nnf_mse_loss(fcast, y_tensor)
-  loss$backward()
-  print(loss)
-  optim$step()
-}
+# for (i in 1:100) {
+#   simple_rnn_instance$zero_grad()
+#   fcast <- simple_rnn_instance(X_tensor_cat, X_tensor_rest)
+#   loss <- nnf_mse_loss(fcast, y_tensor)
+#   loss$backward()
+#   print(loss)
+#   optim$step()
+# }
 
 ```
 

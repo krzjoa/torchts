@@ -1,8 +1,5 @@
-as_tensor.default <- function(.data, ...){
-  UseMethod("as_tensor")
-}
-
-#' Convert a data.frame-like object to tensor
+#' @name as_tensor
+#' @title Convert an object to tensor
 #
 #' @param .data A data.frame-like object
 #' @param ... Column names to wrap the data.frame-like object
@@ -29,29 +26,56 @@ as_tensor.default <- function(.data, ...){
 #' * creates a n-dimensional tensor with the following shape
 #' (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)
 #'
-#'
 #' @examples
 #' # Simple data.frame-to-torch_tensor transformation
 #' as_tensor(mtcars)
 #'
-#' # Transformation with column-wise data wraping
+#' # Transformation with column-wise data wrapping
 #' library(dplyr)
+#' library(torchts)
 #'
-#' euro_stock <-
-#'   as.data.frame(EuStockMarkets) %>%
-#'   mutate(idx = 1:n()) %>%
-#'   tidyr::pivot_longer(c(DAX, SMI, CAC, FTSE))
+#' # ts class - default
+#' air_passengers <- as_tensor(AirPassengers)
+#' class(air_passengers)
+#' dim(air_passengers)
+#'
+#' # ts class using data frequency
+#' air_passengers <-
+#'   AirPassengers %>%
+#'   as_tensor(frequency(.))
+#' class(air_passengers)
+#' dim(air_passengers)
+#'
+#' # ts class using arbitrary frequency
 #'
 #' euro_stock
 #'
-#' euro_stock_tensor <-
-#'   euro_stock %>%
-#'   as_tensor(name, idx)
-#'
-#' euro_stock_tensor$shape
-#'
 #' @export
-as_tensor <- function(.data, ...,
+as_tensor <- function(.data, ..., dtype = NULL,
+                      device = NULL,
+                      requires_grad = FALSE,
+                      pin_memory = FALSE){
+  UseMethod("as_tensor")
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.default <- function(.data, dtype = NULL,
+                              device = NULL,
+                              requires_grad = FALSE,
+                              pin_memory = FALSE){
+  torch::torch_tensor(
+    data = .data,
+    dtype = dtype,
+    device = device,
+    requires_grad = requires_grad,
+    pin_memory = pin_memory
+  )
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.data.frame <- function(.data, ...,
                       dtype = NULL,
                       device = NULL,
                       requires_grad = FALSE,
@@ -64,7 +88,6 @@ as_tensor <- function(.data, ...,
   #' Something like value ~ wday + month
   #' but we need to handle shapes for such output tensors
 
-  #
   # special_names <- c(
   #   "dtype", "device",
   #   "requires_grad", "pin_memory"
@@ -110,5 +133,75 @@ as_tensor <- function(.data, ...,
     requires_grad  = requires_grad,
     pin_memory = pin_memory
   )
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.ts <- function(.data, by = NULL,
+                         dtype = NULL,
+                         device = NULL,
+                         requires_grad = FALSE,
+                         pin_memory = FALSE){
+
+  # TODO: add natural language handling
+  if (is.null(by)) {
+    return(torch::torch_tensor(
+      array(.data, dim = c(1, length(.data), 1)),
+      dtype = dtype,
+      device = device,
+      requires_grad  = requires_grad,
+      pin_memory = pin_memory
+    ))
+  }
+
+  # .frequency <- frequency(.data)
+  .array <-
+    array(.data, dim = c(length(.data)/by, by, 1))
+
+  torch::torch_tensor(
+    .array,
+    dtype = dtype,
+    device = device,
+    requires_grad  = requires_grad,
+    pin_memory = pin_memory
+  )
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.mts <- function(.data, ...,
+                          dtype = NULL,
+                          device = NULL,
+                          requires_grad = FALSE,
+                          pin_memory = FALSE){
+  .args <- rlang::exprs(...)
+
+  .data <- EuStockMarkets
+  .initial_colnames <- colnames(.data)
+
+  # .frequency <- frequency(.data)
+  .data <- tibble::as_tibble(.data)
+  .data <- dplyr::mutate(.data, index = 1:n())
+  .data <- tidyr::pivot_longer(.data, dplyr::all_of(.initial_colnames))
+
+  if (length(.args) == 0) {
+    return(as_tensor(.data, name, index, dtype = dtype, device = device,
+              requires_grad = requires_grad, pin_memory = pin_memory))
+  }
+
+  as_tensor(
+    .data, ..., dtype = dtype, device = device,
+    requires_grad = requires_grad, pin_memory = pin_memory
+  )
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.tsibble <- function(.data, ...,
+                              dtype = NULL,
+                              device = NULL,
+                              requires_grad = FALSE,
+                              pin_memory = FALSE){
+  NULL
 }
 

@@ -1,0 +1,36 @@
+---
+title: "Handling missing data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Handling missing data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(torchts)
+```
+
+## Adding missing item-date entities
+```{r filling.data}
+
+## TODO: handling missing data as a separate vignette
+## See: https://www.tensorflow.org/guide/keras/masking_and_padding
+## https://www.nature.com/articles/s41598-018-24271-9
+
+# print(nrow(experiment_data))
+# 
+# experiment_data <- 
+#   experiment_data %>% 
+#   span_time(item_id, date)
+# 
+# print(nrow(experiment_data))
+# 
+# filter(experiment_data, is.na(value))

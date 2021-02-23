@@ -2,9 +2,48 @@
 % Please edit documentation in R/as-tensor.R
 \name{as_tensor}
 \alias{as_tensor}
-\title{Convert a data.frame-like object to tensor}
+\alias{as_tensor.default}
+\alias{as_tensor.ts}
+\alias{as_tensor.mts}
+\alias{as_tensor.tsibble}
+\title{Convert an object to tensor}
 \usage{
 as_tensor(
+  .data,
+  ...,
+  dtype = NULL,
+  device = NULL,
+  requires_grad = FALSE,
+  pin_memory = FALSE
+)
+
+\method{as_tensor}{default}(
+  .data,
+  dtype = NULL,
+  device = NULL,
+  requires_grad = FALSE,
+  pin_memory = FALSE
+)
+
+\method{as_tensor}{ts}(
+  .data,
+  by = NULL,
+  dtype = NULL,
+  device = NULL,
+  requires_grad = FALSE,
+  pin_memory = FALSE
+)
+
+\method{as_tensor}{mts}(
+  .data,
+  ...,
+  dtype = NULL,
+  device = NULL,
+  requires_grad = FALSE,
+  pin_memory = FALSE
+)
+
+\method{as_tensor}{tsibble}(
   .data,
   ...,
   dtype = NULL,
@@ -49,20 +88,24 @@ When passing optional column names, function:
 # Simple data.frame-to-torch_tensor transformation
 as_tensor(mtcars)
 
-# Transformation with column-wise data wraping
+# Transformation with column-wise data wrapping
 library(dplyr)
+library(torchts)
 
-euro_stock <-
-  as.data.frame(EuStockMarkets) \%>\%
-  mutate(idx = 1:n()) \%>\%
-  tidyr::pivot_longer(c(DAX, SMI, CAC, FTSE))
+# ts class - default
+air_passengers <- as_tensor(AirPassengers)
+class(air_passengers)
+dim(air_passengers)
+
+# ts class using data frequency
+air_passengers <-
+  AirPassengers \%>\%
+  as_tensor(frequency(.))
+class(air_passengers)
+dim(air_passengers)
+
+# ts class using arbitrary frequency
 
 euro_stock
-
-euro_stock_tensor <-
-  euro_stock \%>\%
-  as_tensor(name, idx)
-
-euro_stock_tensor$shape
 
 }

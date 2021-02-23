@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Convert a data.frame-like object to tensor — as_tensor • torchts</title>
+<title>Convert an object to tensor — as_tensor • torchts</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Convert a data.frame-like object to tensor — as_tensor" />
+<meta property="og:title" content="Convert an object to tensor — as_tensor" />
 <meta property="og:description" content="The function converts an a data.frame-like object to torch_tensor instance.
 If no column names are specified (as &quot;three dots&quot;), the function
 simply transforms the input data to matrix and then to torch_tensor.
@@ -114,6 +114,9 @@ creates a n-dimensional tensor with the following shape
     <li>
       <a href="../articles/missing_data.html">Handling missing data</a>
     </li>
+    <li>
+      <a href="../articles/prepare_tensor.html">Prepare tensor</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -132,7 +135,7 @@ creates a n-dimensional tensor with the following shape
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Convert a data.frame-like object to tensor</h1>
+    <h1>Convert an object to tensor</h1>
     
     <div class="hidden name"><code>as_tensor.Rd</code></div>
     </div>
@@ -156,6 +159,45 @@ When passing optional column names, function:</p><ul>
     </div>
 
     <pre class="usage"><span class='fu'>as_tensor</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>...</span>,
+  dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  device <span class='op'>=</span> <span class='cn'>NULL</span>,
+  requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for default</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  device <span class='op'>=</span> <span class='cn'>NULL</span>,
+  requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for ts</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  by <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  device <span class='op'>=</span> <span class='cn'>NULL</span>,
+  requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for mts</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>...</span>,
+  dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  device <span class='op'>=</span> <span class='cn'>NULL</span>,
+  requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for tsibble</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span>
   <span class='va'>.data</span>,
   <span class='va'>...</span>,
   dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -197,42 +239,65 @@ When passing optional column names, function:</p><ul>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Simple data.frame-to-torch_tensor transformation</span>
 <span class='fu'>as_tensor</span><span class='op'>(</span><span class='va'>mtcars</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in as_tensor(mtcars): nie udało się znaleźć funkcji 'as_tensor'</span></div><div class='input'>
-<span class='co'># Transformation with column-wise data wraping</span>
+</div><div class='output co'>#&gt; torch_tensor
+#&gt; Columns 1 to 8  21.0000    6.0000  160.0000  110.0000    3.9000    2.6200   16.4600    0.0000
+#&gt;   21.0000    6.0000  160.0000  110.0000    3.9000    2.8750   17.0200    0.0000
+#&gt;   22.8000    4.0000  108.0000   93.0000    3.8500    2.3200   18.6100    1.0000
+#&gt;   21.4000    6.0000  258.0000  110.0000    3.0800    3.2150   19.4400    1.0000
+#&gt;   18.7000    8.0000  360.0000  175.0000    3.1500    3.4400   17.0200    0.0000
+#&gt;   18.1000    6.0000  225.0000  105.0000    2.7600    3.4600   20.2200    1.0000
+#&gt;   14.3000    8.0000  360.0000  245.0000    3.2100    3.5700   15.8400    0.0000
+#&gt;   24.4000    4.0000  146.7000   62.0000    3.6900    3.1900   20.0000    1.0000
+#&gt;   22.8000    4.0000  140.8000   95.0000    3.9200    3.1500   22.9000    1.0000
+#&gt;   19.2000    6.0000  167.6000  123.0000    3.9200    3.4400   18.3000    1.0000
+#&gt;   17.8000    6.0000  167.6000  123.0000    3.9200    3.4400   18.9000    1.0000
+#&gt;   16.4000    8.0000  275.8000  180.0000    3.0700    4.0700   17.4000    0.0000
+#&gt;   17.3000    8.0000  275.8000  180.0000    3.0700    3.7300   17.6000    0.0000
+#&gt;   15.2000    8.0000  275.8000  180.0000    3.0700    3.7800   18.0000    0.0000
+#&gt;   10.4000    8.0000  472.0000  205.0000    2.9300    5.2500   17.9800    0.0000
+#&gt;   10.4000    8.0000  460.0000  215.0000    3.0000    5.4240   17.8200    0.0000
+#&gt;   14.7000    8.0000  440.0000  230.0000    3.2300    5.3450   17.4200    0.0000
+#&gt;   32.4000    4.0000   78.7000   66.0000    4.0800    2.2000   19.4700    1.0000
+#&gt;   30.4000    4.0000   75.7000   52.0000    4.9300    1.6150   18.5200    1.0000
+#&gt;   33.9000    4.0000   71.1000   65.0000    4.2200    1.8350   19.9000    1.0000
+#&gt;   21.5000    4.0000  120.1000   97.0000    3.7000    2.4650   20.0100    1.0000
+#&gt;   15.5000    8.0000  318.0000  150.0000    2.7600    3.5200   16.8700    0.0000
+#&gt;   15.2000    8.0000  304.0000  150.0000    3.1500    3.4350   17.3000    0.0000
+#&gt;   13.3000    8.0000  350.0000  245.0000    3.7300    3.8400   15.4100    0.0000
+#&gt;   19.2000    8.0000  400.0000  175.0000    3.0800    3.8450   17.0500    0.0000
+#&gt;   27.3000    4.0000   79.0000   66.0000    4.0800    1.9350   18.9000    1.0000
+#&gt;   26.0000    4.0000  120.3000   91.0000    4.4300    2.1400   16.7000    0.0000
+#&gt;   30.4000    4.0000   95.1000  113.0000    3.7700    1.5130   16.9000    1.0000
+#&gt;   15.8000    8.0000  351.0000  264.0000    4.2200    3.1700   14.5000    0.0000
+#&gt;   19.7000    6.0000  145.0000  175.0000    3.6200    2.7700   15.5000    0.0000
+#&gt; ... [the output was truncated (use n=-1 to disable)]
+#&gt; [ CPUFloatType{32,11} ]</div><div class='input'>
+<span class='co'># Transformation with column-wise data wrapping</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'></span>
 #&gt; <span class='message'>Dołączanie pakietu: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>Następujące obiekty zostały zakryte z ‘package:stats’:</span>
 #&gt; <span class='message'></span>
 #&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>Następujące obiekty zostały zakryte z ‘package:base’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'>
-<span class='va'>euro_stock</span> <span class='op'>&lt;-</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='va'>EuStockMarkets</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>idx <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_longer.html'>pivot_longer</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>DAX</span>, <span class='va'>SMI</span>, <span class='va'>CAC</span>, <span class='va'>FTSE</span><span class='op'>)</span><span class='op'>)</span>
+#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>torchts</span><span class='op'>)</span>
+
+<span class='co'># ts class - default</span>
+<span class='va'>air_passengers</span> <span class='op'>&lt;-</span> <span class='fu'>as_tensor</span><span class='op'>(</span><span class='va'>AirPassengers</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>air_passengers</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "torch_tensor" "R7"          </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>air_passengers</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1]   1 144   1</div><div class='input'>
+<span class='co'># ts class using data frequency</span>
+<span class='va'>air_passengers</span> <span class='op'>&lt;-</span>
+  <span class='va'>AirPassengers</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>as_tensor</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/time.html'>frequency</a></span><span class='op'>(</span><span class='va'>.</span><span class='op'>)</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/class.html'>class</a></span><span class='op'>(</span><span class='va'>air_passengers</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] "torch_tensor" "R7"          </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>air_passengers</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 12 12  1</div><div class='input'>
+<span class='co'># ts class using arbitrary frequency</span>
 
 <span class='va'>euro_stock</span>
-</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 7,440 x 3</span><span>
-#&gt;      idx name  value
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>     1 DAX   </span><span style='text-decoration: underline;'>1</span><span>629.
-#&gt; </span><span style='color: #555555;'> 2</span><span>     1 SMI   </span><span style='text-decoration: underline;'>1</span><span>678.
-#&gt; </span><span style='color: #555555;'> 3</span><span>     1 CAC   </span><span style='text-decoration: underline;'>1</span><span>773.
-#&gt; </span><span style='color: #555555;'> 4</span><span>     1 FTSE  </span><span style='text-decoration: underline;'>2</span><span>444.
-#&gt; </span><span style='color: #555555;'> 5</span><span>     2 DAX   </span><span style='text-decoration: underline;'>1</span><span>614.
-#&gt; </span><span style='color: #555555;'> 6</span><span>     2 SMI   </span><span style='text-decoration: underline;'>1</span><span>688.
-#&gt; </span><span style='color: #555555;'> 7</span><span>     2 CAC   </span><span style='text-decoration: underline;'>1</span><span>750.
-#&gt; </span><span style='color: #555555;'> 8</span><span>     2 FTSE  </span><span style='text-decoration: underline;'>2</span><span>460.
-#&gt; </span><span style='color: #555555;'> 9</span><span>     3 DAX   </span><span style='text-decoration: underline;'>1</span><span>607.
-#&gt; </span><span style='color: #555555;'>10</span><span>     3 SMI   </span><span style='text-decoration: underline;'>1</span><span>679.
-#&gt; </span><span style='color: #555555;'># … with 7,430 more rows</span><span></div><div class='input'>
-<span class='va'>euro_stock_tensor</span> <span class='op'>&lt;-</span>
-  <span class='va'>euro_stock</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>as_tensor</span><span class='op'>(</span><span class='va'>name</span>, <span class='va'>idx</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in as_tensor(., name, idx): nie udało się znaleźć funkcji 'as_tensor'</span></div><div class='input'>
-<span class='va'>euro_stock_tensor</span><span class='op'>$</span><span class='va'>shape</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'euro_stock_tensor'</span></div><div class='input'>
-</div></span></pre>
+</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'euro_stock'</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

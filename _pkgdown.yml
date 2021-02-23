@@ -8,7 +8,7 @@ authors:
 reference:
 - title: Models
   contents:
-  - deep_factor_rnn
+  - deep_factor
 - title: modules
   contents:
   - nn_multi_embedding
@@ -22,4 +22,3 @@ reference:
   - equal_years
   - equal_months
   - dict_size
-  - dict_replace

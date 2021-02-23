@@ -18,6 +18,7 @@
 #' @details
 #'
 #' @importFrom torch nn_module
+#' @importFrom glue glue
 #'
 #' @export
 nn_multi_embedding <- nn_module(

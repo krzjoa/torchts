@@ -27,6 +27,9 @@ the inverse of frequency of the words in the mini-batch. Default FALSE}
 \item{.weight}{(Tensor) embeddings weights (in case you want to set it manually)}
 }
 \description{
-It is especially useful, fo dealing with multiple
-categorical features
+It is especially useful, for dealing with multiple
+categorical features.
+}
+\details{
+
 }

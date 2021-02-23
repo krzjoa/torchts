@@ -1,0 +1,32 @@
+---
+title: "Prepare tensor"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Prepare tensor}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(magrittr)
+library(dplyr)
+library(torch)
+library(torchts)
+```
+
+The basic notion what every deep learning novice should know is **tensor**. 
+Tensor is an abstract mathematical structure representing an organized set of numbers. 
+The simplest example of tensor is vector, which can be interpreted as a 1-dimensional tensor.
+The next one is the order is **matrix**, a 2-dimensional tensor.
+
+```{r mts}
+as_tensor(EuStockMarkets, value, index)
+
+```
