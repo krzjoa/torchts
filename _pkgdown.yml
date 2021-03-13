@@ -9,7 +9,7 @@ reference:
 - title: Models
   contents:
   - deep_factor
-- title: modules
+- title: Modules
   contents:
   - nn_multi_embedding
 - title: Preparing tensors
@@ -22,3 +22,6 @@ reference:
   - equal_years
   - equal_months
   - dict_size
+- title: torch utils
+  contents:
+  - rnn_output_size

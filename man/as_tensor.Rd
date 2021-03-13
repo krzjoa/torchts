@@ -4,8 +4,6 @@
 \alias{as_tensor}
 \alias{as_tensor.default}
 \alias{as_tensor.ts}
-\alias{as_tensor.mts}
-\alias{as_tensor.tsibble}
 \title{Convert an object to tensor}
 \usage{
 as_tensor(
@@ -28,24 +26,6 @@ as_tensor(
 \method{as_tensor}{ts}(
   .data,
   by = NULL,
-  dtype = NULL,
-  device = NULL,
-  requires_grad = FALSE,
-  pin_memory = FALSE
-)
-
-\method{as_tensor}{mts}(
-  .data,
-  ...,
-  dtype = NULL,
-  device = NULL,
-  requires_grad = FALSE,
-  pin_memory = FALSE
-)
-
-\method{as_tensor}{tsibble}(
-  .data,
-  ...,
   dtype = NULL,
   device = NULL,
   requires_grad = FALSE,

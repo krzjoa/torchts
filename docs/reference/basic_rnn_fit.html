@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • torchts</title>
+<title>Basic RNN model for time series forecasting — basic_rnn_fit • torchts</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Basic RNN model for time series forecasting — basic_rnn_fit" />
+<meta property="og:description" content="Basic RNN model for time series forecasting" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -118,136 +119,43 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Basic RNN model for time series forecasting</h1>
+    
+    <div class="hidden name"><code>basic_rnn_fit.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Basic RNN model for time series forecasting</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>basic_rnn_fit</span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>key</span>, <span class='va'>index</span>, categorical_features <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-models" class="hasAnchor"><a href="#section-models" class="anchor"></a>Models</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="deep_factor.html">deep_factor()</a></code> </p>
-        </td>
-        <td><p>Deep Factor Model with RNN model</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-modules" class="hasAnchor"><a href="#section-modules" class="anchor"></a>Modules</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="nn_multi_embedding.html">nn_multi_embedding()</a></code> </p>
-        </td>
-        <td><p>Create multiple embeddings at once</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-preparing-tensors" class="hasAnchor"><a href="#section-preparing-tensors" class="anchor"></a>Preparing tensors</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="as_tensor.html">as_tensor()</a></code> </p>
-        </td>
-        <td><p>Convert an object to tensor</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-data-wrangling" class="hasAnchor"><a href="#section-data-wrangling" class="anchor"></a>Data wrangling</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="span_time.html">span_time()</a></code> </p>
-        </td>
-        <td><p>Span a time range each</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="numeric_date.html">numeric_date()</a></code> </p>
-        </td>
-        <td><p>Converts a date column to numeric-only format</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="equal.html">equal_years()</a></code> <code><a href="equal.html">equal_months()</a></code> </p>
-        </td>
-        <td><p>Adds a phantom 29th of February to data.frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dict_size.html">dict_size()</a></code> </p>
-        </td>
-        <td><p>Dictionary size per column</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-torch-utils" class="hasAnchor"><a href="#section-torch-utils" class="anchor"></a>torch utils</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="rnn_output_size.html">rnn_output_size()</a></code> </p>
-        </td>
-        <td><p>RNN output size</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>Input features</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>Targets</p></td>
+    </tr>
+    <tr>
+      <th>categorical_features</th>
+      <td><p>List of categorical feature columns from data.frame x</p></td>
+    </tr>
+    <tr>
+      <th>optim</th>
+      <td><p>An optimizer with arguments</p>
+<p>If using simple fix_xy, we do not any assumption about time and number of items.</p></td>
+    </tr>
     </table>
-  </div>
 
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>

@@ -167,41 +167,39 @@ as_tensor.ts <- function(.data, by = NULL,
   )
 }
 
-#' @export
-#' @rdname as_tensor
-as_tensor.mts <- function(.data, ...,
-                          dtype = NULL,
-                          device = NULL,
-                          requires_grad = FALSE,
-                          pin_memory = FALSE){
-  .args <- rlang::exprs(...)
 
-  .data <- EuStockMarkets
-  .initial_colnames <- colnames(.data)
+# as_tensor.mts <- function(.data, ...,
+#                           dtype = NULL,
+#                           device = NULL,
+#                           requires_grad = FALSE,
+#                           pin_memory = FALSE){
+#   .args <- rlang::exprs(...)
+#
+#   .data <- EuStockMarkets
+#   .initial_colnames <- colnames(.data)
+#
+#   # .frequency <- frequency(.data)
+#   .data <- tibble::as_tibble(.data)
+#   .data <- dplyr::mutate(.data, index = 1:n())
+#   .data <- tidyr::pivot_longer(.data, dplyr::all_of(.initial_colnames))
+#
+#   if (length(.args) == 0) {
+#     return(as_tensor(.data, name, index, dtype = dtype, device = device,
+#               requires_grad = requires_grad, pin_memory = pin_memory))
+#   }
+#
+#   as_tensor(
+#     .data, ..., dtype = dtype, device = device,
+#     requires_grad = requires_grad, pin_memory = pin_memory
+#   )
+# }
 
-  # .frequency <- frequency(.data)
-  .data <- tibble::as_tibble(.data)
-  .data <- dplyr::mutate(.data, index = 1:n())
-  .data <- tidyr::pivot_longer(.data, dplyr::all_of(.initial_colnames))
 
-  if (length(.args) == 0) {
-    return(as_tensor(.data, name, index, dtype = dtype, device = device,
-              requires_grad = requires_grad, pin_memory = pin_memory))
-  }
-
-  as_tensor(
-    .data, ..., dtype = dtype, device = device,
-    requires_grad = requires_grad, pin_memory = pin_memory
-  )
-}
-
-#' @export
-#' @rdname as_tensor
-as_tensor.tsibble <- function(.data, ...,
-                              dtype = NULL,
-                              device = NULL,
-                              requires_grad = FALSE,
-                              pin_memory = FALSE){
-  NULL
-}
+#' as_tensor.tsibble <- function(.data, ...,
+#'                               dtype = NULL,
+#'                               device = NULL,
+#'                               requires_grad = FALSE,
+#'                               pin_memory = FALSE){
+#'   NULL
+#' }
 
