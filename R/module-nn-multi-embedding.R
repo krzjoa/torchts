@@ -16,6 +16,8 @@
 #' @param .weight (Tensor) embeddings weights (in case you want to set it manually)
 #'
 #' @details
+#' "Optimal number of embeddings"
+#' See: https://developers.googleblog.com/2017/11/introducing-tensorflow-feature-columns.html
 #'
 #' @importFrom torch nn_module
 #' @importFrom glue glue

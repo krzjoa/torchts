@@ -7,3 +7,17 @@
 rnn_output_size <- function(module){
   tail(dim(module$weight_hh_l1), 1)
 }
+
+#' An auxilliary function to call optimizer
+call_optim <- function(optim, params){
+  if (!is_quosure(optim))
+    quosure <- rlang::enquo(optim)
+  else
+    quosure <- optim
+  fun     <- rlang::call_fn(quosure)
+  args <- c(
+    list(params = params),
+    rlang::call_args(quosure)
+  )
+  do.call({fun}, args)
+}

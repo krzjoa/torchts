@@ -10,6 +10,8 @@
 #' @param bwd_output_size (numeric) Backward layer size (in other words: the forward layer output size)
 #' @param output_size (numeric) Output size of the whole neural network. Default: 1
 #' @param final_activation The final activation function
+#' @param num_embeddings Dictionary sizes for the particular features
+#' @param embedding_dim
 #'
 #' @examples
 #'
@@ -18,6 +20,7 @@ basic_rnn <- nn_module(
   "basic_rnn",
   initialize = function(forward_layer = nn_gru,
                         backward_layer = NULL,
+                        fwd_numeric_input,
                         fwd_input_size = NULL, fwd_output_size = NULL,
                         bwd_input_size = NULL, bwd_output_size = NULL,
                         output_size = 1, final_activation = nn_relu(),
@@ -25,14 +28,19 @@ basic_rnn <- nn_module(
 
     self$embedding          <- nn_multi_embedding(num_embeddings, embedding_dim)
 
+    # browser()
+
+    n_features <- fwd_numeric_input + sum(embedding_dim)
+    print(n_features)
+
     if (is_nn_module(forward_layer))
       self$forward_recurrent <- forward_layer
     else
-      self$forward_recurrent <- forward_layer(fwd_input_size, fwd_output_size)
+      self$forward_recurrent <- forward_layer(n_features, fwd_output_size)
 
     if (is_nn_module(backward_layer))
       self$backward_recurrent <- backward_layer
-    else
+    else if (!is.null(backward_layer))
       self$backward_recurrent <- backward_layer(fwd_input_size, fwd_output_size)
 
     #' Compute output size from both layers
@@ -44,11 +52,11 @@ basic_rnn <- nn_module(
     self$final_activation <- final_activation
   },
   forward = function(input_cat, input_rest){
-    X_tensor_cat_processed <- self$embedding(X_tensor_cat)
+    X_tensor_cat_processed <- self$embedding(input_cat)
     X_transformed <- torch_cat(
-      list(X_tensor_rest, X_tensor_cat_processed), dim = -1
+      list(input_rest, X_tensor_cat_processed), dim = -1
     )
-    out <- self$recurrent_layer(X_transformed)
-    nnf_relu(self$linear(nnf_relu(out[[1]])))
+    out <- self$forward_recurrent(X_transformed)
+    self$final_activation(self$linear(nnf_relu(out[[1]])))
   }
 )
