@@ -26,7 +26,15 @@
 #' Idea:
 #' - rnn_reg for parsnip
 #' - ts_rnn for fable (ts prefix for fable)
-recurrent_fit <- function(x, y, key, index, categorical_features = NULL,
+#'
+#'
+recurrent_fit_formula <- function(formula, data, optim = optim_adam(), batch_size = 1,
+                                  n_epochs = 10, loss_fn = nnf_mse_loss, plugins = NULL){
+  browser()
+}
+
+
+recurrent_fit_xy <- function(x, y, key, index, categorical_features = NULL,
                           backward = NULL, optim = optim_adam(), batch_size = 1,
                           n_epochs = 10, loss_fn = nnf_mse_loss, plugins = NULL){
 
@@ -48,7 +56,7 @@ recurrent_fit <- function(x, y, key, index, categorical_features = NULL,
     ceiling(dict_sizes ** 0.25)
 
   # Creating a neural network
-  neural_network <- nn_recurrent(
+  neural_network <- model_recurrent(
     fwd_input_size  = n_features,
     fwd_numeric_input =  tail(dim(X_tensor_numeric), 1),
     fwd_output_size = 3,
@@ -74,19 +82,21 @@ recurrent_fit <- function(x, y, key, index, categorical_features = NULL,
 
   # Return neural network structure
   structure(
-    class = "basic_rnn_fit",
+    class = "recurrent_fit",
     list(
-      neural_network = neural_network,
+      neural_network       = neural_network,
+      numerical_features   = numerical_features,
       categorical_features = categorical_features,
-      index = index,
-      key = key,
-      optim = optim
+      all_features         = c(numerical_features, categorical_features),
+      index                = index,
+      key                  = key,
+      optim                = optim
     )
   )
 }
 
 
-predict_recurrent_impl <- function(obj, new_data, key, index, categorical_features = NULL){
+predict_recurrent <- function(obj, new_data, key, index, categorical_features = NULL){
   input_tensors <- resolve_data(new_data, key, index, categorical_features)
   X_tensor_numeric <- input_tensors[[1]]
   X_tensor_cat     <- input_tensors[[2]]

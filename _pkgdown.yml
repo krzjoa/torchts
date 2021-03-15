@@ -6,11 +6,13 @@ authors:
   Krzysztof Joachimiak:
     href: https://krzjoa.github.io
 reference:
-- title: Models
+- title: `parsnip` API
   contents:
+  - recurrent_network
   - deep_factor
 - title: Modules
   contents:
+  - model_recurrent
   - nn_multi_embedding
 - title: Preparing tensors
   contents:
