@@ -28,8 +28,6 @@ model_recurrent <- nn_module(
 
     self$embedding          <- nn_multi_embedding(num_embeddings, embedding_dim)
 
-    # browser()
-
     n_features <- fwd_numeric_input + sum(embedding_dim)
     print(n_features)
 

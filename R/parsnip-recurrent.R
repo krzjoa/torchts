@@ -1,4 +1,4 @@
-#' General interface to Time Series RNN model
+#' General interface to recurrent neural netowrk models
 #'
 #' @param mode (character) Model mode, default: 'regression'
 #' @param learn_rate (numeric or dials::learn_rate) Learning rate

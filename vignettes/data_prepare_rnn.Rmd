@@ -206,8 +206,6 @@ embedding <-
     embedding_dim  = rep(3, length(d_size))
   )
 
-
-
 X_tensor_cat_processed <-  embedding(X_tensor_cat)
 ```
 

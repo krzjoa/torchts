@@ -19,6 +19,8 @@ reference:
   - as_tensor
 - title: Data wrangling
   contents:
+  - cat2idx
+  - idx2cat
   - span_time
   - numeric_date
   - equal_years
