@@ -1,0 +1,58 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# torchts
+
+> Time series models with torch
+
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
+<!-- badges: end -->
+
+## Installation
+
+You can install the released version of torchts from [CRAN](https://CRAN.R-project.org) with:
+
+The development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("krzjoa/torchts")
+```
+## Usage
+
+### Transforming data.frames to tensors
+
+In `as_tensor` function we can specify columns, that are used to 
+create a tensor out of the input `data.frame`. Listed column names 
+are only used to determine dimension sizes - they are removed after that
+and are not present in the final tensor.
+
+```{r example}
+library(torchts)
+suppressMessages(library(dplyr))
+data("mts-examples", package="MTS")
+
+dim(ibmspko)
+head(ibmspko)
+
+monthly_returns <- 
+  ibmspko %>% 
+  as_tensor(date)
+
+dim(monthly_returns)
+monthly_returns[1:6, ]
+```

@@ -19,8 +19,7 @@
 model_recurrent <- nn_module(
   "model_recurrent",
   initialize = function(forward_layer = nn_gru,
-                        backward_layer = NULL,
-                        fwd_numeric_input,
+                        backward_layer = NULL, fwd_numeric_input,
                         fwd_input_size = NULL, fwd_output_size = NULL,
                         bwd_input_size = NULL, bwd_output_size = NULL,
                         output_size = 1, final_activation = nn_relu(),

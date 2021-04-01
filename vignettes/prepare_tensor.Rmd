@@ -27,6 +27,9 @@ The simplest example of tensor is vector, which can be interpreted as a 1-dimens
 The next one is the order is **matrix**, a 2-dimensional tensor.
 
 ```{r mts}
+# https://faculty.chicagobooth.edu/ruey-s-tsay/research/multivariate-time-series-analysis-with-r-and-financial-applications
+# Mcomp
+# https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781783552078/1/ch01lvl1sec08/multivariate-time-series-analysis
 as_tensor(EuStockMarkets, value, index)
 
 ```
