@@ -94,13 +94,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data_prepare_rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing_data.html">Handling missing data</a>
+      <a href="../articles/missing-data.html">Handling missing data</a>
     </li>
     <li>
-      <a href="../articles/prepare_tensor.html">Prepare tensor</a>
+      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
+    </li>
+    <li>
+      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -134,7 +137,7 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-models" class="hasAnchor"><a href="#section-models" class="anchor"></a>Models</h2>
+          <h2 id="section-parsnip-api" class="hasAnchor"><a href="#section-parsnip-api" class="anchor"></a>parsnip API</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -144,6 +147,12 @@
       
       
       <tr>
+        
+        <td>
+          <p><code><a href="recurrent_network.html">recurrent_network()</a></code> </p>
+        </td>
+        <td><p>General interface to recurrent neural netowrk models</p></td>
+      </tr><tr>
         
         <td>
           <p><code><a href="deep_factor.html">deep_factor()</a></code> </p>
@@ -165,6 +174,12 @@
       <tr>
         
         <td>
+          <p><code><a href="model_recurrent.html">model_recurrent()</a></code> </p>
+        </td>
+        <td><p>A recurrent neural network model</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="nn_multi_embedding.html">nn_multi_embedding()</a></code> </p>
         </td>
         <td><p>Create multiple embeddings at once</p></td>
@@ -172,7 +187,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-preparing-tensors" class="hasAnchor"><a href="#section-preparing-tensors" class="anchor"></a>Preparing tensors</h2>
+          <h2 id="section-preparing-data" class="hasAnchor"><a href="#section-preparing-data" class="anchor"></a>Preparing data</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -187,6 +202,18 @@
           <p><code><a href="as_tensor.html">as_tensor()</a></code> </p>
         </td>
         <td><p>Convert an object to tensor</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as_dataset.html">as_dataset()</a></code> </p>
+        </td>
+        <td><p>Create a tensor to handle time series data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="ts_dataset.html">ts_dataset()</a></code> </p>
+        </td>
+        <td><p>Create a time series dataset object</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -201,6 +228,18 @@
       
       
       <tr>
+        
+        <td>
+          <p><code><a href="cat2idx.html">cat2idx()</a></code> </p>
+        </td>
+        <td><p>Encode vector of categorical features</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="idx2cat.html">idx2cat()</a></code> </p>
+        </td>
+        <td><p>Invert <code>cat2idx</code> transformation</p></td>
+      </tr><tr>
         
         <td>
           <p><code><a href="span_time.html">span_time()</a></code> </p>

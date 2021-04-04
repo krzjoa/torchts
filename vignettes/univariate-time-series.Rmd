@@ -1,0 +1,161 @@
+---
+title: "Univariate Time Series"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{univariate-time-series}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(torch)
+library(torchts)
+suppressMessages(library(dplyr))
+```
+
+```{r preparing.data}
+# # as_ts_dataset
+# data_set <- 
+#   read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+# 
+# # Train data
+# X_tensor <- 
+#   data_set %>% 
+#   select(Date, Temp) %>% 
+#   as_tensor(Date)
+# 
+# X_tensor <- 
+#   X_tensor$reshape(c(1, X_tensor$shape))
+# 
+# y_train_tensor <- 
+#   train_data %>% 
+#   select(Date, Lagged_Temp) %>% 
+#   na.omit() %>% 
+#   as_tensor(Date)
+# 
+# y_train_tensor <- 
+#   y_train_tensor$reshape(c(1, y_train_tensor$shape))
+# 
+# # Test data
+# X_test_tensor <- 
+#   test_data %>% 
+#   select(Date, Temp) %>% 
+#   as_tensor(Date)
+# 
+# # as_tensor(1, Date)
+# 
+# X_test_tensor <- 
+#   X_test_tensor$reshape(c(1, X_test_tensor$shape))
+# 
+# y_test_tensor <- 
+#   test_data %>% 
+#   select(Date, Lagged_Temp) %>% 
+#   na.omit() %>% 
+#   as_tensor(Date)
+# 
+# y_test_tensor <- 
+#   y_test_tensor$reshape(c(1, y_test_tensor$shape))
+```
+
+```{r creating.network}
+# 
+# rnn_module <- nn_module(
+#   "rnn",
+#   initialize = function(){
+#     self$gru_layer <- nn_gru(1, 10)
+#     self$linear    <- nn_linear(10, 1)
+#   },
+#   
+#   forward = function(X){
+#     gru_out    <- self$gru_layer(X)
+#     linear_out <- self$linear(gru_out[[1]])
+# 
+#     last_20 <-  dim(linear_out)[2] - 20
+#     linear_out[1, last_20:(last_20+19), 1]$reshape(c(1, 20, 1))
+#   }
+# )
+# 
+# rnn <- rnn_module()
+# 
+# optim <- optim_adam(rnn$parameters)
+# 
+# X_train_tensor <- 
+#   X_tensor[1, 1:2400, 1]$reshape(c(1, 2400, 1))
+# 
+# X_test_tensor <- 
+#   X_tensor[1, 2401:3600, 1]$reshape(c(1, 1200, 1))
+#   
+# 
+# for (i in 1:100) {
+#   current_start <- 1
+#   loss_per_epoch <- NULL
+#   for (j in 1:20) {
+#     rnn$zero_grad()
+#     
+#     input  <- X_train_tensor[1, current_start:(current_start + 99), 1]$reshape(c(1, 100, 1))
+#     target <- X_train_tensor[1, (current_start+100):(current_start + 119), 1]$reshape(c(1, 20, 1))
+#     
+#     fcast <- rnn(input)
+#     
+#     loss <- nnf_mse_loss(fcast, target)
+#     loss_per_epoch <- c(loss_per_epoch, as.vector(as.array(loss)))
+#     
+#     loss$backward()
+# 
+#     optim$step()
+#     
+#     current_start <- current_start + 120
+#   }
+#     print(glue::glue("Epoch {i} | {sum(loss_per_epoch)}"))
+#  
+# }
+# 
+# full_fcast <- NULL
+# 
+# # Forecast
+# for (j in 1:55) {
+#   current_start <- 1
+#   input  <- X_test_tensor[1, current_start:(current_start + 99), 1]$reshape(c(1, 100, 1))
+#   #target <- X_train_tensor[1, (current_start+100):(current_start + 119), 1]$reshape(c(1, 20, 1))
+#   
+#   fcast <- rnn(input)
+#   full_fcast <- c(
+#     full_fcast, as.vector(as.array(fcast))
+#   )
+#   
+#   #loss <- nnf_mse_loss(fcast, target)
+#   #loss_per_epoch <- c(loss_per_epoch, as.vector(as.array(loss)))
+#   
+#   #loss$backward()
+# 
+#   #optim$step()
+#   
+#   current_start <- current_start + 20
+# }
+# 
+# plot(ts(full_fcast))
+# 
+# bind_cols(
+#   data_set %>% slice(2501:3600),
+#   full_fcast = full_fcast
+# ) -> out
+# 
+# out <- 
+#   out %>% 
+#   mutate(Date = lubridate::as_date(Date))
+# 
+# library(ggplot2)
+# 
+# ggplot(out) + 
+#   geom_line(aes(Date, Temp)) +
+#   geom_line(aes(Date, full_fcast))
+
+```
+

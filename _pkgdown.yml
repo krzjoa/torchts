@@ -6,7 +6,7 @@ authors:
   Krzysztof Joachimiak:
     href: https://krzjoa.github.io
 reference:
-- title: `parsnip` API
+- title: parsnip API
   contents:
   - recurrent_network
   - deep_factor
@@ -14,9 +14,11 @@ reference:
   contents:
   - model_recurrent
   - nn_multi_embedding
-- title: Preparing tensors
+- title: Preparing data
   contents:
   - as_tensor
+  - as_dataset
+  - ts_dataset
 - title: Data wrangling
   contents:
   - cat2idx

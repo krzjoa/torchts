@@ -8,7 +8,6 @@
 #'
 #' If using simple fix_xy, we do not any assumption about time and number of items.
 #'
-#' @examples
 #' data <- filter(experiment_data, item_id == "FOODS_1_001")
 #'
 #' x <- filter(experiment_data, item_id == "FOODS_1_001")

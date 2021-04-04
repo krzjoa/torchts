@@ -232,12 +232,12 @@ A causal **embedding module** is a simple, but memory efficient operation, which
 
 ```{r network}
 
-recurrent_network <- 
-  nn_gru(
-    input_size  = 1,
-    hidden_size = 3,
-    num_layers  = 1
-  )
+# recurrent_network <- 
+#   nn_gru(
+#     input_size  = 1,
+#     hidden_size = 3,
+#     num_layers  = 1
+#   )
 
 
 # embedding <- 
@@ -252,9 +252,9 @@ recurrent_network <-
 ### Feature concatenation
 
 ```{r concat}
-X_transformed <- torch_cat(
-  list(X_tensor_rest, X_tensor_cat_processed), dim = -1
-)
+# X_transformed <- torch_cat(
+#   list(X_tensor_rest, X_tensor_cat_processed), dim = -1
+# )
 ```
 
 ```{r recurrent.layer}
@@ -284,36 +284,40 @@ X_transformed <- torch_cat(
 # simple_rnn_instance <- simple_rnn(d_size, rep(3, length(d_size)), 12, 48)
 # simple_rnn_instance(X_tensor_cat, X_tensor_rest)
 
-recurrent_network <- model_recurrent(
-  fwd_numeric_input = 1,
-  fwd_input_size    = 3,
-  fwd_output_size   = 8,
-  num_embeddings    = d_size,
-  embedding_dim     = round(d_size ** 0.25),
-  
-)
+# recurrent_network <- model_recurrent(
+#   fwd_numeric_input = 1,
+#   fwd_input_size    = 3,
+#   fwd_output_size   = 8,
+#   num_embeddings    = d_size,
+#   embedding_dim     = round(d_size ** 0.25),
+#   
+# )
 
 ```
 ### Training Recurrent Neural Network
 
 ```{r train.network}
 
-debugonce(recurrent_network$forward)
-
-recurrent_network$forward(X_train_tensor_cat, X_train_tensor_rest)
-
-optim <- optim_adagrad(recurrent_network$parameters, lr = 0.01)
-
-for (i in 1:100) {
-  recurrent_network$zero_grad()
-  fcast <- recurrent_network(X_train_tensor_cat, X_train_tensor_rest)
-  loss  <- nnf_mse_loss(fcast, y_tensor)
-  loss$backward()
-  print(loss)
-  optim$step()
-}
-
-
-trial(optim_adagrad(lr = 0.1))
+# debugonce(recurrent_network$forward)
+# 
+# recurrent_network$forward(X_train_tensor_cat, X_train_tensor_rest)
+# 
+# optim <- optim_adagrad(recurrent_network$parameters, lr = 0.01)
+# 
+# for (i in 1:100) {
+#   recurrent_network$zero_grad()
+#   fcast <- recurrent_network(X_train_tensor_cat, X_train_tensor_rest)
+#   loss  <- nnf_mse_loss(fcast, y_tensor)
+#   loss$backward()
+#   print(loss)
+#   optim$step()
+# }
+# 
+# 
+# 
+# 
+# 
+# 
+# trial(optim_adagrad(lr = 0.1))
 ```
 

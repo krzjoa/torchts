@@ -1,38 +1,75 @@
-#' Default time series dataset handler
+#' Create a time series dataset object
 #'
-#' @param data (data.frame) An input
-ts_dataset <- function(data, formula){
-  dataset(
-    name = "ts_dataset",
+#' @param .data (torch_tensor) An input data object
+#' @param n_timesteps (integer) Number of timesteps for input tensor
+#' @param h (integer) Forecast horizon: number of timesteps for output tensor
+#' @param input_columns (list) Output specification
+#' @param target_columns (list) Output specification
+#' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
+#'
+#' @examples
+#' suppressMessages(library(dplyr))
+#' library(torchts)
+#' data("mts-examples", package="MTS")
+#'
+#' ibmspko <-
+#'     ibmspko %>%
+#'     select(date, ibm)
+#'
+#' ibm_tensor <- as_tensor(ibmspko, date)
+#'
+#' ibm_dataset <-
+#'     ts_dataset(ibm_tensor, n_timesteps = 7, h = 7)
+#'
+#' ibm_dataset$.getitem(1)
+#'
+#' @export
+ts_dataset <- torch::dataset(
+  name = "ts_dataset",
 
-    initialize = function(x, n_timesteps, sample_frac = 1) {
+  initialize = function(.data, n_timesteps, h,
+                        input_columns  = list(x = NULL),
+                        target_columns = list(y = NULL),
+                        sample_frac = 1) {
 
-      self$n_timesteps <- n_timesteps
-      self$x <- torch_tensor((x - train_mean) / train_sd)
+    # TODO: check data types
+    self$.data          <- .data
+    self$margin         <- max(n_timesteps, h)
+    self$n_timesteps    <- n_timesteps
+    self$h              <- h
+    self$input_columns  <- input_columns
+    self$target_columns <- target_columns
 
-      n <- length(self$x) - self$n_timesteps
+    n <- length(self$.data) - self$n_timesteps
 
-      self$starts <- sort(sample.int(
-        n = n,
-        size = n * sample_frac
-      ))
+    self$starts <- sort(sample.int(
+      n = n,
+      size = n * sample_frac
+    ))
 
-    },
+  },
 
-    .getitem = function(i) {
+  .getitem = function(i) {
 
-      start <- self$starts[i]
-      end <- start + self$n_timesteps - 1
+    start <- self$starts[i]
+    end   <- start + self$n_timesteps - 1
 
-      list(
-        x = self$x[start:end],
-        y = self$x[end + 1]
-      )
+    # Input columns
+    inputs <-
+      purrr::map(self$input_columns, ~ self$.data[start:end, .x])
 
-    },
+    targets <-
+      purrr::map(self$target_columns, ~ self$.data[(end + 1):(end + self$h), .x])
 
-    .length = function() {
-      length(self$starts)
-    }
-  )
-}
+    c(
+      inputs,
+      targets
+    )
+
+  },
+
+  .length = function() {
+    length(self$starts)
+  }
+
+)

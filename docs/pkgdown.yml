@@ -2,8 +2,9 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  data_prepare_rnn: data_prepare_rnn.html
-  missing_data: missing_data.html
-  prepare_tensor: prepare_tensor.html
-last_built: 2021-03-13T23:36Z
+  data-prepare-rnn: data-prepare-rnn.html
+  missing-data: missing-data.html
+  prepare-tensor: prepare-tensor.html
+  univariate-time-series: univariate-time-series.html
+last_built: 2021-04-04T22:04Z
 

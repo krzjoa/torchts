@@ -54,13 +54,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/data_prepare_rnn.html">Preparing data for RNN models</a>
+      <a href="articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="articles/missing_data.html">Handling missing data</a>
+      <a href="articles/missing-data.html">Handling missing data</a>
     </li>
     <li>
-      <a href="articles/prepare_tensor.html">Prepare tensor</a>
+      <a href="articles/prepare-tensor.html">Prepare tensor</a>
+    </li>
+    <li>
+      <a href="articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -80,7 +83,60 @@
 <div id="torchts" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#torchts" class="anchor"></a>torchts</h1></div>
-<p>Time Series with torch</p>
+<blockquote>
+<p>Time series models with torch</p>
+</blockquote>
+<!-- badges: start -->
+<p><a href="https://travis-ci.com/krzjoa/torchts"><img src="https://travis-ci.com/krzjoa/torchts.svg?branch=master" alt="Travis build status"></a> <a href="https://ci.appveyor.com/project/krzjoa/torchts"><img src="https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&amp;svg=true" alt="AppVeyor build status"></a> <!-- badges: end --></p>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>You can install the released version of torchts from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
+<p>The development version from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co"># install.packages("devtools")</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"krzjoa/torchts"</span><span class="op">)</span></pre></div>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
+<div id="transforming-dataframes-to-tensors" class="section level3">
+<h3 class="hasAnchor">
+<a href="#transforming-dataframes-to-tensors" class="anchor"></a>Transforming data.frames to tensors</h3>
+<p>In <code>as_tensor</code> function we can specify columns, that are used to create a tensor out of the input <code>data.frame</code>. Listed column names are only used to determine dimension sizes - they are removed after that and are not present in the final tensor.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">torchts</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"mts-examples"</span>, package<span class="op">=</span><span class="st">"MTS"</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">ibmspko</span><span class="op">)</span>
+<span class="co">#&gt; [1] 612   4</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ibmspko</span><span class="op">)</span>
+<span class="co">#&gt;       date       ibm        sp        ko</span>
+<span class="co">#&gt; 1 19610131  0.072513  0.063156  0.009331</span>
+<span class="co">#&gt; 2 19610228  0.062500  0.026870  0.103236</span>
+<span class="co">#&gt; 3 19610330  0.029630  0.025536  0.012291</span>
+<span class="co">#&gt; 4 19610428  0.027338  0.003843 -0.050000</span>
+<span class="co">#&gt; 5 19610531  0.027521  0.019139  0.087719</span>
+<span class="co">#&gt; 6 19610630 -0.026612 -0.028846 -0.058065</span>
+
+<span class="va">monthly_returns</span> <span class="op">&lt;-</span> 
+  <span class="va">ibmspko</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="reference/as_tensor.html">as_tensor</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">monthly_returns</span><span class="op">)</span>
+<span class="co">#&gt; [1] 612   3</span>
+<span class="va">monthly_returns</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, <span class="op">]</span>
+<span class="co">#&gt; torch_tensor</span>
+<span class="co">#&gt;  0.0725  0.0632  0.0093</span>
+<span class="co">#&gt;  0.0625  0.0269  0.1032</span>
+<span class="co">#&gt;  0.0296  0.0255  0.0123</span>
+<span class="co">#&gt;  0.0273  0.0038 -0.0500</span>
+<span class="co">#&gt;  0.0275  0.0191  0.0877</span>
+<span class="co">#&gt; -0.0266 -0.0288 -0.0581</span>
+<span class="co">#&gt; [ CPUFloatType{6,3} ]</span></pre></div>
+</div>
+</div>
 </div>
   </div>
 

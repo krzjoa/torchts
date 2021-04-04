@@ -1,5 +1,7 @@
 #' Parse time series formula
 #'
+#' bidir
+#'
 #' @examples
 #' parsed   <- torchts_parse_formula(value ~ . + backward(cat(snap_CA)) + backward(sell_price) + categ(wday), experiment_data)
 #' parsed_2 <- torchts_parse_formula(value ~ . + backward(cat(snap_CA, wday)) + backward(sell_price) + categ(wday), experiment_data)

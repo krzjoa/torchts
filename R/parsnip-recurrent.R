@@ -57,35 +57,35 @@ make_recurrent_network <- function(){
   )
 
   # Fit
-  parsnip::set_fit(
-    model = "recurrent_network",
-    eng   = "torchts",
-    mode  = "regression",
-    value = list(
-      interface = "data.frame",
-      protect   = c("x", "y"),
-      func      = c(fun = "recurrent_fit"),
-      defaults  = NULL
-    )
-  )
-
-  # Predict
-  parsnip::set_pred(
-    model         = "recurrent_network",
-    eng           = "torchts",
-    mode          = "regression",
-    type          = "numeric",
-    value         = list(
-      pre       = NULL,
-      post      = NULL,
-      func      = c(fun = "predict_recurrent"),
-      args      =
-        list(
-          object   = rlang::expr(object),
-          new_data = rlang::expr(new_data)
-        )
-    )
-  )
+  # parsnip::set_fit(
+  #   model = "recurrent_network",
+  #   eng   = "torchts",
+  #   mode  = "regression",
+  #   value = list(
+  #     interface = "data.frame",
+  #     protect   = c("x", "y"),
+  #     func      = c(fun = "recurrent_fit"),
+  #     defaults  = NULL
+  #   )
+  # )
+  #
+  # # Predict
+  # parsnip::set_pred(
+  #   model         = "recurrent_network",
+  #   eng           = "torchts",
+  #   mode          = "regression",
+  #   type          = "numeric",
+  #   value         = list(
+  #     pre       = NULL,
+  #     post      = NULL,
+  #     func      = c(fun = "predict_recurrent"),
+  #     args      =
+  #       list(
+  #         object   = rlang::expr(object),
+  #         new_data = rlang::expr(new_data)
+  #       )
+  #   )
+  # )
 }
 
 

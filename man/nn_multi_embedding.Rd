@@ -4,7 +4,16 @@
 \alias{nn_multi_embedding}
 \title{Create multiple embeddings at once}
 \usage{
-nn_multi_embedding(num_embeddings, embedding_dim)
+nn_multi_embedding(
+  num_embeddings = "auto",
+  embedding_dim = "auto",
+  padding_idx = NULL,
+  max_norm = NULL,
+  norm_type = 2,
+  scale_grad_by_freq = FALSE,
+  sparse = FALSE,
+  .weight = NULL
+)
 }
 \arguments{
 \item{num_embeddings}{(int vector): size of the dictionary of embeddings}
@@ -24,12 +33,30 @@ the inverse of frequency of the words in the mini-batch. Default FALSE}
 
 \item{sparse}{(bool, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.}
 
-\item{.weight}{(Tensor) embeddings weights (in case you want to set it manually)}
+\item{.weight}{(torch_tensor or list of torch_tensor) embeddings weights (in case you want to set it manually)}
 }
 \description{
-It is especially useful, for dealing with multiple
-categorical features.
+It is especially useful, for dealing with multiple categorical features.
 }
-\details{
+\examples{
+data("gss_cat", package = "forcats")
+
+gss_cat_transformed <-
+  gss_cat \%>\%
+  na.omit() \%>\%
+  sapply(function(x) cat2idx(x)[[1]]) \%>\%
+  as_tibble()
+
+gss_cat_tensor  <- as_tensor(gss_cat_transformed)
+.dict_size      <- dict_size(gss_cat_transformed)
+.embedding_size <- ceiling(.dict_size ** .25)
+
+embedding_module <-
+  nn_multi_embedding(.dict_size, .embedding_size)
+
+# Expected output size
+sum(.embedding_size)
+
+embedding_module(gss_cat_tensor)
 
 }
