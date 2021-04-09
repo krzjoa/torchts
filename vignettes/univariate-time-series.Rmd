@@ -22,9 +22,13 @@ suppressMessages(library(dplyr))
 
 ```{r preparing.data}
 # # as_ts_dataset
-# data_set <- 
-#   read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
-# 
+data_set <-
+  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+
+ts_dataset <- 
+  data_set %>% 
+  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
+
 # # Train data
 # X_tensor <- 
 #   data_set %>% 
