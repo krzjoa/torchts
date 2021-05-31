@@ -40,7 +40,7 @@ ts_dataset <- torch::dataset(
     self$input_columns  <- input_columns
     self$target_columns <- target_columns
 
-    n <- length(self$.data) - self$n_timesteps
+    n <- nrow(self$.data) - self$n_timesteps
 
     self$starts <- sort(sample.int(
       n = n,
@@ -55,8 +55,10 @@ ts_dataset <- torch::dataset(
     end   <- start + self$n_timesteps - 1
 
     # Input columns
+    # TODO: Dropping dimension in inputs and not in targets?
+    # It seems to work in the simpliest case
     inputs <-
-      purrr::map(self$input_columns, ~ self$.data[start:end, .x])
+      purrr::map(self$input_columns, ~ self$.data[start:end, .x, drop = FALSE])
 
     targets <-
       purrr::map(self$target_columns, ~ self$.data[(end + 1):(end + self$h), .x])

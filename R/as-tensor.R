@@ -110,7 +110,7 @@ as_tensor.data.frame <- function(.data, ...,
   }
 
   selected_cols <-
-    as.character(exprs)
+    Reduce(c, sapply(exprs, as.character))
 
   other_cols    <-
     colnames(.data)[!(colnames(.data) %in% selected_cols)]

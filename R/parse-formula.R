@@ -2,6 +2,13 @@
 #'
 #' bidir
 #'
+#' # Warning!!!
+#'
+#' First version returns 3 types of variables:
+#' * outcome
+#' * predictor
+#' * index
+#'
 #' @examples
 #' parsed   <- torchts_parse_formula(value ~ . + backward(cat(snap_CA)) + backward(sell_price) + categ(wday), experiment_data)
 #' parsed_2 <- torchts_parse_formula(value ~ . + backward(cat(snap_CA, wday)) + backward(sell_price) + categ(wday), experiment_data)
@@ -16,8 +23,8 @@ torchts_parse_formula <- function(formula, data){
     attr(formula_terms, "variables")
 
   rhs <-
-    Filter(function(x){!(as.character(x) %in% lhs)}, as.list(all_variables)) %>%
-    Filter(function(x)!is.null(x), .)
+    # Filter(function(x){!(as.character(x) %in% lhs)}, ) %>%
+    Filter(function(x)!is.null(x), as.list(all_variables))
 
   # Removing "list" from call
   rhs <- rhs[-1]
@@ -39,7 +46,7 @@ torchts_parse_formula <- function(formula, data){
 .recursive_parse <- function(object, .type = NULL){
   if (typeof(object) == 'symbol') {
     if (is.null(.type))
-      .type <- "default"
+      .type <- "predictor" # !!! TODO
      out <- tibble(
        .var  = as.character(object),
        .type = list(.type)

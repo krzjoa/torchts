@@ -17,149 +17,133 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(torch)
 library(torchts)
+library(rsample)
 suppressMessages(library(dplyr))
 ```
 
 ```{r preparing.data}
-# # as_ts_dataset
 data_set <-
   read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
 
-ts_dataset <- 
-  data_set %>% 
+# Splitting on training and test
+data_split <- initial_time_split(data_set)
+# training(data_split)
+
+train_ds <- 
+  training(data_split) %>% 
   as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
 
-# # Train data
-# X_tensor <- 
-#   data_set %>% 
-#   select(Date, Temp) %>% 
-#   as_tensor(Date)
-# 
-# X_tensor <- 
-#   X_tensor$reshape(c(1, X_tensor$shape))
-# 
-# y_train_tensor <- 
-#   train_data %>% 
-#   select(Date, Lagged_Temp) %>% 
-#   na.omit() %>% 
-#   as_tensor(Date)
-# 
-# y_train_tensor <- 
-#   y_train_tensor$reshape(c(1, y_train_tensor$shape))
-# 
-# # Test data
-# X_test_tensor <- 
-#   test_data %>% 
-#   select(Date, Temp) %>% 
-#   as_tensor(Date)
-# 
-# # as_tensor(1, Date)
-# 
-# X_test_tensor <- 
-#   X_test_tensor$reshape(c(1, X_test_tensor$shape))
-# 
-# y_test_tensor <- 
-#   test_data %>% 
-#   select(Date, Lagged_Temp) %>% 
-#   na.omit() %>% 
-#   as_tensor(Date)
-# 
-# y_test_tensor <- 
-#   y_test_tensor$reshape(c(1, y_test_tensor$shape))
+test_ds <- 
+  training(data_split) %>% 
+  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
+
+train_dl <- dataloader(train_ds, batch_size = 5)
+test_dl  <- dataloader(test_ds, batch_size = 5)
+```
+
+```{r resolve.ts}
+# resolve_ts_dataset() = initial_time_split + 
+# resolve_ts_dataloader
+train_ds[1]
+
+# train_ds$.data[1:20, 1, drop = FALSE]
+
+# b <- train_dl %>% dataloader_make_iter() %>% dataloader_next()
+# b
+
 ```
 
 ```{r creating.network}
-# 
-# rnn_module <- nn_module(
-#   "rnn",
-#   initialize = function(){
-#     self$gru_layer <- nn_gru(1, 10)
-#     self$linear    <- nn_linear(10, 1)
-#   },
-#   
-#   forward = function(X){
-#     gru_out    <- self$gru_layer(X)
-#     linear_out <- self$linear(gru_out[[1]])
-# 
-#     last_20 <-  dim(linear_out)[2] - 20
-#     linear_out[1, last_20:(last_20+19), 1]$reshape(c(1, 20, 1))
-#   }
-# )
-# 
-# rnn <- rnn_module()
-# 
-# optim <- optim_adam(rnn$parameters)
-# 
-# X_train_tensor <- 
-#   X_tensor[1, 1:2400, 1]$reshape(c(1, 2400, 1))
-# 
-# X_test_tensor <- 
-#   X_tensor[1, 2401:3600, 1]$reshape(c(1, 1200, 1))
-#   
-# 
-# for (i in 1:100) {
-#   current_start <- 1
-#   loss_per_epoch <- NULL
-#   for (j in 1:20) {
-#     rnn$zero_grad()
-#     
-#     input  <- X_train_tensor[1, current_start:(current_start + 99), 1]$reshape(c(1, 100, 1))
-#     target <- X_train_tensor[1, (current_start+100):(current_start + 119), 1]$reshape(c(1, 20, 1))
-#     
-#     fcast <- rnn(input)
-#     
-#     loss <- nnf_mse_loss(fcast, target)
-#     loss_per_epoch <- c(loss_per_epoch, as.vector(as.array(loss)))
-#     
-#     loss$backward()
-# 
-#     optim$step()
-#     
-#     current_start <- current_start + 120
-#   }
-#     print(glue::glue("Epoch {i} | {sum(loss_per_epoch)}"))
-#  
-# }
-# 
-# full_fcast <- NULL
-# 
-# # Forecast
-# for (j in 1:55) {
-#   current_start <- 1
-#   input  <- X_test_tensor[1, current_start:(current_start + 99), 1]$reshape(c(1, 100, 1))
-#   #target <- X_train_tensor[1, (current_start+100):(current_start + 119), 1]$reshape(c(1, 20, 1))
-#   
-#   fcast <- rnn(input)
-#   full_fcast <- c(
-#     full_fcast, as.vector(as.array(fcast))
-#   )
-#   
-#   #loss <- nnf_mse_loss(fcast, target)
-#   #loss_per_epoch <- c(loss_per_epoch, as.vector(as.array(loss)))
-#   
-#   #loss$backward()
-# 
-#   #optim$step()
-#   
-#   current_start <- current_start + 20
-# }
-# 
-# plot(ts(full_fcast))
-# 
-# bind_cols(
-#   data_set %>% slice(2501:3600),
-#   full_fcast = full_fcast
-# ) -> out
-# 
-# out <- 
-#   out %>% 
-#   mutate(Date = lubridate::as_date(Date))
-# 
-# library(ggplot2)
-# 
-# ggplot(out) + 
-#   geom_line(aes(Date, Temp)) +
-#   geom_line(aes(Date, full_fcast))
+model <- nn_module(
+  
+  initialize = function(type, input_size, hidden_size, num_layers = 1, dropout = 0) {
+    
+    self$type <- type
+    self$num_layers <- num_layers
+    
+    self$rnn <-
+      nn_gru(
+        input_size = input_size,
+        hidden_size = hidden_size,
+        num_layers = num_layers,
+        dropout = dropout,
+        batch_first = TRUE
+      )
+   
+    self$output <- nn_linear(hidden_size, 1)
+    
+  },
+  
+  forward = function(x) {
+    
+    # list of [output, hidden]
+    # we use the output, which is of size (batch_size, n_timesteps, hidden_size)
+    x <- self$rnn(x)[[1]]
+    
+    # from the output, we only want the final timestep
+    # shape now is (batch_size, hidden_size)
+    x <- x[ , dim(x)[2], ]
+    
+    # feed this to a single output neuron
+    # final shape then is (batch_size, 1)
+    x %>% self$output() 
+  }
+  
+)
+
+net <- model("gru", 1, 32)
+```
+
+```{r training}
+optimizer <- optim_adam(net$parameters, lr = 0.001)
+
+num_epochs <- 30
+
+train_batch <- function(b) {
+  
+  optimizer$zero_grad()
+  output <- net(b$x)
+  target <- b$y
+  
+  loss <- nnf_mse_loss(output, target)
+  loss$backward()
+  optimizer$step()
+  
+  loss$item()
+}
+
+valid_batch <- function(b) {
+  
+  output <- net(b$x)
+  target <- b$y
+  
+  loss <- nnf_mse_loss(output, target)
+  loss$item()
+  
+}
+
+for (epoch in 1:num_epochs) {
+  
+  net$train()
+  train_loss <- c()
+  
+  coro::loop(for (b in train_dl) {
+    loss <- train_batch(b)
+    train_loss <- c(train_loss, loss)
+  })
+  
+  cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
+  
+  net$eval()
+  valid_loss <- c()
+  
+  # coro::loop(for (b in valid_dl) {
+  #   loss <- valid_batch(b)
+  #   valid_loss <- c(valid_loss, loss)
+  # })
+  
+  # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+}
 
 ```
 
