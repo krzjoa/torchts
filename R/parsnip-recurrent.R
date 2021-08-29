@@ -8,6 +8,8 @@
 #' @export
 recurrent_network <- function(mode = "regression",
                               learn_rate = 0.01, epochs = 50,
+                              hidden_units = NULL,
+                              dropout = NULL,
                               batch_size = 32){
 
   args <- list(
@@ -23,17 +25,20 @@ recurrent_network <- function(mode = "regression",
     method   = NULL,
     engine   = NULL
   )
+
 }
 
 # nocov start
 
 make_recurrent_network <- function(){
+
   #See: https://tidymodels.github.io/model-implementation-principles/standardized-argument-names.html#data-arguments
   parsnip::set_new_model("recurrent_network")
   parsnip::set_model_mode("recurrent_network", "regression")
 
   #' torchts engine
-  parsnip::set_model_engine("recurrent_network", mode = "regression", eng = "torchts")
+  parsnip::set_model_engine("recurrent_network",
+                            mode = "regression", eng = "torchts")
   parsnip::set_dependency("recurrent_network", "torchts", "torch")
   parsnip::set_dependency("recurrent_network", "torchts", "torchts")
 
@@ -48,44 +53,63 @@ make_recurrent_network <- function(){
   )
 
   parsnip::set_model_arg(
-    model = "recurrent_network",
-    eng = "torchts",
-    parsnip = "epochs",
-    original = "epochs",
-    func = list(pkg = "dials", fun = "epochs"),
+    model        = "recurrent_network",
+    eng          = "torchts",
+    parsnip      = "epochs",
+    original     = "epochs",
+    func         = list(pkg = "dials", fun = "epochs"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "recurrent_network",
+    eng          = "torchts",
+    parsnip      = "hidden_units",
+    original     = "hidden_units",
+    func         = list(pkg = "dials", fun = "hidden_units"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "recurrent_network",
+    eng          = "torchts",
+    parsnip      = "dropout",
+    original     = "dropout",
+    func         = list(pkg = "dials", fun = "dropout"),
     has_submodel = FALSE
   )
 
   # Fit
-  # parsnip::set_fit(
-  #   model = "recurrent_network",
-  #   eng   = "torchts",
-  #   mode  = "regression",
-  #   value = list(
-  #     interface = "data.frame",
-  #     protect   = c("x", "y"),
-  #     func      = c(fun = "recurrent_fit"),
-  #     defaults  = NULL
-  #   )
-  # )
-  #
-  # # Predict
-  # parsnip::set_pred(
-  #   model         = "recurrent_network",
-  #   eng           = "torchts",
-  #   mode          = "regression",
-  #   type          = "numeric",
-  #   value         = list(
-  #     pre       = NULL,
-  #     post      = NULL,
-  #     func      = c(fun = "predict_recurrent"),
-  #     args      =
-  #       list(
-  #         object   = rlang::expr(object),
-  #         new_data = rlang::expr(new_data)
-  #       )
-  #   )
-  # )
+  parsnip::set_fit(
+    model = "recurrent_network",
+    eng   = "torchts",
+    mode  = "regression",
+    value = list(
+      interface = "formula",
+      protect   = c("formula", "data"),
+      func      = c(fun = "recurrent_network_fit_formula"),
+      defaults  = list()
+    )
+  )
+
+  # Predict
+  parsnip::set_pred(
+    model         = "recurrent_network",
+    eng           = "torchts",
+    mode          = "regression",
+    type          = "numeric",
+    value         = list(
+      pre       = NULL,
+      post      = NULL,
+      func      = c(fun = "predict_recurrent_network"),
+      args      =
+        list(
+          object   = rlang::expr(object),
+          new_data = rlang::expr(new_data)
+        )
+    )
+  )
+
 }
 
 

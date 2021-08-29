@@ -5,17 +5,13 @@
 \title{A recurrent neural network model}
 \usage{
 model_recurrent(
-  forward_layer = nn_gru,
-  backward_layer = NULL,
-  fwd_numeric_input,
-  fwd_input_size = NULL,
-  fwd_output_size = NULL,
-  bwd_input_size = NULL,
-  bwd_output_size = NULL,
-  output_size = 1,
-  final_activation = nn_relu(),
-  num_embeddings,
-  embedding_dim
+  layer = nn_gru,
+  input_size,
+  hidden_size,
+  h,
+  num_layers = 1,
+  dropout = 0,
+  output_activation = nn_linear(hidden_size, 1)
 )
 }
 \arguments{
@@ -37,7 +33,7 @@ model_recurrent(
 
 \item{num_embeddings}{Dictionary sizes for the particular features}
 
-\item{embedding_dim}{}
+\item{embedding_dim}{Starting from the simpliest example}
 }
 \description{
 TODO: get rid off fwd_input_size etc.? Compare with other applications

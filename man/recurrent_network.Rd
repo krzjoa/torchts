@@ -8,6 +8,8 @@ recurrent_network(
   mode = "regression",
   learn_rate = 0.01,
   epochs = 50,
+  hidden_units = NULL,
+  dropout = NULL,
   batch_size = 32
 )
 }

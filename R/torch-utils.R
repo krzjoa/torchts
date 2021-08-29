@@ -10,7 +10,7 @@ rnn_output_size <- function(module){
 
 #' An auxilliary function to call optimizer
 call_optim <- function(optim, params){
-  if (!is_quosure(optim))
+  if (!rlang::is_quosure(optim))
     quosure <- rlang::enquo(optim)
   else
     quosure <- optim

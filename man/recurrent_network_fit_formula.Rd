@@ -7,9 +7,12 @@
 recurrent_network_fit_formula(
   formula,
   data,
+  n_timesteps,
+  h = 1,
+  n_layers = 1,
   optim = optim_adam(),
   batch_size = 1,
-  n_epochs = 10,
+  epochs = 10,
   loss_fn = nnf_mse_loss,
   plugins = NULL
 )
@@ -33,7 +36,7 @@ categorical_features <- c("wday", "month", "snap_CA")
 catch <- function(optim){browser()}
 catch(optim_adam(lr = 0.001))
 
-model <- recurrent_fit(x, y, key = "item_id", index = "date", n_epochs = 1000)
+model <- recurrent_fit(x, y, key = "item_id", index = "date", epochs = 1000)
 fcast <- predict_basic_rnn_impl(model, x, key = "item_id", index = "date")
 View(bind_cols(y, fcast))
 

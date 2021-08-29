@@ -20,7 +20,7 @@
 #' catch <- function(optim){browser()}
 #' catch(optim_adam(lr = 0.001))
 #'
-#' model <- recurrent_fit(x, y, key = "item_id", index = "date", n_epochs = 1000)
+#' model <- recurrent_fit(x, y, key = "item_id", index = "date", epochs = 1000)
 #' fcast <- predict_basic_rnn_impl(model, x, key = "item_id", index = "date")
 #' View(bind_cols(y, fcast))
 #'
@@ -34,12 +34,20 @@
 #' Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
 #' Może nie musiałaby się tego uczyć?
 #'
-recurrent_network_fit_formula <- function(formula, data, optim = optim_adam(),
-                                          batch_size = 1, n_epochs = 10,
+#'
+#' @export
+recurrent_network_fit_formula <- function(formula, data,
+                                          learn_rate = learn_rate,
+                                          hidden_units, dropout,
+                                          n_timesteps = 20, h = 1,
+                                          n_layers = 1,
+                                          optim = optim_adam(),
+                                          batch_size = 1, epochs = 10,
                                           loss_fn = nnf_mse_loss, plugins = NULL){
 
 
   # Parse formula
+  # TODO: optimize - double
   parsed_formula <- torchts_parse_formula(formula, data)
 
   # Extract column roles from formula
@@ -48,26 +56,102 @@ recurrent_network_fit_formula <- function(formula, data, optim = optim_adam(),
   index   <- filter(parsed_formula, .type == "index")$.var
   outcome <- filter(parsed_formula, .type == "outcome")$.var
 
-  forward_categorical   <- filter(parsed_formula, .type == "categ")$.var
-  double_way_cateorical <- filter(parsed_formula,
-    purrr::map_lgl(.type, ~ all(.x == c("categ", "fbwd")))
-    )$.var
+  # forward_categorical   <- filter(parsed_formula, .type == "categ")$.var
+  # double_way_cateorical <- filter(parsed_formula,
+  #   purrr::map_lgl(.type, ~ all(.x == c("categ", "fbwd")))
+  #   )$.var
+  #
+  # any_categorical <- filter(parsed_formula,
+  #   purrr::map_lgl(.type, ~ "categ" %in% .x)
+  # )$.var
+  #
+  # X_tensors <- resolve_data(select(data, -!!outcome),
+  #                           key = key, index = index,
+  #                           categorical_features = any_categorical)
 
-  any_categorical <- filter(parsed_formula,
-    purrr::map_lgl(.type, ~ "categ" %in% .x)
-  )$.var
+  optim <- rlang::enquo(optim)
 
-  X_tensors <- resolve_data(select(data, -!!outcome),
-                            key = key, index = index,
-                            categorical_features = any_categorical)
+  train_dataset <-
+    as_ts_dataset(
+      .data       = data,
+      formula     = formula,
+      n_timesteps = n_timesteps,
+      h           = h
+    )
 
+  train_dl <-
+    dataloader(train_dataset, batch_size = batch_size)
+
+  input_size <-
+    tail(dim(train_dataset$.data), 1)
+
+  hidden_size <- 32
+
+  # Creating a model
+  net <-
+    model_recurrent(
+        layer             = nn_gru,
+        input_size        = input_size,
+        hidden_size       = hidden_size,
+        h                 = h,
+        num_layers        = n_layers,
+        dropout           = 0,
+        output_activation = nn_linear(hidden_size, 1)
+    )
+
+  # Preparing optimizer
+  optimizer <- call_optim(optim, net$parameters)
+
+  # Training
+  for (epoch in 1:epochs) {
+
+    net$train()
+    train_loss <- c()
+
+    coro::loop(for (b in train_dl) {
+      loss <- train_batch(
+        input     = b$x,
+        target    = b$y,
+        net       = net,
+        optimizer = optimizer,
+        loss_fun  = nnf_mse_loss
+      )
+      train_loss <- c(train_loss, loss)
+    })
+
+    cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
+
+    net$eval()
+    valid_loss <- c()
+
+    # coro::loop(for (b in valid_dl) {
+    #   loss <- valid_batch(b)
+    #   valid_loss <- c(valid_loss, loss)
+    # })
+    #
+    # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+  }
+
+  # Return neural network structure
+  structure(
+    class = "recurrent_network_fit",
+    list(
+      net   = net,
+      index = index,
+      key   = key,
+      optim = optimizer,
+      n_timesteps = n_timesteps,
+      h = h
+    )
+  )
 
 }
 
-
-recurrent_network_fit_xy <- function(x, y, key, index, categorical = NULL,
+#' @param y Can be NULL
+#' @param key Can be NULL
+recurrent_network_fit_xy <- function(x, y = NULL, key = NULL, index = NULL, categorical = NULL,
                           backward = NULL, optim = optim_adam(), batch_size = 1,
-                          n_epochs = 10, loss_fn = nnf_mse_loss, plugins = NULL){
+                          epochs = 10, loss_fn = nnf_mse_loss, plugins = NULL){
 
   input_tensors    <- resolve_data(x, key, index, categorical)
   X_tensor_numeric <- input_tensors[[1]]
@@ -102,7 +186,7 @@ recurrent_network_fit_xy <- function(x, y, key, index, categorical = NULL,
 
   # Train neural network
   # TODO: prepare plugins
-  for (epoch in seq(n_epochs)) {
+  for (epoch in seq(epochs)) {
     neural_network$zero_grad()
     fcast <- neural_network(X_tensor_cat, X_tensor_numeric)
     loss  <- loss_fn(fcast, y_tensor)
@@ -126,11 +210,30 @@ recurrent_network_fit_xy <- function(x, y, key, index, categorical = NULL,
   )
 }
 
+#' @export
+predict_recurrent_network <- function(object, new_data){
 
-predict_recurrent <- function(obj, new_data, key, index, categorical_features = NULL){
-  input_tensors <- resolve_data(new_data, key, index, categorical_features)
-  X_tensor_numeric <- input_tensors[[1]]
-  X_tensor_cat     <- input_tensors[[2]]
-  tesnor_fcast  <- obj$neural_network(X_tensor_cat, X_tensor_numeric)
-  as.vector(as.array(tesnor_fcast))
+  # Preparing
+  test_ds <- as_ts_dataset(
+    new_data,
+    index = object$fit$index,
+    key = object$fit$key,
+    target = object$fit$target,
+    n_timesteps = object$fit$n_timesteps,
+    h = object$fit$h
+  )
+
+  test_dl  <- dataloader(test_ds, batch_size = 5)
+
+  net <- object$fit$net
+  net$eval()
+
+  preds <- rep(NA, 20)
+
+  coro::loop(for (b in test_dl) {
+    output <- net(b$x)
+    preds  <- c(preds, as.numeric(output))
+  })
+
+  preds
 }

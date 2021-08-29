@@ -4,7 +4,7 @@
 \alias{resolve_data}
 \title{Prepare tensors}
 \usage{
-resolve_data(x, key, index, categorical_features = NULL)
+resolve_data(x, key = NULL, index = NULL, categorical_features = NULL)
 }
 \arguments{
 \item{categorical_features}{}

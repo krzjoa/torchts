@@ -14,7 +14,7 @@ ts_dataset(
 )
 }
 \arguments{
-\item{.data}{(data.frame, array, ts, mts) An input data object}
+\item{.data}{(torch_tensor) An input data object}
 
 \item{n_timesteps}{(integer) Number of timesteps for input tensor}
 

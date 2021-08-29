@@ -20,28 +20,43 @@
 #'  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
 #'
 #' @export
-as_ts_dataset <- function(.data, formula, index = NULL, key = NULL,
+as_ts_dataset <- function(.data, formula, index = NULL, key = NULL, target = NULL,
                           n_timesteps, h = 1, sample_frac = 1){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
-as_ts_dataset.data.frame <- function(.data, formula, index = NULL, key = NULL,
-                                     n_timesteps, h = 1, sample_frac = 1){
+as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
+                                     key = NULL, target = NULL, n_timesteps = 20,
+                                     h = 1, sample_frac = 1){
 
   # Parsing formula
-  parsed_formula <- torchts_parse_formula(formula, data = .data)
+  # TODO: key is not used for now
+  if (!is.null(formula)) {
 
-  .input_columns <- list(
-    x = parsed_formula[parsed_formula$.type == "predictor", ]$.var
-  )
+    parsed_formula <- torchts_parse_formula(formula, data = .data)
 
-  .target_columns <- list(
-    y = parsed_formula[parsed_formula$.type == "outcome", ]$.var
-  )
+    .input_columns <- list(
+      x = parsed_formula[parsed_formula$.type == "predictor", ]$.var
+    )
 
-  .index_columns <-
-    parsed_formula[parsed_formula$.type == "index", ]$.var
+    .target_columns <- list(
+      y = parsed_formula[parsed_formula$.type == "outcome", ]$.var
+    )
+
+    .index_columns <-
+      parsed_formula[parsed_formula$.type == "index", ]$.var
+
+  } else {
+
+    .input_columns <-
+      setdiff(colnames(.data), c(key, index, target))
+
+    .target_columns <- target
+
+    .index_columns <- index
+
+  }
 
   # Transforming column names to column number
   column_order <-

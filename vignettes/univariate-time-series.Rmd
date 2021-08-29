@@ -19,6 +19,8 @@ library(torch)
 library(torchts)
 library(rsample)
 suppressMessages(library(dplyr))
+library(ggplot2)
+library(parsnip)
 ```
 
 ```{r preparing.data}
@@ -34,7 +36,7 @@ train_ds <-
   as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
 
 test_ds <- 
-  training(data_split) %>% 
+  testing(data_split) %>% 
   as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
 
 train_dl <- dataloader(train_ds, batch_size = 5)
@@ -44,19 +46,18 @@ test_dl  <- dataloader(test_ds, batch_size = 5)
 ```{r resolve.ts}
 # resolve_ts_dataset() = initial_time_split + 
 # resolve_ts_dataloader
-train_ds[1]
+# train_ds[1]
 
 # train_ds$.data[1:20, 1, drop = FALSE]
-
 # b <- train_dl %>% dataloader_make_iter() %>% dataloader_next()
 # b
-
 ```
 
 ```{r creating.network}
 model <- nn_module(
   
-  initialize = function(type, input_size, hidden_size, num_layers = 1, dropout = 0) {
+  initialize = function(type, input_size, hidden_size, 
+                        num_layers = 1, dropout = 0) {
     
     self$type <- type
     self$num_layers <- num_layers
@@ -122,28 +123,84 @@ valid_batch <- function(b) {
   
 }
 
-for (epoch in 1:num_epochs) {
-  
-  net$train()
-  train_loss <- c()
-  
-  coro::loop(for (b in train_dl) {
-    loss <- train_batch(b)
-    train_loss <- c(train_loss, loss)
-  })
-  
-  cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
-  
-  net$eval()
-  valid_loss <- c()
-  
-  # coro::loop(for (b in valid_dl) {
-  #   loss <- valid_batch(b)
-  #   valid_loss <- c(valid_loss, loss)
-  # })
-  
-  # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
-}
+num_epochs <- 10 
+
+# for (epoch in 1:num_epochs) {
+#   
+#   net$train()
+#   train_loss <- c()
+#   
+#   coro::loop(for (b in train_dl) {
+#     loss <- train_batch(b)
+#     train_loss <- c(train_loss, loss)
+#   })
+#   
+#   cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
+#   
+#   net$eval()
+#   valid_loss <- c()
+#   
+#   # coro::loop(for (b in valid_dl) {
+#   #   loss <- valid_batch(b)
+#   #   valid_loss <- c(valid_loss, loss)
+#   # })
+#   # 
+#   # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+# }
+
+```
+```{r forecasting}
+# net$eval()
+# 
+# preds <- rep(NA, 20)
+# 
+# coro::loop(for (b in test_dl) {
+#   output <- net(b$x)
+#   preds <- c(preds, output %>% as.numeric())
+# })
 
 ```
 
+```{r compare.with.ground.truth}
+
+# comparison <- 
+#   testing(data_split) %>% 
+#   mutate(forecast = preds) %>% 
+#   mutate(Date = lubridate::as_date(Date)) %>% 
+#   tidyr::pivot_longer(c(Temp, forecast))
+# 
+# plt <- 
+#   ggplot(comparison) +
+#   geom_line(aes(Date, value, col = name))
+# 
+# plotly::ggplotly(plt)
+
+```
+
+## pre-parsnip API
+
+```{r pre.parsnip.api}
+# debugonce(recurrent_network_fit_formula)
+
+# fitted_model <-
+#   recurrent_network_fit_formula(
+#     formula     = Temp ~ Temp + index(Date),
+#     data        = training(data_split),
+#     n_timesteps = 20,
+#     h           = 1,
+#     n_epochs    = 3 
+#   )
+```
+
+## parsnip API
+
+```{r parsnip.api}
+model <- 
+  recurrent_network(epochs = 3) %>% 
+  fit(Temp ~ Temp + index(Date), 
+      data = training(data_split))
+
+prediction <- 
+  model %>% 
+  predict(new_data = testing(data_split))
+```

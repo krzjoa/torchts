@@ -6,7 +6,7 @@
 #' @param categorical_features
 #'
 #' @export
-resolve_data <- function(x, key, index, categorical_features = NULL){
+resolve_data <- function(x, key = NULL, index = NULL, categorical_features = NULL){
   #' Search for factor or character variables
   #' TODO: add messages, when factors o character variables detected (not mentioned in categorical_features)
   #' TOOD: use data.table?

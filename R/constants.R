@@ -1,4 +1,0 @@
-.constants <- list(
-  # Formula decorators
-
-)
