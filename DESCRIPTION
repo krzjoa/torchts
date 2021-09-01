@@ -1,5 +1,5 @@
 Package: torchts
-Title: Time Series with torch
+Title: Time Series Models with torch
 Version: 0.0.1
 Authors@R: 
     person(given   = "Krzysztof",

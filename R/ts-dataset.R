@@ -1,6 +1,6 @@
 #' Create a time series dataset object
 #'
-#' @param .data (torch_tensor) An input data object
+#' @param data (torch_tensor) An input data object
 #' @param n_timesteps (integer) Number of timesteps for input tensor
 #' @param h (integer) Forecast horizon: number of timesteps for output tensor
 #' @param input_columns (list) Output specification
@@ -27,20 +27,20 @@
 ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
-  initialize = function(.data, n_timesteps, h,
+  initialize = function(data, n_timesteps, h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
                         sample_frac = 1) {
 
     # TODO: check data types
-    self$.data          <- .data
+    self$data          <- data
     self$margin         <- max(n_timesteps, h)
     self$n_timesteps    <- n_timesteps
     self$h              <- h
     self$input_columns  <- input_columns
     self$target_columns <- target_columns
 
-    n <- nrow(self$.data) - self$n_timesteps
+    n <- nrow(self$data) - self$n_timesteps
 
     self$starts <- sort(sample.int(
       n = n,
@@ -58,10 +58,10 @@ ts_dataset <- torch::dataset(
     # TODO: Dropping dimension in inputs and not in targets?
     # It seems to work in the simpliest case
     inputs <-
-      purrr::map(self$input_columns, ~ self$.data[start:end, .x, drop = FALSE])
+      purrr::map(self$input_columns, ~ self$data[start:end, .x, drop = FALSE])
 
     targets <-
-      purrr::map(self$target_columns, ~ self$.data[(end + 1):(end + self$h), .x])
+      purrr::map(self$target_columns, ~ self$data[(end + 1):(end + self$h), .x])
 
     c(
       inputs,

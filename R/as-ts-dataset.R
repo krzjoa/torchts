@@ -1,6 +1,6 @@
 #' Create a torch dataset for time series data
 #'
-#' @param .data (data.frame)
+#' @param data (data.frame)
 #' @param formula A formula describing, how to use the data
 #' @param index The index column
 #' @param key The key column(s)
@@ -20,13 +20,13 @@
 #'  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
 #'
 #' @export
-as_ts_dataset <- function(.data, formula, index = NULL, key = NULL, target = NULL,
+as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
                           n_timesteps, h = 1, sample_frac = 1){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
-as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
+as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, n_timesteps = 20,
                                      h = 1, sample_frac = 1){
 
@@ -34,7 +34,7 @@ as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
   # TODO: key is not used for now
   if (!is.null(formula)) {
 
-    parsed_formula <- torchts_parse_formula(formula, data = .data)
+    parsed_formula <- torchts_parse_formula(formula, data = data)
 
     .input_columns <- list(
       x = parsed_formula[parsed_formula$.type == "predictor", ]$.var
@@ -49,10 +49,11 @@ as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
 
   } else {
 
-    .input_columns <-
-      setdiff(colnames(.data), c(key, index, target))
+    .input_columns <- list(
+      x = setdiff(colnames(data), c(key, index))
+    )
 
-    .target_columns <- target
+    .target_columns <- list(y = target)
 
     .index_columns <- index
 
@@ -60,7 +61,7 @@ as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
 
   # Transforming column names to column number
   column_order <-
-    head(.data, 1) %>%
+    head(data, 1) %>%
     select(!!.index_columns, everything()) %>%
     select(-!!.index_columns) %>%
     colnames()
@@ -72,11 +73,11 @@ as_ts_dataset.data.frame <- function(.data, formula = NULL, index = NULL,
     purrr::map(.target_columns, ~ match(.x, column_order))
 
   # TODO: hardcoded!!!
-  .data_tensor <-
-    as_tensor(.data, !!.index_columns)
+  data_tensor <-
+    as_tensor(data, !!.index_columns)
 
   ts_dataset(
-    .data          = .data_tensor,
+    data          = data_tensor,
     n_timesteps    = n_timesteps,
     h              = h,
     input_columns  = .input_column_idx,

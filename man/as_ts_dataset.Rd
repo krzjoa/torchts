@@ -5,7 +5,7 @@
 \title{Create a torch dataset for time series data}
 \usage{
 as_ts_dataset(
-  .data,
+  data,
   formula,
   index = NULL,
   key = NULL,
@@ -16,7 +16,7 @@ as_ts_dataset(
 )
 }
 \arguments{
-\item{.data}{(data.frame)}
+\item{data}{(data.frame)}
 
 \item{formula}{A formula describing, how to use the data}
 
