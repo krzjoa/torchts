@@ -9,7 +9,6 @@ reference:
 - title: parsnip API
   contents:
   - recurrent_network
-  - deep_factor
 - title: Modules
   contents:
   - model_recurrent
@@ -17,16 +16,13 @@ reference:
 - title: Preparing data
   contents:
   - as_tensor
-  - as_dataset
   - ts_dataset
+  - as_ts_dataset
 - title: Data wrangling
   contents:
   - cat2idx
   - idx2cat
   - span_time
-  - numeric_date
-  - equal_years
-  - equal_months
   - dict_size
 - title: torch utils
   contents:

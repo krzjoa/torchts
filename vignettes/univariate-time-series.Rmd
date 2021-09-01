@@ -23,6 +23,10 @@ library(ggplot2)
 library(parsnip)
 ```
 
+## Doing it with parsnip API
+
+`parsnip` API provides quick and convenient way to train time series models based on `torch` library.
+
 ```{r preparing.data}
 data_set <-
   read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
@@ -30,7 +34,30 @@ data_set <-
 # Splitting on training and test
 data_split <- initial_time_split(data_set)
 # training(data_split)
+```
 
+
+```{r training.parsnip.api}
+model <- 
+  recurrent_network(epochs = 3) %>% 
+  fit(Temp ~ Temp + index(Date), 
+      data = training(data_split))
+
+model$fit$target <- "Temp"
+
+
+# Iterative forecastig with h or 
+# These models gets lags in another form!
+# Solution: 
+# Simple workflow heler function
+
+prediction <- 
+  model %>% 
+  predict(new_data = testing(data_split))
+```
+
+
+```{r preparing.dls}
 train_ds <- 
   training(data_split) %>% 
   as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
@@ -42,6 +69,7 @@ test_ds <-
 train_dl <- dataloader(train_ds, batch_size = 5)
 test_dl  <- dataloader(test_ds, batch_size = 5)
 ```
+
 
 ```{r resolve.ts}
 # resolve_ts_dataset() = initial_time_split + 
@@ -149,58 +177,33 @@ num_epochs <- 10
 # }
 
 ```
+
 ```{r forecasting}
 # net$eval()
 # 
-# preds <- rep(NA, 20)
-# 
-# coro::loop(for (b in test_dl) {
-#   output <- net(b$x)
-#   preds <- c(preds, output %>% as.numeric())
-# })
+preds <- rep(NA, 20)
+
+coro::loop(for (b in test_dl) {
+  print(b$x)
+  # output <- net(b$x)
+  # preds <- c(preds, output %>% as.numeric())
+})
 
 ```
 
 ```{r compare.with.ground.truth}
 
-# comparison <- 
-#   testing(data_split) %>% 
-#   mutate(forecast = preds) %>% 
-#   mutate(Date = lubridate::as_date(Date)) %>% 
-#   tidyr::pivot_longer(c(Temp, forecast))
-# 
-# plt <- 
-#   ggplot(comparison) +
-#   geom_line(aes(Date, value, col = name))
-# 
-# plotly::ggplotly(plt)
+comparison <-
+  testing(data_split) %>%
+  mutate(forecast = prediction$.pred) %>%
+  mutate(Date = lubridate::as_date(Date)) %>%
+  tidyr::pivot_longer(c(Temp, forecast))
+
+plt <-
+  ggplot(comparison) +
+  geom_line(aes(Date, value, col = name))
+
+plotly::ggplotly(plt)
 
 ```
 
-## pre-parsnip API
-
-```{r pre.parsnip.api}
-# debugonce(recurrent_network_fit_formula)
-
-# fitted_model <-
-#   recurrent_network_fit_formula(
-#     formula     = Temp ~ Temp + index(Date),
-#     data        = training(data_split),
-#     n_timesteps = 20,
-#     h           = 1,
-#     n_epochs    = 3 
-#   )
-```
-
-## parsnip API
-
-```{r parsnip.api}
-model <- 
-  recurrent_network(epochs = 3) %>% 
-  fit(Temp ~ Temp + index(Date), 
-      data = training(data_split))
-
-prediction <- 
-  model %>% 
-  predict(new_data = testing(data_split))
-```

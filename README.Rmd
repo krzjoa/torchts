@@ -34,6 +34,33 @@ devtools::install_github("krzjoa/torchts")
 ```
 ## Usage
 
+## parsnip models
+
+```{r parsnip.api}
+library(torchts)
+library(torch)
+library(rsample)
+library(dplyr)
+library(parsnip)
+
+data_set <-
+  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+
+# Splitting on training and test
+data_split <- initial_time_split(data_set)
+
+# Training 
+model <- 
+  rnn(epochs = 3, hidden_units = 32) %>% 
+  fit(Temp ~ Temp + index(Date), 
+      data = training(data_split))
+
+# prediction <- 
+#   model %>% 
+#   predict(new_data = testing(data_split))
+
+```
+
 ### Transforming data.frames to tensors
 
 In `as_tensor` function we can specify columns, that are used to 

@@ -27,6 +27,61 @@ devtools::install_github("krzjoa/torchts")
 
 ## Usage
 
+## parsnip models
+
+``` r
+library(torchts)
+library(torch)
+library(rsample)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+library(parsnip)
+
+data_set <-
+  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+
+# Splitting on training and test
+data_split <- initial_time_split(data_set)
+
+# Training 
+model <- 
+  rnn(epochs = 10, hidden_units = 32) %>% 
+  fit(Temp ~ Temp + index(Date), 
+      data = training(data_split))
+#> Warning: Engine set to `torchts`.
+#> 
+#> Epoch 1, training: loss: 95.42544 
+#> 
+#> Epoch 2, training: loss: 48.88457 
+#> 
+#> Epoch 3, training: loss: 29.60288 
+#> 
+#> Epoch 4, training: loss: 21.21282 
+#> 
+#> Epoch 5, training: loss: 16.75105 
+#> 
+#> Epoch 6, training: loss: 13.32213 
+#> 
+#> Epoch 7, training: loss: 10.93875 
+#> 
+#> Epoch 8, training: loss: 9.33267 
+#> 
+#> Epoch 9, training: loss: 8.31204 
+#> 
+#> Epoch 10, training: loss: 7.67917
+
+# prediction <- 
+#   model %>% 
+#   predict(new_data = testing(data_split))
+```
+
 ### Transforming data.frames to tensors
 
 In `as_tensor` function we can specify columns, that are used to create

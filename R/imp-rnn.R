@@ -4,7 +4,6 @@
 #' @param y Targets
 #' @param categorical_features List of categorical feature columns from data.frame x
 #' @param optim An optimizer with arguments
-#' @param plugins A list of additional objects to observe loss function values etc.
 #'
 #' If using simple fix_xy, we do not any assumption about time and number of items.
 #'
@@ -34,16 +33,13 @@
 #' Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
 #' Może nie musiałaby się tego uczyć?
 #'
-#'
 #' @export
-recurrent_network_fit_formula <- function(formula, data,
-                                          learn_rate = learn_rate,
-                                          hidden_units, dropout,
-                                          n_timesteps = 20, h = 1,
-                                          n_layers = 1,
-                                          optim = optim_adam(),
-                                          batch_size = 1, epochs = 10,
-                                          loss_fn = nnf_mse_loss, plugins = NULL){
+rnn_fit <- function(formula, data,
+                    learn_rate, hidden_units, dropout,
+                    n_timesteps = 20, h = 1,
+                    n_layers = 1, optim = optim_adam(),
+                    batch_size = 1, epochs = 10,
+                    loss_fn = nnf_mse_loss){
 
 
   # Parse formula
@@ -73,7 +69,7 @@ recurrent_network_fit_formula <- function(formula, data,
 
   train_dataset <-
     as_ts_dataset(
-      .data       = data,
+      data       = data,
       formula     = formula,
       n_timesteps = n_timesteps,
       h           = h
@@ -83,20 +79,18 @@ recurrent_network_fit_formula <- function(formula, data,
     dataloader(train_dataset, batch_size = batch_size)
 
   input_size <-
-    tail(dim(train_dataset$.data), 1)
-
-  hidden_size <- 32
+    tail(dim(train_dataset$data), 1)
 
   # Creating a model
   net <-
-    model_recurrent(
+    model_rnn(
         layer             = nn_gru,
         input_size        = input_size,
-        hidden_size       = hidden_size,
+        hidden_size       = hidden_units,
         h                 = h,
         num_layers        = n_layers,
         dropout           = 0,
-        output_activation = nn_linear(hidden_size, 1)
+        output_activation = nn_linear(hidden_units, 1)
     )
 
   # Preparing optimizer
@@ -134,7 +128,7 @@ recurrent_network_fit_formula <- function(formula, data,
 
   # Return neural network structure
   structure(
-    class = "recurrent_network_fit",
+    class = "torchts_rnn",
     list(
       net   = net,
       index = index,
@@ -211,26 +205,26 @@ recurrent_network_fit_xy <- function(x, y = NULL, key = NULL, index = NULL, cate
 }
 
 #' @export
-predict_recurrent_network <- function(object, new_data){
+predict.torchts_rnn <- function(object, new_data){
 
   # Preparing
-  test_ds <- as_ts_dataset(
+ new_data_ds <- as_ts_dataset(
     new_data,
-    index = object$fit$index,
-    key = object$fit$key,
-    target = object$fit$target,
+    index       = object$fit$index,
+    key         = object$fit$key,
+    target      = object$fit$target,
     n_timesteps = object$fit$n_timesteps,
-    h = object$fit$h
+    h           = object$fit$h
   )
 
-  test_dl  <- dataloader(test_ds, batch_size = 5)
+ new_data_dl  <- dataloader(new_data_ds, batch_size = 5)
 
   net <- object$fit$net
   net$eval()
 
   preds <- rep(NA, 20)
 
-  coro::loop(for (b in test_dl) {
+  coro::loop(for (b in new_data_dl) {
     output <- net(b$x)
     preds  <- c(preds, as.numeric(output))
   })
