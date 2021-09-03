@@ -134,7 +134,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>ts_dataset</span><span class='op'>(</span>
-  <span class='va'>.data</span>,
+  <span class='va'>data</span>,
   <span class='va'>n_timesteps</span>,
   <span class='va'>h</span>,
   input_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
@@ -146,8 +146,8 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>.data</th>
-      <td><p>(data.frame, array, ts, mts) An input data object</p></td>
+      <th>data</th>
+      <td><p>(torch_tensor) An input data object</p></td>
     </tr>
     <tr>
       <th>n_timesteps</th>
@@ -185,9 +185,70 @@
 
 <span class='va'>ibm_dataset</span> <span class='op'>&lt;-</span>
     <span class='fu'>ts_dataset</span><span class='op'>(</span><span class='va'>ibm_tensor</span>, n_timesteps <span class='op'>=</span> <span class='fl'>7</span>, h <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in ts_dataset(ibm_tensor, n_timesteps = 7, h = 7): nie udało się znaleźć funkcji 'ts_dataset'</span></div><div class='input'>
+
 <span class='va'>ibm_dataset</span><span class='op'>$</span><span class='fu'>.getitem</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'ibm_dataset'</span></div><div class='input'>
+</div><div class='output co'>#&gt; $x
+#&gt; torch_tensor
+#&gt; (1,.,.) = 
+#&gt;  0.01 *
+#&gt;   7.2513
+#&gt; 
+#&gt; (2,.,.) = 
+#&gt;  0.01 *
+#&gt;   6.2500
+#&gt; 
+#&gt; (3,.,.) = 
+#&gt;  0.01 *
+#&gt;   2.9630
+#&gt; 
+#&gt; (4,.,.) = 
+#&gt;  0.01 *
+#&gt;   2.7338
+#&gt; 
+#&gt; (5,.,.) = 
+#&gt;  0.01 *
+#&gt;   2.7521
+#&gt; 
+#&gt; (6,.,.) = 
+#&gt;  0.01 *
+#&gt;  -2.6612
+#&gt; 
+#&gt; (7,.,.) = 
+#&gt;  0.01 *
+#&gt;   2.4185
+#&gt; [ CPUFloatType{7,1,1} ]
+#&gt; 
+#&gt; $y
+#&gt; torch_tensor
+#&gt; (1,.,.) = 
+#&gt;  0.01 *
+#&gt;   6.7967
+#&gt; 
+#&gt; (2,.,.) = 
+#&gt;  0.01 *
+#&gt;   3.5611
+#&gt; 
+#&gt; (3,.,.) = 
+#&gt;  0.01 *
+#&gt;   9.2007
+#&gt; 
+#&gt; (4,.,.) = 
+#&gt;  0.01 *
+#&gt;  -1.1745
+#&gt; 
+#&gt; (5,.,.) = 
+#&gt;  0.001 *
+#&gt;  -1.7240
+#&gt; 
+#&gt; (6,.,.) = 
+#&gt;  0.01 *
+#&gt;  -6.3903
+#&gt; 
+#&gt; (7,.,.) = 
+#&gt;  0.001 *
+#&gt;  -7.8410
+#&gt; [ CPUFloatType{7,1,1} ]
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

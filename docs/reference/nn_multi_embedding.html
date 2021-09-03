@@ -191,7 +191,7 @@ the inverse of frequency of the words in the mini-batch. Default FALSE</p></td>
 <span class='va'>gss_cat_transformed</span> <span class='op'>&lt;-</span>
   <span class='va'>gss_cat</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='cat2idx.html'>cat2idx</a></span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'>cat2idx</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in cat2idx(x): nie udało się znaleźć funkcji 'cat2idx'</span></div><div class='input'>
 <span class='va'>gss_cat_tensor</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='as_tensor.html'>as_tensor</a></span><span class='op'>(</span><span class='va'>gss_cat_transformed</span><span class='op'>)</span>
@@ -200,7 +200,7 @@ the inverse of frequency of the words in the mini-batch. Default FALSE</p></td>
 </div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu '.dict_size'</span></div><div class='input'>
 <span class='va'>embedding_module</span> <span class='op'>&lt;-</span>
   <span class='fu'>nn_multi_embedding</span><span class='op'>(</span><span class='va'>.dict_size</span>, <span class='va'>.embedding_size</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in initialize(...): nie znaleziono obiektu '.dict_size'</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in nn_multi_embedding(.dict_size, .embedding_size): nie udało się znaleźć funkcji 'nn_multi_embedding'</span></div><div class='input'>
 <span class='co'># Expected output size</span>
 <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>.embedding_size</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu '.embedding_size'</span></div><div class='input'>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare tensors — resolve_data • torchts</title>
+<title>Basic RNN model for time series forecasting — rnn_fit • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Prepare tensors — resolve_data" />
-<meta property="og:description" content="Prepare tensors" />
+<meta property="og:title" content="Basic RNN model for time series forecasting — rnn_fit" />
+<meta property="og:description" content="Basic RNN model for time series forecasting" />
 
 
 
@@ -124,23 +124,70 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare tensors</h1>
+    <h1>Basic RNN model for time series forecasting</h1>
     
-    <div class="hidden name"><code>resolve_data.Rd</code></div>
+    <div class="hidden name"><code>rnn_fit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepare tensors</p>
+    <p>Basic RNN model for time series forecasting</p>
     </div>
 
-    <pre class="usage"><span class='fu'>resolve_data</span><span class='op'>(</span><span class='va'>x</span>, key <span class='op'>=</span> <span class='cn'>NULL</span>, index <span class='op'>=</span> <span class='cn'>NULL</span>, categorical_features <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>rnn_fit</span><span class='op'>(</span>
+  <span class='va'>formula</span>,
+  <span class='va'>data</span>,
+  <span class='va'>learn_rate</span>,
+  <span class='va'>hidden_units</span>,
+  <span class='va'>dropout</span>,
+  n_timesteps <span class='op'>=</span> <span class='fl'>20</span>,
+  h <span class='op'>=</span> <span class='fl'>1</span>,
+  n_layers <span class='op'>=</span> <span class='fl'>1</span>,
+  optim <span class='op'>=</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/optim_adam.html'>optim_adam</a></span><span class='op'>(</span><span class='op'>)</span>,
+  batch_size <span class='op'>=</span> <span class='fl'>1</span>,
+  epochs <span class='op'>=</span> <span class='fl'>10</span>,
+  loss_fn <span class='op'>=</span> <span class='va'>nnf_mse_loss</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>optim</th>
+      <td><p>An optimizer with arguments</p>
+<p>If using simple fix_xy, we do not any assumption about time and number of items.</p>
+<p>data &lt;- filter(experiment_data, item_id == "FOODS_1_001")</p>
+<p>x &lt;- filter(experiment_data, item_id == "FOODS_1_001")
+x &lt;- select(x, -value)
+y &lt;- select(filter(experiment_data, item_id == "FOODS_1_001"), value, item_id, date)
+key &lt;- "item_id"
+index &lt;- "date"
+categorical_features &lt;- c("wday", "month", "snap_CA")</p>
+<p>catch &lt;- function(optim)browser()
+catch(optim_adam(lr = 0.001))</p>
+<p>model &lt;- recurrent_fit(x, y, key = "item_id", index = "date", epochs = 1000)
+fcast &lt;- predict_basic_rnn_impl(model, x, key = "item_id", index = "date")
+View(bind_cols(y, fcast))</p>
+<p>recurrent_network_fit_formula(value ~ key(item_id) + index(date) + . + categ(wday, month, fbwd(snap_CA)),
+data = data)</p>
+<p>Idea:</p><ul>
+<li><p>rnn_reg for parsnip</p></li>
+<li><p>ts_rnn for fable (ts prefix for fable)</p></li>
+</ul>
+
+<p>Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
+Może nie musiałaby się tego uczyć?</p></td>
+    </tr>
+    <tr>
+      <th>x</th>
+      <td><p>Input features</p></td>
+    </tr>
+    <tr>
+      <th>y</th>
+      <td><p>Targets</p></td>
+    </tr>
+    <tr>
       <th>categorical_features</th>
-      <td></td>
+      <td><p>List of categorical feature columns from data.frame x</p></td>
     </tr>
     </table>
 

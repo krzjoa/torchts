@@ -5,7 +5,7 @@
 \title{Create a time series dataset object}
 \usage{
 ts_dataset(
-  .data,
+  data,
   n_timesteps,
   h,
   input_columns = list(x = NULL),
@@ -14,7 +14,7 @@ ts_dataset(
 )
 }
 \arguments{
-\item{.data}{(torch_tensor) An input data object}
+\item{data}{(torch_tensor) An input data object}
 
 \item{n_timesteps}{(integer) Number of timesteps for input tensor}
 

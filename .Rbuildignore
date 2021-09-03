@@ -3,7 +3,7 @@
 ^LICENSE\.md$
 ^doc$
 ^Meta$
-^data$
+^data-dev$
 ^README\.Rmd$
 ^appveyor\.yml$
 ^\.travis\.yml$

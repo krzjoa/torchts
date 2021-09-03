@@ -149,15 +149,9 @@
       <tr>
         
         <td>
-          <p><code><a href="recurrent_network.html">recurrent_network()</a></code> </p>
+          <p><code><a href="rnn.html">rnn()</a></code> </p>
         </td>
         <td><p>General interface to recurrent neural netowrk models</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="deep_factor.html">deep_factor()</a></code> </p>
-        </td>
-        <td><p>Deep Factor Model with RNN model</p></td>
       </tr>
     </tbody><tbody>
       <tr>
@@ -174,7 +168,7 @@
       <tr>
         
         <td>
-          <p><code><a href="model_recurrent.html">model_recurrent()</a></code> </p>
+          <p><code><a href="model_rnn.html">model_rnn()</a></code> </p>
         </td>
         <td><p>A recurrent neural network model</p></td>
       </tr><tr>
@@ -205,20 +199,26 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="as_dataset.html">as_dataset()</a></code> </p>
-        </td>
-        <td><p>Create a tensor to handle time series data</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="ts_dataset.html">ts_dataset()</a></code> </p>
         </td>
         <td><p>Create a time series dataset object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as_ts_dataset.html">as_ts_dataset()</a></code> </p>
+        </td>
+        <td><p>Create a torch dataset for time series data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as_ts_dataloader.html">as_ts_dataloader()</a></code> </p>
+        </td>
+        <td><p>Quick shortcut to create a torch dataloader based on the given dataset</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-data-wrangling" class="hasAnchor"><a href="#section-data-wrangling" class="anchor"></a>Data wrangling</h2>
+          <h2 id="section-data" class="hasAnchor"><a href="#section-data" class="anchor"></a>Data</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -230,58 +230,9 @@
       <tr>
         
         <td>
-          <p><code><a href="cat2idx.html">cat2idx()</a></code> </p>
+          <p><code><a href="weather_pl.html">weather_pl</a></code> </p>
         </td>
-        <td><p>Encode vector of categorical features</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="idx2cat.html">idx2cat()</a></code> </p>
-        </td>
-        <td><p>Invert <code>cat2idx</code> transformation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="span_time.html">span_time()</a></code> </p>
-        </td>
-        <td><p>Span a time range each</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="numeric_date.html">numeric_date()</a></code> </p>
-        </td>
-        <td><p>Converts a date column to numeric-only format</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="equal.html">equal_years()</a></code> <code><a href="equal.html">equal_months()</a></code> </p>
-        </td>
-        <td><p>Adds a phantom 29th of February to data.frame</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dict_size.html">dict_size()</a></code> </p>
-        </td>
-        <td><p>Dictionary size per column</p></td>
-      </tr>
-    </tbody><tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-torch-utils" class="hasAnchor"><a href="#section-torch-utils" class="anchor"></a>torch utils</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="rnn_output_size.html">rnn_output_size()</a></code> </p>
-        </td>
-        <td><p>RNN output size</p></td>
+        <td><p>Weather data from Poland in 2001-2020</p></td>
       </tr>
     </tbody>
     </table>

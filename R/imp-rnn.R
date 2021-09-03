@@ -210,16 +210,16 @@ predict.torchts_rnn <- function(object, new_data){
   # Preparing
  new_data_ds <- as_ts_dataset(
     new_data,
-    index       = object$fit$index,
-    key         = object$fit$key,
-    target      = object$fit$target,
-    n_timesteps = object$fit$n_timesteps,
-    h           = object$fit$h
+    index       = object$index,
+    key         = object$key,
+    target      = object$target,
+    n_timesteps = object$n_timesteps,
+    h           = object$h
   )
 
  new_data_dl  <- dataloader(new_data_ds, batch_size = 5)
 
-  net <- object$fit$net
+  net <- object$net
   net$eval()
 
   preds <- rep(NA, 20)

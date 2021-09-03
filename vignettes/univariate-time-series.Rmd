@@ -28,32 +28,30 @@ library(parsnip)
 `parsnip` API provides quick and convenient way to train time series models based on `torch` library.
 
 ```{r preparing.data}
-data_set <-
-  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+tarnow_temp <- 
+  weather_pl %>% 
+  filter(station == "TARNÓW") %>% 
+  select(date, temp = tmax_daily)
 
 # Splitting on training and test
-data_split <- initial_time_split(data_set)
-# training(data_split)
+data_split <- initial_time_split(tarnow_temp)
 ```
 
 
 ```{r training.parsnip.api}
+# Training 
 model <- 
-  recurrent_network(epochs = 3) %>% 
-  fit(Temp ~ Temp + index(Date), 
+  rnn(epochs = 10, hidden_units = 32) %>% 
+  fit(temp ~ temp + index(date), 
       data = training(data_split))
 
-model$fit$target <- "Temp"
-
-
-# Iterative forecastig with h or 
-# These models gets lags in another form!
-# Solution: 
-# Simple workflow heler function
-
-prediction <- 
-  model %>% 
+prediction <-
+  model %>%
   predict(new_data = testing(data_split))
+
+View(bind_cols(
+  testing(data_split), prediction$.pred
+))
 ```
 
 

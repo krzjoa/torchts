@@ -8,22 +8,17 @@ authors:
 reference:
 - title: parsnip API
   contents:
-  - recurrent_network
+  - rnn
 - title: Modules
   contents:
-  - model_recurrent
+  - model_rnn
   - nn_multi_embedding
 - title: Preparing data
   contents:
   - as_tensor
   - ts_dataset
   - as_ts_dataset
-- title: Data wrangling
+  - as_ts_dataloader
+- title: Data
   contents:
-  - cat2idx
-  - idx2cat
-  - span_time
-  - dict_size
-- title: torch utils
-  contents:
-  - rnn_output_size
+  - weather_pl

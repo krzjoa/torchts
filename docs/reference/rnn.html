@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare tensors — resolve_data • torchts</title>
+<title>General interface to recurrent neural netowrk models — rnn • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Prepare tensors — resolve_data" />
-<meta property="og:description" content="Prepare tensors" />
+<meta property="og:title" content="General interface to recurrent neural netowrk models — rnn" />
+<meta property="og:description" content="General interface to recurrent neural netowrk models" />
 
 
 
@@ -124,23 +124,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare tensors</h1>
+    <h1>General interface to recurrent neural netowrk models</h1>
     
-    <div class="hidden name"><code>resolve_data.Rd</code></div>
+    <div class="hidden name"><code>rnn.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepare tensors</p>
+    <p>General interface to recurrent neural netowrk models</p>
     </div>
 
-    <pre class="usage"><span class='fu'>resolve_data</span><span class='op'>(</span><span class='va'>x</span>, key <span class='op'>=</span> <span class='cn'>NULL</span>, index <span class='op'>=</span> <span class='cn'>NULL</span>, categorical_features <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>rnn</span><span class='op'>(</span>
+  mode <span class='op'>=</span> <span class='st'>"regression"</span>,
+  learn_rate <span class='op'>=</span> <span class='fl'>0.01</span>,
+  epochs <span class='op'>=</span> <span class='fl'>50</span>,
+  hidden_units <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dropout <span class='op'>=</span> <span class='cn'>NULL</span>,
+  batch_size <span class='op'>=</span> <span class='fl'>32</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>categorical_features</th>
-      <td></td>
+      <th>mode</th>
+      <td><p>(character) Model mode, default: 'regression'</p></td>
+    </tr>
+    <tr>
+      <th>learn_rate</th>
+      <td><p>(numeric or dials::learn_rate) Learning rate</p></td>
+    </tr>
+    <tr>
+      <th>epochs</th>
+      <td><p>(integer or dials::epochs) Number of epochs</p></td>
+    </tr>
+    <tr>
+      <th>hidden_units</th>
+      <td><p>Number of hidden units</p></td>
+    </tr>
+    <tr>
+      <th>batch_size</th>
+      <td><p>(integer) Batch size</p></td>
     </tr>
     </table>
 

@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 > Time series models with torch
 
 <!-- badges: start -->
+[![CRAN status](https://www.r-pkg.org/badges/version/torchts)](https://CRAN.R-project.org/package=torchts)
+[![Documentation](https://img.shields.io/badge/documentation-path.chain-orange.svg?colorB=E91E63)](https://krzjoa.github.io/torchts/)
 [![Travis build status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
 <!-- badges: end -->
@@ -43,21 +45,28 @@ library(rsample)
 library(dplyr)
 library(parsnip)
 
-data_set <-
-  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+max_temp_poznan <- 
+  poland_weather %>% 
+  filter(station == "POZNAŃ") %>% 
+  select(date, temp = tmax_daily)
 
 # Splitting on training and test
-data_split <- initial_time_split(data_set)
+data_split <- initial_time_split(max_temp_poznan)
 
 # Training 
 model <- 
   rnn(epochs = 3, hidden_units = 32) %>% 
-  fit(Temp ~ Temp + index(Date), 
+  fit(temp ~ temp + index(date), 
       data = training(data_split))
 
-# prediction <- 
-#   model %>% 
-#   predict(new_data = testing(data_split))
+prediction <-
+  model %>%
+  predict(new_data = testing(data_split))
+
+View(bind_cols(
+  testing(data_split), prediction$.pred
+))
+
 
 ```
 

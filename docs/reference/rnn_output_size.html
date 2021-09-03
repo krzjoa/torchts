@@ -146,9 +146,9 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>gru_layer</span> <span class='op'>&lt;-</span> <span class='fu'>nn_gru</span><span class='op'>(</span><span class='fl'>15</span>, <span class='fl'>3</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='va'>gru_layer</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/nn_gru.html'>nn_gru</a></span><span class='op'>(</span><span class='fl'>15</span>, <span class='fl'>3</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in nn_gru(15, 3): nie udało się znaleźć funkcji 'nn_gru'</span></div><div class='input'><span class='fu'>rnn_output_size</span><span class='op'>(</span><span class='va'>gru_layer</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in rnn_output_size(gru_layer): nie udało się znaleźć funkcji 'rnn_output_size'</span></div></pre>
+</div><div class='output co'>#&gt; <span class='error'>Error in tail(dim(module$weight_hh_l1), 1): nie znaleziono obiektu 'gru_layer'</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
