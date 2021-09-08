@@ -9,6 +9,8 @@ rnn(
   learn_rate = 0.01,
   epochs = 50,
   hidden_units = NULL,
+  timesteps = NULL,
+  horizon = 1,
   dropout = NULL,
   batch_size = 32
 )

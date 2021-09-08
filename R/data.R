@@ -23,5 +23,6 @@
 #' }
 #'
 #' @examples
-#' weather_pl
+#' # Head of weather_pl
+#' head(weather_pl)
 "weather_pl"

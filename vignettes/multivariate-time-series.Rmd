@@ -1,0 +1,55 @@
+---
+title: "Univariate Time Series"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{univariate-time-series}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(torch)
+library(torchts)
+library(rsample)
+suppressMessages(library(dplyr))
+library(ggplot2)
+library(parsnip)
+```
+
+## Doing it with parsnip API
+
+`parsnip` API provides quick and convenient way to train time series models based on `torch` library.
+
+```{r preparing.data}
+tarnow_temp <- 
+  weather_pl %>% 
+  filter(station == "TARNÓW") %>% 
+  select(date, max_temp = tmax_daily, min_temp = tmin_daily)
+
+# Splitting on training and test
+data_split <- 
+  initial_time_split(tarnow_temp)
+```
+
+```{r training.parsnip.api}
+# Training 
+# model <- 
+#   rnn(epochs = 10, hidden_units = 32) %>% 
+#   fit(max_temp + min_temp ~ max_temp + min_temp + index(date), 
+#       data = training(data_split))
+# 
+# prediction <-
+#   model %>%
+#   predict(new_data = testing(data_split))
+# 
+# View(bind_cols(
+#   testing(data_split), prediction$.pred
+# ))
+```

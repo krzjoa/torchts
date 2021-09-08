@@ -7,9 +7,6 @@
 torchts_parse_formula(formula, data)
 }
 \description{
-bidir
-}
-\section{Warning!!!}{
 First version returns 3 types of variables:
 \itemize{
 \item outcome
@@ -17,9 +14,19 @@ First version returns 3 types of variables:
 \item index
 }
 }
-
 \examples{
-parsed   <- torchts_parse_formula(value ~ . + backward(cat(snap_CA)) + backward(sell_price) + categ(wday), experiment_data)
-parsed_2 <- torchts_parse_formula(value ~ . + backward(cat(snap_CA, wday)) + backward(sell_price) + categ(wday), experiment_data)
-View(parsed_2)
+tarnow_temp <-
+  weather_pl \%>\%
+  filter(station == "TARNÓW") \%>\%
+  select(date, temp = tmax_daily)
+
+View(torchts_parse_formula(temp ~ temp +index(date), tarnow_temp))
+View(torchts_parse_formula(temp ~ date), tarnow_temp))
+
+# This example is not working
+View(torchts_parse_formula(max_temp + min_temp ~ max_temp + min_temp + index(date), tarnow_temp))
+TODO:
+Rename
+.type -> .role
+.class -> .type
 }

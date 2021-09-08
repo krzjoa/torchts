@@ -11,17 +11,17 @@
 rnn <- function(mode = "regression",
                 learn_rate = 0.01, epochs = 50,
                 hidden_units = NULL, timesteps = NULL,
-                h = NULL, dropout = NULL,
+                horizon = 1, dropout = NULL,
                 batch_size = 32){
 
   args <- list(
-    learn_rate   = rlang::enquo(learn_rate),
-    epochs       = rlang::enquo(epochs),
-    hidden_units = rlang::enquo(hidden_units),
-    timesteps    = rlang::enquo(timesteps),
-    h            = rlang::enquo(h),
-    dropout      = rlang::enquo(dropout),
-    batch_size   = rlang::enquo(batch_size)
+    learn_rate    = rlang::enquo(learn_rate),
+    epochs        = rlang::enquo(epochs),
+    hidden_units  = rlang::enquo(hidden_units),
+    timesteps     = rlang::enquo(timesteps),
+    horizon       = rlang::enquo(horizon),
+    dropout       = rlang::enquo(dropout),
+    batch_size    = rlang::enquo(batch_size)
   )
 
   parsnip::new_model_spec(
@@ -78,6 +78,24 @@ make_rnn <- function(){
     parsnip      = "hidden_units",
     original     = "hidden_units",
     func         = list(pkg = "dials", fun = "hidden_units"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "timesteps",
+    original     = "timesteps",
+    func         = list(pkg = "torchts", fun = "timesteps"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "horizon",
+    original     = "horizon",
+    func         = list(pkg = "torchts", fun = "horizon"),
     has_submodel = FALSE
   )
 

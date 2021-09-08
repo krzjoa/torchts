@@ -1,60 +1,107 @@
 #' Parse time series formula
 #'
-#' bidir
-#'
-#' # Warning!!!
-#'
 #' First version returns 3 types of variables:
 #' * outcome
 #' * predictor
 #' * index
 #'
 #' @examples
-#' parsed   <- torchts_parse_formula(value ~ . + backward(cat(snap_CA)) + backward(sell_price) + categ(wday), experiment_data)
-#' parsed_2 <- torchts_parse_formula(value ~ . + backward(cat(snap_CA, wday)) + backward(sell_price) + categ(wday), experiment_data)
-#' View(parsed_2)
+#' library(dplyr)
+#' library(torchts)
+#'
+#' tarnow_temp <-
+#'   weather_pl %>%
+#'   filter(station == "TARNÓW") %>%
+#'   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
+#'
+#' View(torchts_parse_formula(max_temp ~ max_temp +index(date), tarnow_temp))
+#' View(torchts_parse_formula(max_temp ~ date, tarnow_temp))
+#'
+#' debugonce(torchts_parse_formula)
+#'
+#' # This example is not working
+#' View(torchts_parse_formula(max_temp + min_temp ~ max_temp + min_temp + index(date), tarnow_temp))
+#' View(torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date), tarnow_temp))
 torchts_parse_formula <- function(formula, data){
-  formula_terms <- terms(formula, data = data)
 
+  date_types <- c("Date", "POSIXt", "POSIXlt", "POSIXct")
+
+  formula_terms <- terms(formula, data = data)
   lhs <- as.character(rlang::f_lhs(formula))
 
-  # Working on characters
+  variable_classes <-
+    tibble(.var = colnames(data),
+           .type = sapply(data, class))
+
+  names(variable_classes$.type) <- NULL
+
   all_variables <-
     attr(formula_terms, "variables")
 
-  rhs <-
-    # Filter(function(x){!(as.character(x) %in% lhs)}, ) %>%
+  filtered_variables <-
     Filter(function(x)!is.null(x), as.list(all_variables))
 
   # Removing "list" from call
-  rhs <- rhs[-1]
+  if (length(lhs) > 1) {
+    rhs <- filtered_variables[-(1:2)]
+    lhs <- filtered_variables[2][[1]]
+    parsed_lhs <-
+      purrr::map_dfr(lhs, ~ .recursive_parse(.x, .role = "outcome"))
+  } else {
+    rhs <- filtered_variables[-1]
+    parsed_lhs <-tibble(
+      .var  = lhs,
+      .role = list("outcome")
+    )
+  }
 
   parsed_rhs <-
     purrr::map_dfr(rhs, .recursive_parse)
 
-  parsed_lhs <-tibble(
-    .var  = lhs,
-    .type = list("outcome")
-  )
+  output <-
+    bind_rows(
+      parsed_lhs,
+      parsed_rhs
+    )
 
-  bind_rows(
-    parsed_lhs,
-    parsed_rhs
-  )
+  output <-
+    left_join(output, variable_classes, by = ".var")
+
+  if (!("index" %in% output$.role)) {
+    output <-
+      output %>%
+      mutate(.role = ifelse(.type %in% date_types,
+                            "index", .role))
+  }
+
+  # If still no index
+  if (!("index" %in% output$.role)) {
+    message("Cannot indetify any index variable!")
+  }
+
+  output
 }
 
-.recursive_parse <- function(object, .type = NULL){
-  if (typeof(object) == 'symbol') {
-    if (is.null(.type))
-      .type <- "predictor" # !!! TODO
-     out <- tibble(
-       .var  = as.character(object),
-       .type = list(.type)
-     )
+.recursive_parse <- function(object, .role = NULL){
+  if (typeof(object) == "symbol") {
+
+    if (is.null(.role))
+      .role <- "predictor"
+
+    if (as.character(object) == "+")
+      out <- tibble(.var = NULL, .role = NULL)
+    else
+      out <- tibble(
+        .var  = as.character(object),
+        .role = list(.role)
+      )
+
   } else if (typeof(object) == "language") {
-    .type  <- c(.type, rlang::call_name(object))
+    .candidate_role <- rlang::call_name(object)
+    if (as.character(.candidate_role) != "+")
+      .role  <- c(.role, .candidate_role)
     object <- rlang::call_args(object)
-    out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .type))
+    out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .role))
   }
   out
 }

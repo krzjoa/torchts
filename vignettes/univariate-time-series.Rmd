@@ -179,29 +179,29 @@ num_epochs <- 10
 ```{r forecasting}
 # net$eval()
 # 
-preds <- rep(NA, 20)
-
-coro::loop(for (b in test_dl) {
-  print(b$x)
-  # output <- net(b$x)
-  # preds <- c(preds, output %>% as.numeric())
-})
+# preds <- rep(NA, 20)
+# 
+# coro::loop(for (b in test_dl) {
+#   print(b$x)
+#   # output <- net(b$x)
+#   # preds <- c(preds, output %>% as.numeric())
+# })
 
 ```
 
 ```{r compare.with.ground.truth}
-
-comparison <-
-  testing(data_split) %>%
-  mutate(forecast = prediction$.pred) %>%
-  mutate(Date = lubridate::as_date(Date)) %>%
-  tidyr::pivot_longer(c(Temp, forecast))
-
-plt <-
-  ggplot(comparison) +
-  geom_line(aes(Date, value, col = name))
-
-plotly::ggplotly(plt)
+# 
+# comparison <-
+#   testing(data_split) %>%
+#   mutate(forecast = prediction$.pred) %>%
+#   mutate(Date = lubridate::as_date(Date)) %>%
+#   tidyr::pivot_longer(c(Temp, forecast))
+# 
+# plt <-
+#   ggplot(comparison) +
+#   geom_line(aes(Date, value, col = name))
+# 
+# plotly::ggplotly(plt)
 
 ```
 

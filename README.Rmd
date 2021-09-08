@@ -15,14 +15,14 @@ knitr::opts_chunk$set(
 
 # torchts
 
-> Time series models with torch
-
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/torchts)](https://CRAN.R-project.org/package=torchts)
 [![Documentation](https://img.shields.io/badge/documentation-path.chain-orange.svg?colorB=E91E63)](https://krzjoa.github.io/torchts/)
 [![Travis build status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
 <!-- badges: end -->
+
+> Time series models with torch
 
 ## Installation
 

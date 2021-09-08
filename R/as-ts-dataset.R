@@ -37,15 +37,15 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     parsed_formula <- torchts_parse_formula(formula, data = data)
 
     .input_columns <- list(
-      x = parsed_formula[parsed_formula$.type == "predictor", ]$.var
+      x = parsed_formula[parsed_formula$.role == "predictor", ]$.var
     )
 
     .target_columns <- list(
-      y = parsed_formula[parsed_formula$.type == "outcome", ]$.var
+      y = parsed_formula[parsed_formula$.role == "outcome", ]$.var
     )
 
     .index_columns <-
-      parsed_formula[parsed_formula$.type == "index", ]$.var
+      parsed_formula[parsed_formula$.role == "index", ]$.var
 
   } else {
 

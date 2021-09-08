@@ -7,8 +7,13 @@ authors:
     href: https://krzjoa.github.io
 reference:
 - title: parsnip API
+- subtitle: Model
   contents:
   - rnn
+- subtitle: Parameters (Dials)
+  contents:
+  - horizon
+  - timesteps
 - title: Modules
   contents:
   - model_rnn

@@ -10,9 +10,9 @@ rnn_fit(
   learn_rate,
   hidden_units,
   dropout,
-  n_timesteps = 20,
-  h = 1,
-  n_layers = 1,
+  timesteps = 20,
+  horizon = 1,
+  layers = 1,
   optim = optim_adam(),
   batch_size = 1,
   epochs = 10,
@@ -20,37 +20,7 @@ rnn_fit(
 )
 }
 \arguments{
-\item{optim}{An optimizer with arguments
-
-If using simple fix_xy, we do not any assumption about time and number of items.
-
-data <- filter(experiment_data, item_id == "FOODS_1_001")
-
-x <- filter(experiment_data, item_id == "FOODS_1_001")
-x <- select(x, -value)
-y <- select(filter(experiment_data, item_id == "FOODS_1_001"), value, item_id, date)
-key <- "item_id"
-index <- "date"
-categorical_features <- c("wday", "month", "snap_CA")
-
-catch <- function(optim){browser()}
-catch(optim_adam(lr = 0.001))
-
-model <- recurrent_fit(x, y, key = "item_id", index = "date", epochs = 1000)
-fcast <- predict_basic_rnn_impl(model, x, key = "item_id", index = "date")
-View(bind_cols(y, fcast))
-
-recurrent_network_fit_formula(value ~ key(item_id) + index(date) + . + categ(wday, month, fbwd(snap_CA)),
-data = data)
-
-Idea:
-\itemize{
-\item rnn_reg for parsnip
-\item ts_rnn for fable (ts prefix for fable)
-}
-
-Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
-Może nie musiałaby się tego uczyć?}
+\item{optim}{An optimizer with arguments}
 
 \item{x}{Input features}
 

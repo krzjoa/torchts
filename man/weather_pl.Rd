@@ -31,6 +31,7 @@ was downloaded using the \code{climate} package. Two places have been chosen:
 A subset of columns has been selected and \code{date} column was added.
 }
 \examples{
-weather_pl
+# Head of weather_pl
+head(weather_pl)
 }
 \keyword{datasets}
