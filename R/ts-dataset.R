@@ -6,6 +6,7 @@
 #' @param input_columns (list) Output specification
 #' @param target_columns (list) Output specification
 #' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
+#' @param scale (logical) Scale feature columns
 #'
 #' @examples
 #' suppressMessages(library(dplyr))
@@ -30,10 +31,10 @@ ts_dataset <- torch::dataset(
   initialize = function(data, n_timesteps, h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
-                        sample_frac = 1) {
+                        sample_frac = 1, scale = TRUE) {
 
     # TODO: check data types
-    self$data          <- data
+    self$data           <- data
     self$margin         <- max(n_timesteps, h)
     self$n_timesteps    <- n_timesteps
     self$h              <- h
@@ -46,6 +47,12 @@ ts_dataset <- torch::dataset(
       n = n,
       size = n * sample_frac
     ))
+
+    # How to keeo dimensions?
+    if (scale) {
+      self$mean <- torch::torch_mean(self$data[, unlist(input_columns)], dim = 1)
+      self$std  <- torch::torch_std(self$data[, unlist(input_columns)], dim = 1)
+    }
 
   },
 

@@ -21,14 +21,14 @@
 #'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          n_timesteps, h = 1, sample_frac = 1){
+                          n_timesteps, h = 1, sample_frac = 1, ...){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, n_timesteps = 20,
-                                     h = 1, sample_frac = 1){
+                                     h = 1, sample_frac = 1, scale = TRUE){
 
   # Parsing formula
   # TODO: key is not used for now
@@ -77,11 +77,12 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     as_tensor(data, !!.index_columns)
 
   ts_dataset(
-    data          = data_tensor,
+    data           = data_tensor,
     n_timesteps    = n_timesteps,
     h              = h,
     input_columns  = .input_column_idx,
     target_columns = .target_column_idx,
-    sample_frac    = sample_frac
+    sample_frac    = sample_frac,
+    scale          = scale
   )
 }

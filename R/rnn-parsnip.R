@@ -1,27 +1,62 @@
-#' General interface to recurrent neural netowrk models
+#' General interface to recurrent neural network models
 #'
 #' @param mode (character) Model mode, default: 'regression'
+#' @param timesteps (integer or torchts::timesteps) Number of timesteps to look back
+#' @param horizon (integer) Forecast horizon
 #' @param learn_rate (numeric or dials::learn_rate) Learning rate
 #' @param epochs (integer or dials::epochs) Number of epochs
 #' @param hidden_units Number of hidden units
-#' @param dropout
+#' @param dropout (logical or dials::dropout) Flag to use dropout
 #' @param batch_size (integer) Batch size
+#' @param scale (logical) Scale input features
+#'
+#' @examples
+#' library(torchts)
+#' library(parsnip)
+#' suppressMessages(library(dplyr))
+#' library(rsample)
+#'
+#' # Univariate time series
+#' tarnow_temp <-
+#'  weather_pl %>%
+#'  filter(station == "TARNÓW") %>%
+#'  select(date, temp = tmax_daily)
+#'
+#' data_split <- initial_time_split(tarnow_temp)
+#'
+#' rnn_model <-
+#'    rnn(
+#'      timesteps = 20,
+#'      horizon = 1,
+#'      epochs = 10,
+#'      hidden_units = 32
+#'    )
+#'
+#' rnn_model <-
+#'    rnn_model %>%
+#'    fit(temp ~ date, data = training(data_split))
+#'
 #'
 #' @export
 rnn <- function(mode = "regression",
-                learn_rate = 0.01, epochs = 50,
-                hidden_units = NULL, timesteps = NULL,
-                horizon = 1, dropout = NULL,
-                batch_size = 32){
+                timesteps = NULL,
+                horizon = 1,
+                learn_rate = 0.01,
+                epochs = 50,
+                hidden_units = NULL,
+                dropout = NULL,
+                batch_size = 32,
+                scale = TRUE){
 
   args <- list(
+    timesteps     = rlang::enquo(timesteps),
+    horizon       = rlang::enquo(horizon),
     learn_rate    = rlang::enquo(learn_rate),
     epochs        = rlang::enquo(epochs),
     hidden_units  = rlang::enquo(hidden_units),
-    timesteps     = rlang::enquo(timesteps),
-    horizon       = rlang::enquo(horizon),
     dropout       = rlang::enquo(dropout),
-    batch_size    = rlang::enquo(batch_size)
+    batch_size    = rlang::enquo(batch_size),
+    scale         = rlang::enquo(scale)
   )
 
   parsnip::new_model_spec(
@@ -32,7 +67,6 @@ rnn <- function(mode = "regression",
     method   = NULL,
     engine   = NULL
   )
-
 }
 
 # nocov start
@@ -57,6 +91,24 @@ make_rnn <- function(){
   parsnip::set_model_arg(
     model        = "rnn",
     eng          = "torchts",
+    parsnip      = "timesteps",
+    original     = "timesteps",
+    func         = list(pkg = "torchts", fun = "timesteps"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "horizon",
+    original     = "horizon",
+    func         = list(pkg = "torchts", fun = "horizon"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
     parsnip      = "learn_rate",
     original     = "learn_rate",
     func         = list(pkg = "dials", fun = "learn_rate"),
@@ -78,24 +130,6 @@ make_rnn <- function(){
     parsnip      = "hidden_units",
     original     = "hidden_units",
     func         = list(pkg = "dials", fun = "hidden_units"),
-    has_submodel = FALSE
-  )
-
-  parsnip::set_model_arg(
-    model        = "rnn",
-    eng          = "torchts",
-    parsnip      = "timesteps",
-    original     = "timesteps",
-    func         = list(pkg = "torchts", fun = "timesteps"),
-    has_submodel = FALSE
-  )
-
-  parsnip::set_model_arg(
-    model        = "rnn",
-    eng          = "torchts",
-    parsnip      = "horizon",
-    original     = "horizon",
-    func         = list(pkg = "torchts", fun = "horizon"),
     has_submodel = FALSE
   )
 
@@ -129,6 +163,16 @@ make_rnn <- function(){
       allow_sparse_x       = FALSE
     )
   )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "scale",
+    original     = "scale",
+    func         = list(pkg = "torchts", fun = "horizon"),
+    has_submodel = FALSE
+  )
+
 
   # Fit
   parsnip::set_fit(

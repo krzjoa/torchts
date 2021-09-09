@@ -83,6 +83,7 @@ torchts_parse_formula <- function(formula, data){
 }
 
 .recursive_parse <- function(object, .role = NULL){
+
   if (typeof(object) == "symbol") {
 
     if (is.null(.role))
@@ -103,5 +104,6 @@ torchts_parse_formula <- function(formula, data){
     object <- rlang::call_args(object)
     out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .role))
   }
+
   out
 }
