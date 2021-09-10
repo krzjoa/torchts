@@ -59,6 +59,9 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   }
 
+  if (!("index" %in% parsed_formula$.role))
+    stop("No time index column defined! Add at least one time-based variable.")
+
   # Transforming column names to column number
   column_order <-
     head(data, 1) %>%

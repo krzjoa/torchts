@@ -50,8 +50,9 @@ ts_dataset <- torch::dataset(
 
     # How to keeo dimensions?
     if (scale) {
-      self$mean <- torch::torch_mean(self$data[, unlist(input_columns)], dim = 1)
-      self$std  <- torch::torch_std(self$data[, unlist(input_columns)], dim = 1)
+      self$col_map <- unique(unlist(input_columns))
+      self$mean    <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$std     <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
     }
 
   },
@@ -65,7 +66,11 @@ ts_dataset <- torch::dataset(
     # TODO: Dropping dimension in inputs and not in targets?
     # It seems to work in the simpliest case
     inputs <-
-      purrr::map(self$input_columns, ~ self$data[start:end, .x, drop = FALSE])
+      purrr::map(
+        self$input_columns,
+       ~ (self$data[start:end, .x, drop = FALSE] - self$mean[match(.x, self$col_map)]) /
+         self$std[match(.x, self$col_map)]
+      )
 
     targets <-
       purrr::map(self$target_columns, ~ self$data[(end + 1):(end + self$h), .x])
