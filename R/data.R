@@ -1,10 +1,10 @@
-#' Weather data from Poland in 2001-2020
+#' Weather data from Polish "poles of extreme temperatures" in 2001-2020
 #'
 #' The data comes from IMGW (Institute of Meteorology and Water Management) and
 #' was downloaded using the `climate` package. Two places have been chosen:
 #' \itemize{
-#' \item{Tarnów ("pole of warmth")}
-#' \item{Suwałki ("pole of cold")}
+#' \item{TRN - Tarnów ("pole of warmth")}
+#' \item{SWK - Suwałki ("pole of cold")}
 #' }
 #' A subset of columns has been selected and `date` column was added.
 #'

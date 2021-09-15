@@ -3,7 +3,7 @@
 \docType{data}
 \name{weather_pl}
 \alias{weather_pl}
-\title{Weather data from Poland in 2001-2020}
+\title{Weather data from Polish "poles of extreme temperatures" in 2001-2020}
 \format{
 \describe{
 \item{station}{A place where weather data were measured}
@@ -25,8 +25,8 @@ weather_pl
 The data comes from IMGW (Institute of Meteorology and Water Management) and
 was downloaded using the \code{climate} package. Two places have been chosen:
 \itemize{
-\item{Tarnów ("pole of warmth")}
-\item{Suwałki ("pole of cold")}
+\item{TRN - Tarnów ("pole of warmth")}
+\item{SWK - Suwałki ("pole of cold")}
 }
 A subset of columns has been selected and \code{date} column was added.
 }

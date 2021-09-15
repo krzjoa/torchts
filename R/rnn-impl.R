@@ -1,17 +1,23 @@
 #' Basic RNN model for time series forecasting
 #'
-#' @param x Input features
-#' @param y Targets
-#' @param categorical_features List of categorical feature columns from data.frame x
-#' @param optim An optimizer with arguments
-#'
+#' @param formula A formula describing, how to use the data
+#' @param data (data.frame)
+#' @param learn_rate (numeric) Learning rate
+#' @param hidden_units (integer) Number of hidden units
 #'
 #' @export
 rnn_fit <- function(formula, data,
-                    learn_rate, hidden_units, dropout,
-                    timesteps = 20, horizon = 1,
-                    layers = 1, optim = optim_adam(),
-                    batch_size = 1, epochs = 10, scale = TRUE,
+                    learn_rate,
+                    hidden_units,
+                    dropout,
+                    timesteps = 20,
+                    horizon = 1,
+                    layers = 1,
+                    optim = optim_adam(),
+                    validation = NULL,
+                    batch_size = 1,
+                    epochs = 10,
+                    scale = TRUE,
                     loss_fn = nnf_mse_loss){
 
   #' Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
@@ -28,7 +34,42 @@ rnn_fit <- function(formula, data,
 
   optim <- rlang::enquo(optim)
 
-  train_dataset <-
+  # Validation if defined
+  if (!is.null(validation) &
+      !is.data.frame(validation)) {
+
+    #' TODO: implement own ts_split? (optimization)
+
+    browser()
+
+    split <- timetk::time_series_split(
+
+    )
+    # split <-
+    #   timetk::time_series_split(
+    #     data     = data,
+    #     date_var = index,
+    #     initial  =
+    #   )
+
+    # TODO: simplify
+    train_dl <-
+      as_ts_dataset(
+        data        = data,
+        formula     = formula,
+        n_timesteps = timesteps,
+        h           = horizon,
+        scale       = scale
+      )
+
+    train_dl <-
+      dataloader(train_dataset, batch_size = batch_size)
+
+  }
+
+
+  # TODO: simplify
+  train_dl <-
     as_ts_dataset(
       data        = data,
       formula     = formula,
@@ -80,12 +121,16 @@ rnn_fit <- function(formula, data,
     net$eval()
     valid_loss <- c()
 
-    # coro::loop(for (b in valid_dl) {
-    #   loss <- valid_batch(b)
-    #   valid_loss <- c(valid_loss, loss)
-    # })
-    #
-    # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+    if (!is.null(validation)) {
+
+      coro::loop(for (b in valid_dl) {
+        loss <- valid_batch(b)
+        valid_loss <- c(valid_loss, loss)
+      })
+
+      cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+    }
+
   }
 
   # Return neural network structure
@@ -131,65 +176,4 @@ predict.torchts_rnn <- function(object, new_data){
   preds
 }
 
-#' @param y Can be NULL
-#' @param key Can be NULL
-# rnn_fit_xy <- function(x, y = NULL, key = NULL, index = NULL, categorical = NULL,
-#                           backward = NULL, optim = optim_adam(), batch_size = 1,
-#                           epochs = 10, loss_fn = nnf_mse_loss, plugins = NULL){
 #
-#   input_tensors    <- resolve_data(x, key, index, categorical)
-#   X_tensor_numeric <- input_tensors[[1]]
-#   X_tensor_cat     <- input_tensors[[2]]
-#
-#   # Input size
-#   n_features <-
-#     tail(dim(X_tensor_cat), 1) +
-#     tail(dim(X_tensor_numeric), 1)
-#
-#   dict_sizes <-
-#     x %>%
-#     select(!!categorical_features) %>%
-#     dict_size()
-#
-#   embedding_sizes <-
-#     ceiling(dict_sizes ** 0.25)
-#
-#   # Creating a neural network
-#   neural_network <- model_recurrent(
-#     fwd_input_size  = n_features,
-#     fwd_numeric_input =  tail(dim(X_tensor_numeric), 1),
-#     fwd_output_size = 3,
-#     output_size     = 1,
-#     num_embeddings  = dict_sizes,
-#     embedding_dim   = embedding_sizes
-#   )
-#
-#   # Creating an optimizer object
-#   optim <- call_optim(rlang::enquo(optim),
-#                       neural_network$parameters)
-#
-#   # Train neural network
-#   # TODO: prepare plugins
-#   for (epoch in seq(epochs)) {
-#     neural_network$zero_grad()
-#     fcast <- neural_network(X_tensor_cat, X_tensor_numeric)
-#     loss  <- loss_fn(fcast, y_tensor)
-#     loss$backward()
-#     print(loss)
-#     optim$step()
-#   }
-#
-#   # Return neural network structure
-#   structure(
-#     class = "recurrent_network_fit",
-#     list(
-#       neural_network       = neural_network,
-#       numerical_features   = numerical_features,
-#       categorical_features = categorical_features,
-#       all_features         = c(numerical_features, categorical_features),
-#       index                = index,
-#       key                  = key,
-#       optim                = optim
-#     )
-#   )
-# }

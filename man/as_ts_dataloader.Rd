@@ -14,7 +14,7 @@ as_ts_dataloader(
   batch_size,
   h = 1,
   sample_frac = 1,
-  ...
+  scale = TRUE
 )
 }
 \arguments{
@@ -36,4 +36,17 @@ as_ts_dataloader(
 }
 \description{
 Quick shortcut to create a torch dataloader based on the given dataset
+}
+\examples{
+library(rsample)
+
+suwalki_temp <-
+   weather_pl \%>\%
+   filter(station == "SWK") \%>\%
+   select(date, temp = tmax_daily)
+
+# Splitting on training and test
+data_split <- initial_time_split(suwalki_temp)
+
+
 }

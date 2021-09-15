@@ -11,9 +11,24 @@
 #'
 #' @importFrom torch dataloader
 #'
+#' @examples
+#' library(rsample)
+#'
+#' suwalki_temp <-
+#'    weather_pl %>%
+#'    filter(station == "SWK") %>%
+#'    select(date, temp = tmax_daily)
+#'
+#' # Splitting on training and test
+#' data_split <- initial_time_split(suwalki_temp)
+#'
+# train_ds <-
+#  training(data_split) %>%
+#  as_ts_dataloader(temp ~ date, n_timesteps = 20, h = 1, batch_size = 32)
+#'
 #' @export
 as_ts_dataloader <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          n_timesteps, batch_size, h = 1, sample_frac = 1, ...){
+                          n_timesteps, batch_size, h = 1, sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataloader")
 }
 
@@ -21,18 +36,18 @@ as_ts_dataloader <- function(data, formula, index = NULL, key = NULL, target = N
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, n_timesteps, batch_size,
-                                     h = 1, sample_frac = 1, ...){
+                                     h = 1, sample_frac = 1, scale = TRUE){
   dataloader(
     as_ts_dataset(
-      data = data,
-      formula = formula,
-      index = index,
-      key = key,
-      target = target,
+      data        = data,
+      formula     = formula,
+      index       = index,
+      key         = key,
+      target      = target,
       n_timesteps = n_timesteps,
-      batch_size = batch_size,
-      h = h,
+      h           = h,
       sample_frac = sample_frac,
-      ...)
+      scale       = scale),
+    batch_size = batch_size
     )
 }

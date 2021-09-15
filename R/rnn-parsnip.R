@@ -169,7 +169,7 @@ make_rnn <- function(){
     eng          = "torchts",
     parsnip      = "scale",
     original     = "scale",
-    func         = list(pkg = "torchts", fun = "horizon"),
+    func         = list(pkg = "torchts", fun = "scale"),
     has_submodel = FALSE
   )
 

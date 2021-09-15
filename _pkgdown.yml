@@ -12,12 +12,10 @@ reference:
   - rnn
 - subtitle: Parameters (Dials)
   contents:
-  - horizon
   - timesteps
 - title: Modules
   contents:
   - model_rnn
-  - nn_multi_embedding
 - title: Preparing data
   contents:
   - as_tensor

@@ -45,13 +45,13 @@ library(rsample)
 library(dplyr)
 library(parsnip)
 
-max_temp_poznan <- 
+max_temp_tarnow <- 
   poland_weather %>% 
-  filter(station == "POZNAŃ") %>% 
+  filter(station == "TRN") %>% 
   select(date, temp = tmax_daily)
 
 # Splitting on training and test
-data_split <- initial_time_split(max_temp_poznan)
+data_split <- initial_time_split(max_temp_tarnow)
 
 # Training 
 model <- 

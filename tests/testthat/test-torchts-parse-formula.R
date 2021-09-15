@@ -2,7 +2,7 @@ library(dplyr)
 
 tarnow_temp <-
   weather_pl %>%
-  filter(station == "TARNÓW") %>%
+  filter(station == "TRN") %>%
   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
 test_that("Test simple formula with explicit index", {

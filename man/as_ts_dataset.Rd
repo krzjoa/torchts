@@ -12,7 +12,8 @@ as_ts_dataset(
   target = NULL,
   n_timesteps,
   h = 1,
-  sample_frac = 1
+  sample_frac = 1,
+  scale = TRUE
 )
 }
 \arguments{
@@ -29,18 +30,31 @@ as_ts_dataset(
 \item{h}{Forecast horizon}
 
 \item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
+
+\item{scale}{(logical) Scale feature columns}
 }
 \description{
 Create a torch dataset for time series data
 }
+\note{
+If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
+}
 \examples{
-data_set <-
- read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+library(rsample)
 
-data_split <- initial_time_split(data_set)
+suwalki_temp <-
+   weather_pl \%>\%
+   filter(station == "SWK") \%>\%
+   select(date, temp = tmax_daily)
+
+# Splitting on training and test
+data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
- as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
+ as_ts_dataset(temp ~ date, n_timesteps = 20, h = 1)
+
+train_ds[1]
 
 }

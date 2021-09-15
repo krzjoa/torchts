@@ -101,6 +101,9 @@
       <a href="../articles/missing-data.html">Handling missing data</a>
     </li>
     <li>
+      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+    </li>
+    <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
     </li>
     <li>
@@ -143,7 +146,7 @@
   <span class='va'>batch_size</span>,
   h <span class='op'>=</span> <span class='fl'>1</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
-  <span class='va'>...</span>
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -184,6 +187,19 @@
     </table>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>
+
+<span class='va'>suwalki_temp</span> <span class='op'>&lt;-</span>
+   <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
+   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"SWK"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, temp <span class='op'>=</span> <span class='va'>tmax_daily</span><span class='op'>)</span>
+
+<span class='co'># Splitting on training and test</span>
+<span class='va'>data_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_time_split</a></span><span class='op'>(</span><span class='va'>suwalki_temp</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error: `in_id` must be a positive integer vector.</span></div><div class='input'>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

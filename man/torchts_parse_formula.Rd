@@ -14,19 +14,26 @@ First version returns 3 types of variables:
 \item index
 }
 }
+\details{
+If no predictor is defined, every outcome variable is treated as a predictor
+}
 \examples{
+library(dplyr)
+library(torchts)
+
 tarnow_temp <-
   weather_pl \%>\%
   filter(station == "TARNÓW") \%>\%
-  select(date, temp = tmax_daily)
+  select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
-View(torchts_parse_formula(temp ~ temp +index(date), tarnow_temp))
-View(torchts_parse_formula(temp ~ date), tarnow_temp))
+View(torchts_parse_formula(max_temp ~ max_temp +index(date), tarnow_temp))
+View(torchts_parse_formula(max_temp ~ date, tarnow_temp))
+
+debugonce(torchts_parse_formula)
 
 # This example is not working
 View(torchts_parse_formula(max_temp + min_temp ~ max_temp + min_temp + index(date), tarnow_temp))
-TODO:
-Rename
-.type -> .role
-.class -> .type
+View(torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date), tarnow_temp))
+View(torchts_parse_formula(min_temp ~ max_temp + date, tarnow_temp))
+TODO: simplify?
 }

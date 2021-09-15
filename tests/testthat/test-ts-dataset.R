@@ -1,24 +1,43 @@
 tarnow_temp <-
   weather_pl %>%
-  filter(station == "TARNÓW") %>%
+  filter(station == "TRN") %>%
   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
 test_that("Test as_ts_dataset scaling", {
-  tarnow_ds <-
-    tarnow_temp %>%
-    as_ts_dataset(max_temp ~ date)
+
+  TIMESTEPS <- 20
+  HORIZON   <- 1
 
   tarnow_ds <-
     tarnow_temp %>%
-    as_ts_dataset(max_temp ~ min_temp)
+    as_ts_dataset(max_temp ~ date, timesteps = TIMESTEPS, h = HORIZON)
 
-  tarnow_ds[1]
+  # First slice
+  ds_slice <- tarnow_ds[1]
 
-  tarnow_dl <- torch::dataloader(tarnow_ds, batch_size = 32)
-  dataloader_next(tarnow_dl)
+  # Input is scaled
+  x_mean   <- mean(tarnow_temp$max_temp)
+  x_std    <- sd(tarnow_temp$max_temp)
+  x_scaled <- (tarnow_temp$max_temp - x_mean) / x_std
 
+  expect_equal(as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7)
 
+  # Target is not scaled
+  expect_equal(
+    as.vector(ds_slice$y),
+    tarnow_temp$max_temp[TIMESTEPS + HORIZON],
+    tolerance = 1e-7
+  )
 
-  tarnow_ds$std
+})
 
+test_that("Error when index not defined", {
+  expect_error(
+      as_ts_dataset(
+        tarnow_temp,
+        max_temp ~ min_temp,
+        timesteps = TIMESTEPS,
+        h = HORIZON
+      )
+  )
 })

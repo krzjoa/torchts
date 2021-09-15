@@ -4,30 +4,41 @@
 #' @param formula A formula describing, how to use the data
 #' @param index The index column
 #' @param key The key column(s)
-#' @param n_timesteps The time seris chunk length
+#' @param timesteps The time seris chunk length
 #' @param h Forecast horizon
 #' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
+#' @param scale (logical) Scale feature columns
+#'
+#' @note
+#' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
 #' @examples
-#' data_set <-
-#'  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+#' library(rsample)
 #'
-# Splitting on training and test
-#' data_split <- initial_time_split(data_set)
+#' suwalki_temp <-
+#'    weather_pl %>%
+#'    filter(station == "SWK") %>%
+#'    select(date, temp = tmax_daily)
+#'
+#' # Splitting on training and test
+#' data_split <- initial_time_split(suwalki_temp)
 #'
 #' train_ds <-
 #'  training(data_split) %>%
-#'  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
+#'  as_ts_dataset(temp ~ date, timesteps = 20, h = 1)
+#'
+#' train_ds[1]
 #'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          n_timesteps, h = 1, sample_frac = 1, ...){
+                          timesteps, h = 1, sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, target = NULL, n_timesteps = 20,
+                                     key = NULL, target = NULL, timesteps,
                                      h = 1, sample_frac = 1, scale = TRUE){
 
   # Parsing formula
@@ -81,7 +92,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   ts_dataset(
     data           = data_tensor,
-    n_timesteps    = n_timesteps,
+    timesteps      = timesteps,
     h              = h,
     input_columns  = .input_column_idx,
     target_columns = .target_column_idx,

@@ -1,12 +1,16 @@
 #' Create a time series dataset object
 #'
 #' @param data (torch_tensor) An input data object
-#' @param n_timesteps (integer) Number of timesteps for input tensor
+#' @param timesteps (integer) Number of timesteps for input tensor
 #' @param h (integer) Forecast horizon: number of timesteps for output tensor
 #' @param input_columns (list) Output specification
 #' @param target_columns (list) Output specification
 #' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
 #' @param scale (logical) Scale feature columns
+#'
+#' @note
+#' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
 #' @examples
 #' suppressMessages(library(dplyr))
@@ -20,7 +24,7 @@
 #' ibm_tensor <- as_tensor(ibmspko, date)
 #'
 #' ibm_dataset <-
-#'     ts_dataset(ibm_tensor, n_timesteps = 7, h = 7)
+#'     ts_dataset(ibm_tensor, timesteps = 7, h = 7)
 #'
 #' ibm_dataset$.getitem(1)
 #'
@@ -28,20 +32,21 @@
 ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
-  initialize = function(data, n_timesteps, h,
+  initialize = function(data, timesteps, h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
 
     # TODO: check data types
     self$data           <- data
-    self$margin         <- max(n_timesteps, h)
-    self$n_timesteps    <- n_timesteps
+    self$margin         <- max(timesteps, h)
+    self$timesteps    <- timesteps
     self$h              <- h
     self$input_columns  <- input_columns
     self$target_columns <- target_columns
+    self$scale          <- scale
 
-    n <- nrow(self$data) - self$n_timesteps
+    n <- nrow(self$data) - self$timesteps
 
     self$starts <- sort(sample.int(
       n = n,
@@ -60,17 +65,25 @@ ts_dataset <- torch::dataset(
   .getitem = function(i) {
 
     start <- self$starts[i]
-    end   <- start + self$n_timesteps - 1
+    end   <- start + self$timesteps - 1
 
     # Input columns
     # TODO: Dropping dimension in inputs and not in targets?
     # It seems to work in the simpliest case
-    inputs <-
-      purrr::map(
-        self$input_columns,
-       ~ (self$data[start:end, .x, drop = FALSE] - self$mean[match(.x, self$col_map)]) /
-         self$std[match(.x, self$col_map)]
-      )
+
+    if (self$scale) {
+      inputs <-
+        purrr::map(
+          self$input_columns,
+          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[match(.x, self$col_map)]) /
+            self$std[match(.x, self$col_map)]
+        )
+    } else {
+      inputs <-
+        purrr::map(
+          self$input_columns, ~ self$data[start:end, .x, drop = FALSE]
+        )
+    }
 
     targets <-
       purrr::map(self$target_columns, ~ self$data[(end + 1):(end + self$h), .x])

@@ -10,7 +10,8 @@ ts_dataset(
   h,
   input_columns = list(x = NULL),
   target_columns = list(y = NULL),
-  sample_frac = 1
+  sample_frac = 1,
+  scale = TRUE
 )
 }
 \arguments{
@@ -24,10 +25,16 @@ ts_dataset(
 
 \item{target_columns}{(list) Output specification}
 
+\item{scale}{(logical) Scale feature columns}
+
 \item{sample_fram}{(numeric) A numeric value > 0. and <= 1 to sample a subset of data}
 }
 \description{
 Create a time series dataset object
+}
+\note{
+If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
 }
 \examples{
 suppressMessages(library(dplyr))
