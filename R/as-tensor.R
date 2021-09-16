@@ -81,12 +81,12 @@ as_tensor.data.frame <- function(.data, ...,
                       requires_grad = FALSE,
                       pin_memory = FALSE){
 
-  #' TODO: a case when column name matches a torch_tensor arg
-  #' TODO: number of all the elements in tensor vs
-  #' case as_tensor(euro_stock, name)
-  #' TODO: accept formulas?
-  #' Something like value ~ wday + month
-  #' but we need to handle shapes for such output tensors
+  # TODO: a case when column name matches a torch_tensor arg
+  # TODO: number of all the elements in tensor vs
+  # case as_tensor(euro_stock, name)
+  # TODO: accept formulas?
+  # Something like value ~ wday + month
+  # but we need to handle shapes for such output tensors
 
   # special_names <- c(
   #   "dtype", "device",

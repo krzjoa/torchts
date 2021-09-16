@@ -6,7 +6,7 @@
 \usage{
 ts_dataset(
   data,
-  n_timesteps,
+  timesteps,
   h,
   input_columns = list(x = NULL),
   target_columns = list(y = NULL),
@@ -17,7 +17,7 @@ ts_dataset(
 \arguments{
 \item{data}{(torch_tensor) An input data object}
 
-\item{n_timesteps}{(integer) Number of timesteps for input tensor}
+\item{timesteps}{(integer) Number of timesteps for input tensor}
 
 \item{h}{(integer) Forecast horizon: number of timesteps for output tensor}
 
@@ -48,7 +48,7 @@ ibmspko <-
 ibm_tensor <- as_tensor(ibmspko, date)
 
 ibm_dataset <-
-    ts_dataset(ibm_tensor, n_timesteps = 7, h = 7)
+    ts_dataset(ibm_tensor, timesteps = 7, h = 7)
 
 ibm_dataset$.getitem(1)
 

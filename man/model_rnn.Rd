@@ -4,40 +4,19 @@
 \alias{model_rnn}
 \title{A recurrent neural network model}
 \usage{
-model_rnn(
-  layer = nn_gru,
-  input_size,
-  hidden_size,
-  h,
-  num_layers = 1,
-  dropout = 0,
-  output_activation = nn_linear(hidden_size, 1)
-)
+model_rnn(layer = nn_gru, input_size, hidden_size, h, dropout = 0)
 }
 \arguments{
-\item{forward_layer}{(nn_module_generator or nn_module) A module with forward recurrent layer. Default: \code{nn_gru}}
+\item{layer}{A recurrent \code{torch} layer}
 
-\item{backward_layer}{(nn_module) A module with backward recurrent layer. Default: \code{NULL}}
+\item{input_size}{(integer) Input size}
 
-\item{fwd_input_size}{(numeric) Input size for the forward recurrent layer}
+\item{hidden_size}{(integer) Hidden layer size}
 
-\item{fwd_output_size}{(numeric) Forward layer size (in other words: the forward layer output size)}
+\item{h}{(integer) Horizon size}
 
-\item{bwd_input_size}{(numeric) Input size for the backward recurrent layer}
-
-\item{bwd_output_size}{(numeric) Backward layer size (in other words: the forward layer output size)}
-
-\item{output_size}{(numeric) Output size of the whole neural network. Default: 1}
-
-\item{final_activation}{The final activation function}
-
-\item{num_embeddings}{Dictionary sizes for the particular features}
-
-\item{embedding_dim}{Starting from the simpliest example}
+\item{dropout}{(logical) Use dropout}
 }
 \description{
-TODO: get rid off fwd_input_size etc.? Compare with other applications
-}
-\examples{
-
+A recurrent neural network model
 }

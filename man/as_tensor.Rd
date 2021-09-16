@@ -3,6 +3,7 @@
 \name{as_tensor}
 \alias{as_tensor}
 \alias{as_tensor.default}
+\alias{as_tensor.data.frame}
 \alias{as_tensor.ts}
 \title{Convert an object to tensor}
 \usage{
@@ -17,6 +18,15 @@ as_tensor(
 
 \method{as_tensor}{default}(
   .data,
+  dtype = NULL,
+  device = NULL,
+  requires_grad = FALSE,
+  pin_memory = FALSE
+)
+
+\method{as_tensor}{data.frame}(
+  .data,
+  ...,
   dtype = NULL,
   device = NULL,
   requires_grad = FALSE,

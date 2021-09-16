@@ -41,6 +41,11 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, timesteps,
                                      h = 1, sample_frac = 1, scale = TRUE){
 
+
+  if (nrow(data) == 0) {
+    stop("The data object is empty!")
+  }
+
   # Parsing formula
   # TODO: key is not used for now
   if (!is.null(formula)) {
@@ -70,7 +75,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   }
 
-  if (!("index" %in% parsed_formula$.role))
+  if (is.null(.index_columns) | length(.index_columns) == 0)
     stop("No time index column defined! Add at least one time-based variable.")
 
   # Transforming column names to column number

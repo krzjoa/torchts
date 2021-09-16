@@ -12,7 +12,6 @@ rnn_fit <- function(formula, data,
                     dropout,
                     timesteps = 20,
                     horizon = 1,
-                    layers = 1,
                     optim = optim_adam(),
                     validation = NULL,
                     batch_size = 1,
@@ -20,8 +19,8 @@ rnn_fit <- function(formula, data,
                     scale = TRUE,
                     loss_fn = nnf_mse_loss){
 
-  #' Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
-  #' Może nie musiałaby się tego uczyć?
+  # Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
+  # Może nie musiałaby się tego uczyć?
 
   # Parse formula
   parsed_formula <- torchts_parse_formula(formula, data)
@@ -38,7 +37,7 @@ rnn_fit <- function(formula, data,
   if (!is.null(validation) &
       !is.data.frame(validation)) {
 
-    #' TODO: implement own ts_split? (optimization)
+    # TODO: implement own ts_split? (optimization)
 
     browser()
 
@@ -57,23 +56,21 @@ rnn_fit <- function(formula, data,
       as_ts_dataset(
         data        = data,
         formula     = formula,
-        n_timesteps = timesteps,
+        timesteps   = timesteps,
         h           = horizon,
         scale       = scale
       )
 
     train_dl <-
       dataloader(train_dataset, batch_size = batch_size)
-
   }
 
-
   # TODO: simplify
-  train_dl <-
+  train_dataset <-
     as_ts_dataset(
       data        = data,
       formula     = formula,
-      n_timesteps = timesteps,
+      timesteps = timesteps,
       h           = horizon,
       scale       = scale
     )
@@ -90,10 +87,8 @@ rnn_fit <- function(formula, data,
         layer             = nn_gru,
         input_size        = input_size,
         hidden_size       = hidden_units,
-        h                 = h,
-        num_layers        = layers,
-        dropout           = 0,
-        output_activation = nn_linear(hidden_units, 1)
+        h                 = horizon,
+        dropout           = 0
     )
 
   # Preparing optimizer
@@ -116,20 +111,25 @@ rnn_fit <- function(formula, data,
       train_loss <- c(train_loss, loss)
     })
 
-    cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
-
-    net$eval()
-    valid_loss <- c()
+    valid_loss_info <- ""
 
     if (!is.null(validation)) {
+
+      net$eval()
+      valid_loss <- c()
 
       coro::loop(for (b in valid_dl) {
         loss <- valid_batch(b)
         valid_loss <- c(valid_loss, loss)
       })
 
-      cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
+      valid_loss_info <- sprintf("validation: %3.5f", mean(valid_loss))
     }
+
+    cat(sprintf(
+      "\nEpoch %d | training: %3.5f %s \n",
+      epoch, mean(train_loss), valid_loss_info
+    ))
 
   }
 
@@ -141,8 +141,8 @@ rnn_fit <- function(formula, data,
       index = index,
       key   = key,
       optim = optimizer,
-      n_timesteps = n_timesteps,
-      h = h
+      timesteps = timesteps,
+      horizon = horizon
     )
   )
 
@@ -157,8 +157,8 @@ predict.torchts_rnn <- function(object, new_data){
     index       = object$index,
     key         = object$key,
     target      = object$target,
-    n_timesteps = object$n_timesteps,
-    h           = object$h
+    timesteps   = object$timesteps,
+    h           = object$horizon
   )
 
  new_data_dl  <- dataloader(new_data_ds, batch_size = 5)

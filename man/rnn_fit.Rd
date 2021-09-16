@@ -14,6 +14,7 @@ rnn_fit(
   horizon = 1,
   layers = 1,
   optim = optim_adam(),
+  validation = NULL,
   batch_size = 1,
   epochs = 10,
   scale = TRUE,
@@ -21,13 +22,13 @@ rnn_fit(
 )
 }
 \arguments{
-\item{optim}{An optimizer with arguments}
+\item{formula}{A formula describing, how to use the data}
 
-\item{x}{Input features}
+\item{data}{(data.frame)}
 
-\item{y}{Targets}
+\item{learn_rate}{(numeric) Learning rate}
 
-\item{categorical_features}{List of categorical feature columns from data.frame x}
+\item{hidden_units}{(integer) Number of hidden units}
 }
 \description{
 Basic RNN model for time series forecasting

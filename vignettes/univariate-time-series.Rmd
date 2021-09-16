@@ -24,18 +24,25 @@ library(parsnip)
 library(timetk)
 ```
 
-## Doing it with parsnip API
+## With parsnip API
 
 `parsnip` API provides quick and convenient way to train time series models based on `torch` library.
 
-```{r preparing.data}
+First, let's prepare input data set using excelent `timetk` library. `weather_pl` dataset from `torchts` package contains 19-year history of weather data from two Polish "poles of extreme temperature", i.e. Suwałki and Tarnów. In this excercise, we'll use a slice of data registered in the "pole of warmth", i.e in the city of [Tarnów](https://en.wikipedia.org/wiki/Tarn%C3%B3w).
+
+```{r preparing.data.1}
 tarnow_temp <- 
   weather_pl %>% 
-  filter(station == "TARNÓW") %>% 
+  filter(station == "TRN") %>% 
   select(date, temp = tmax_daily)
 
 tk_summary_diagnostics(tarnow_temp, date)
+```
 
+As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
+In the next step, we'll split our data into two training and testing datasets using a handy `time_series_split` function.
+
+```{r preparing.data.1}
 # Splitting on training and test
 data_split <- 
   time_series_split(
@@ -45,178 +52,48 @@ data_split <-
     lag     = 20
   )
 
+# Training dataset
 tk_summary_diagnostics(training(data_split), date)[, 1:3]
 
+# Testing dataset
 tk_summary_diagnostics(testing(data_split), date)[, 1:3]
-
-
-
 ```
 
 ```{r training.parsnip.api}
-# Training 
-model <- 
-  rnn(epochs = 10, hidden_units = 32, scale = TRUE) %>% 
-  fit(temp ~ temp + index(date), 
-      data = training(data_split))
+TIMESTEPS <- 20
+HORIZON   <- 1
 
-prediction <-
-  model %>%
+# Training 
+rnn_model <- 
+  rnn(
+    timesteps    = TIMESTEPS,
+    horizon      = HORIZON,
+    epochs       = 10,
+    hidden_units = 20,
+    batch_size   = 32,
+    scale        = TRUE 
+  ) %>% 
+  fit(temp ~ date, 
+      data = training(data_split))
+```
+
+We want to generate forecast for a full year. To do so, we'll remove the outcome column values
+we'd like to forecast. Bear in mind that input data differs from the inputs for classical tabular-data algorithms.
+In this specific case, we have to keep some "history" (in this case: `r TIMESTEPS` steps, i.e: `r TIMESTEPS` days).
+
+```{r model.forecast}
+
+
+debugonce(torchts:::predict.torchts_rnn)
+
+# Forecast
+fcast <-
+  rnn_model %>%
   predict(new_data = testing(data_split))
 
-View(bind_cols(
-  testing(data_split), prediction$.pred
-))
+# View(bind_cols(
+#   testing(data_split), prediction$.pred
+# ))
 ```
 
-
-```{r preparing.dls}
-train_ds <- 
-  training(data_split) %>% 
-  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
-
-test_ds <- 
-  testing(data_split) %>% 
-  as_ts_dataset(Temp ~ Temp + index(Date), n_timesteps = 20, h = 1)
-
-train_dl <- dataloader(train_ds, batch_size = 5)
-test_dl  <- dataloader(test_ds, batch_size = 5)
-```
-
-
-```{r resolve.ts}
-# resolve_ts_dataset() = initial_time_split + 
-# resolve_ts_dataloader
-# train_ds[1]
-
-# train_ds$.data[1:20, 1, drop = FALSE]
-# b <- train_dl %>% dataloader_make_iter() %>% dataloader_next()
-# b
-```
-
-```{r creating.network}
-model <- nn_module(
-  
-  initialize = function(type, input_size, hidden_size, 
-                        num_layers = 1, dropout = 0) {
-    
-    self$type <- type
-    self$num_layers <- num_layers
-    
-    self$rnn <-
-      nn_gru(
-        input_size = input_size,
-        hidden_size = hidden_size,
-        num_layers = num_layers,
-        dropout = dropout,
-        batch_first = TRUE
-      )
-   
-    self$output <- nn_linear(hidden_size, 1)
-    
-  },
-  
-  forward = function(x) {
-    
-    # list of [output, hidden]
-    # we use the output, which is of size (batch_size, n_timesteps, hidden_size)
-    x <- self$rnn(x)[[1]]
-    
-    # from the output, we only want the final timestep
-    # shape now is (batch_size, hidden_size)
-    x <- x[ , dim(x)[2], ]
-    
-    # feed this to a single output neuron
-    # final shape then is (batch_size, 1)
-    x %>% self$output() 
-  }
-  
-)
-
-net <- model("gru", 1, 32)
-```
-
-```{r training}
-optimizer <- optim_adam(net$parameters, lr = 0.001)
-
-num_epochs <- 30
-
-train_batch <- function(b) {
-  
-  optimizer$zero_grad()
-  output <- net(b$x)
-  target <- b$y
-  
-  loss <- nnf_mse_loss(output, target)
-  loss$backward()
-  optimizer$step()
-  
-  loss$item()
-}
-
-valid_batch <- function(b) {
-  
-  output <- net(b$x)
-  target <- b$y
-  
-  loss <- nnf_mse_loss(output, target)
-  loss$item()
-  
-}
-
-num_epochs <- 10 
-
-# for (epoch in 1:num_epochs) {
-#   
-#   net$train()
-#   train_loss <- c()
-#   
-#   coro::loop(for (b in train_dl) {
-#     loss <- train_batch(b)
-#     train_loss <- c(train_loss, loss)
-#   })
-#   
-#   cat(sprintf("\nEpoch %d, training: loss: %3.5f \n", epoch, mean(train_loss)))
-#   
-#   net$eval()
-#   valid_loss <- c()
-#   
-#   # coro::loop(for (b in valid_dl) {
-#   #   loss <- valid_batch(b)
-#   #   valid_loss <- c(valid_loss, loss)
-#   # })
-#   # 
-#   # cat(sprintf("\nEpoch %d, validation: loss: %3.5f \n", epoch, mean(valid_loss)))
-# }
-
-```
-
-```{r forecasting}
-# net$eval()
-# 
-# preds <- rep(NA, 20)
-# 
-# coro::loop(for (b in test_dl) {
-#   print(b$x)
-#   # output <- net(b$x)
-#   # preds <- c(preds, output %>% as.numeric())
-# })
-
-```
-
-```{r compare.with.ground.truth}
-# 
-# comparison <-
-#   testing(data_split) %>%
-#   mutate(forecast = prediction$.pred) %>%
-#   mutate(Date = lubridate::as_date(Date)) %>%
-#   tidyr::pivot_longer(c(Temp, forecast))
-# 
-# plt <-
-#   ggplot(comparison) +
-#   geom_line(aes(Date, value, col = name))
-# 
-# plotly::ggplotly(plt)
-
-```
 

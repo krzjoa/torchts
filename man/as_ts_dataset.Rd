@@ -10,7 +10,7 @@ as_ts_dataset(
   index = NULL,
   key = NULL,
   target = NULL,
-  n_timesteps,
+  timesteps,
   h = 1,
   sample_frac = 1,
   scale = TRUE
@@ -25,7 +25,7 @@ as_ts_dataset(
 
 \item{key}{The key column(s)}
 
-\item{n_timesteps}{The time seris chunk length}
+\item{timesteps}{The time seris chunk length}
 
 \item{h}{Forecast horizon}
 
@@ -53,7 +53,7 @@ data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
- as_ts_dataset(temp ~ date, n_timesteps = 20, h = 1)
+ as_ts_dataset(temp ~ date, timesteps = 20, h = 1)
 
 train_ds[1]
 

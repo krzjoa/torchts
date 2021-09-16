@@ -1,6 +1,6 @@
 tarnow_temp <-
   weather_pl %>%
-  filter(station == "TRN") %>%
+  filter(station == "TARNÓW") %>%
   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
 test_that("Test as_ts_dataset scaling", {
@@ -31,6 +31,37 @@ test_that("Test as_ts_dataset scaling", {
 
 })
 
+test_that("Test as_ts_dataset without scaling", {
+
+  TIMESTEPS <- 20
+  HORIZON   <- 1
+
+  tarnow_ds <-
+    tarnow_temp %>%
+    as_ts_dataset(max_temp ~ date,
+                  timesteps = TIMESTEPS,
+                  h = HORIZON,
+                  scale = FALSE)
+
+  # First slice
+  ds_slice <- tarnow_ds[1]
+
+  # Input is scaled
+  expect_equal(
+    as.vector(ds_slice$x),
+    tarnow_temp$max_temp[1:TIMESTEPS],
+    tolerance = 1e-7
+  )
+
+  # Target is not scaled
+  expect_equal(
+    as.vector(ds_slice$y),
+    tarnow_temp$max_temp[TIMESTEPS + HORIZON],
+    tolerance = 1e-7
+  )
+
+})
+
 test_that("Error when index not defined", {
   expect_error(
       as_ts_dataset(
@@ -41,3 +72,15 @@ test_that("Error when index not defined", {
       )
   )
 })
+
+test_that("Error when passed empty data.frame", {
+  expect_error(
+    as_ts_dataset(
+      tarnow_temp %>% filter(date < as.Date("2001-01-01")),
+      max_temp ~ min_temp,
+      timesteps = TIMESTEPS,
+      h = HORIZON
+    )
+  )
+})
+
