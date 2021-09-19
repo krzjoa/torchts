@@ -137,12 +137,13 @@ rnn_fit <- function(formula, data,
   structure(
     class = "torchts_rnn",
     list(
-      net   = net,
-      index = index,
-      key   = key,
-      optim = optimizer,
+      net       = net,
+      index     = index,
+      key       = key,
+      outcome   = outcome,
+      optim     = optimizer,
       timesteps = timesteps,
-      horizon = horizon
+      horizon   = horizon
     )
   )
 
@@ -151,12 +152,23 @@ rnn_fit <- function(formula, data,
 #' @export
 predict.torchts_rnn <- function(object, new_data){
 
+  # WARNING: Cannot be used paralelly for now
+
+  # For now we suppose it's continuous
+  recursive_mode <- FALSE
+
+  if (object$outcome %in% colnames(new_data)) {
+    if (any(is.na(new_data[[object$outcome]]))) {
+      recursive_mode <- TRUE
+    }
+  }
+
   # Preparing
  new_data_ds <- as_ts_dataset(
-    new_data,
+   new_data,
     index       = object$index,
     key         = object$key,
-    target      = object$target,
+    target      = object$outcome,
     timesteps   = object$timesteps,
     h           = object$horizon
   )
@@ -167,10 +179,22 @@ predict.torchts_rnn <- function(object, new_data){
   net$eval()
 
   preds <- rep(NA, 20)
+  iter  <- 1
 
   coro::loop(for (b in new_data_dl) {
+
     output <- net(b$x)
     preds  <- c(preds, as.numeric(output))
+
+    if (recursive_mode) {
+      start <- (object$timesteps * iter) + 1
+      end   <- (object$timesteps * iter) + object$horizon
+      cols  <- unlist(new_data_dl$dataset$target_columns)
+      new_data_dl$dataset$data[start:end, cols] <- output
+    }
+
+    iter <- iter + 1
+
   })
 
   preds

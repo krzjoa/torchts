@@ -12,7 +12,6 @@ rnn_fit(
   dropout,
   timesteps = 20,
   horizon = 1,
-  layers = 1,
   optim = optim_adam(),
   validation = NULL,
   batch_size = 1,

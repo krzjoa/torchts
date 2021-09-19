@@ -68,7 +68,7 @@ rnn_model <-
   rnn(
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
-    epochs       = 10,
+    epochs       = 3,
     hidden_units = 20,
     batch_size   = 32,
     scale        = TRUE 
@@ -82,18 +82,19 @@ we'd like to forecast. Bear in mind that input data differs from the inputs for 
 In this specific case, we have to keep some "history" (in this case: `r TIMESTEPS` steps, i.e: `r TIMESTEPS` days).
 
 ```{r model.forecast}
-
-
-debugonce(torchts:::predict.torchts_rnn)
+# Clear outcome variable
+cleared_new_data <- 
+  testing(data_split) %>% 
+  clear_outcome(date, temp, 20)
 
 # Forecast
 fcast <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
-# View(bind_cols(
-#   testing(data_split), prediction$.pred
-# ))
+View(bind_cols(
+  testing(data_split), fcast$.pred
+))
 ```
 
 

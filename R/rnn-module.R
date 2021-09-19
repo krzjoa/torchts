@@ -16,8 +16,6 @@ model_rnn <- torch::nn_module(
                         input_size, hidden_size,
                         h, dropout = 0){
 
-    # self$num_layers <- num_layers
-
     self$rnn <-
       layer(
         input_size  = input_size,
