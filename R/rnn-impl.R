@@ -81,11 +81,14 @@ rnn_fit <- function(formula, data,
   input_size <-
     tail(dim(train_dataset$data), 1)
 
+  output_size <- length(outcome)
+
   # Creating a model
   net <-
     model_rnn(
         layer             = nn_gru,
         input_size        = input_size,
+        output_size       = output_size,
         hidden_size       = hidden_units,
         h                 = horizon,
         dropout           = 0
@@ -152,7 +155,7 @@ rnn_fit <- function(formula, data,
 #' @export
 predict.torchts_rnn <- function(object, new_data){
 
-  # WARNING: Cannot be used paralelly for now
+  # WARNING: Cannot be used parallely for now
 
   # For now we suppose it's continuous
   recursive_mode <- FALSE

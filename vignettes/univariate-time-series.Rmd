@@ -92,9 +92,8 @@ fcast <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
-View(bind_cols(
-  testing(data_split), fcast$.pred
-))
+fcast_vs_true <- 
+  bind_cols(testing(data_split), fcast$.pred)
 ```
 
 

@@ -2,6 +2,7 @@
 #'
 #' @param layer A recurrent `torch` layer
 #' @param input_size (integer) Input size
+#' @param output_size (integer) Output size (number of target variables)
 #' @param hidden_size (integer) Hidden layer size
 #' @param h (integer) Horizon size
 #' @param dropout (logical) Use dropout
@@ -13,8 +14,8 @@ model_rnn <- torch::nn_module(
   "model_rnn",
 
   initialize = function(layer = nn_gru,
-                        input_size, hidden_size,
-                        h, dropout = 0){
+                        input_size, output_size,
+                        hidden_size, h, dropout = 0){
 
     self$rnn <-
       layer(
@@ -25,7 +26,7 @@ model_rnn <- torch::nn_module(
         batch_first = TRUE
       )
 
-    self$output <- nn_linear(hidden_size, 1)
+    self$output <- nn_linear(hidden_size, output_size)
 
   },
 

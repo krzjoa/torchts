@@ -4,7 +4,7 @@
 #' @param formula A formula describing, how to use the data
 #' @param index The index column
 #' @param key The key column(s)
-#' @param timesteps The time seris chunk length
+#' @param timesteps The time series chunk length
 #' @param h Forecast horizon
 #' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
 #' @param scale (logical) Scale feature columns

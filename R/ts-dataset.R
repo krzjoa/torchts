@@ -3,6 +3,7 @@
 #' @param data (torch_tensor) An input data object
 #' @param timesteps (integer) Number of timesteps for input tensor
 #' @param h (integer) Forecast horizon: number of timesteps for output tensor
+#' @param jump (integer) Jump length. By default: horizon length
 #' @param input_columns (list) Output specification
 #' @param target_columns (list) Output specification
 #' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
@@ -32,21 +33,24 @@
 ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
-  initialize = function(data, timesteps, h,
+  initialize = function(data, timesteps, h, jump = h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
 
     # TODO: check data types
+    # TODO: check, if jump works correctly
     self$data           <- data
     self$margin         <- max(timesteps, h)
-    self$timesteps    <- timesteps
+    self$timesteps      <- timesteps
     self$h              <- h
+    self$jump           <- jump
     self$input_columns  <- input_columns
     self$target_columns <- target_columns
     self$scale          <- scale
 
-    n <- nrow(self$data) - self$timesteps
+    n <- (nrow(self$data) - self$timesteps) / self$jump
+    n <- floor(n)
 
     self$starts <- sort(sample.int(
       n = n,
@@ -64,7 +68,7 @@ ts_dataset <- torch::dataset(
 
   .getitem = function(i) {
 
-    start <- self$starts[i]
+    start <- self$starts[i * self$jump]
     end   <- start + self$timesteps - 1
 
     # Input columns
@@ -75,8 +79,8 @@ ts_dataset <- torch::dataset(
       inputs <-
         purrr::map(
           self$input_columns,
-          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[match(.x, self$col_map)]) /
-            self$std[match(.x, self$col_map)]
+          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map)]) /
+            self$std[.., match(.x, self$col_map)]
         )
     } else {
       inputs <-

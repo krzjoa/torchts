@@ -1,5 +1,5 @@
 ---
-title: "Univariate Time Series"
+title: "Multivariate Time Series"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{univariate-time-series}
@@ -21,35 +21,81 @@ library(rsample)
 suppressMessages(library(dplyr))
 library(ggplot2)
 library(parsnip)
+library(timetk)
 ```
 
-## Doing it with parsnip API
+## Multiple output
 
 `parsnip` API provides quick and convenient way to train time series models based on `torch` library.
 
-```{r preparing.data}
+First, let's prepare input data set using excelent `timetk` library. `weather_pl` dataset from `torchts` package contains 19-year history of weather data from two Polish "poles of extreme temperature", i.e. Suwałki and Tarnów. In this excercise, we'll use a slice of data registered in the "pole of warmth", i.e in the city of [Tarnów](https://en.wikipedia.org/wiki/Tarn%C3%B3w).
+
+```{r preparing.data.1}
 tarnow_temp <- 
   weather_pl %>% 
-  filter(station == "TARNÓW") %>% 
+  filter(station == "TRN") %>% 
   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
+tk_summary_diagnostics(tarnow_temp, date)
+```
+
+As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
+In the next step, we'll split our data into two training and testing datasets using a handy `time_series_split` function.
+
+```{r preparing.data.1}
 # Splitting on training and test
 data_split <- 
-  initial_time_split(tarnow_temp)
+  time_series_split(
+    tarnow_temp, date, 
+    initial = "18 years",
+    assess  = "2 years", 
+    lag     = 20
+  )
+
+# Training dataset
+tk_summary_diagnostics(training(data_split), date)[, 1:3]
+
+# Testing dataset
+tk_summary_diagnostics(testing(data_split), date)[, 1:3]
 ```
 
 ```{r training.parsnip.api}
+TIMESTEPS <- 20
+HORIZON   <- 1
+
+# debugonce(torchts::rnn_fit)
+
 # Training 
-# model <- 
-#   rnn(epochs = 10, hidden_units = 32) %>% 
-#   fit(max_temp + min_temp ~ max_temp + min_temp + index(date), 
-#       data = training(data_split))
-# 
-# prediction <-
-#   model %>%
-#   predict(new_data = testing(data_split))
-# 
-# View(bind_cols(
-#   testing(data_split), prediction$.pred
-# ))
+rnn_model <- 
+  rnn(
+    timesteps    = TIMESTEPS,
+    horizon      = HORIZON,
+    epochs       = 2,
+    hidden_units = 20,
+    batch_size   = 32,
+    scale        = TRUE 
+  ) %>% 
+  fit(min_temp + max_temp ~ min_temp + max_temp + index(date), 
+      data = training(data_split))
 ```
+
+We want to generate forecast for a full year. To do so, we'll remove the outcome column values
+we'd like to forecast. Bear in mind that input data differs from the inputs for classical tabular-data algorithms.
+In this specific case, we have to keep some "history" (in this case: `r TIMESTEPS` steps, i.e: `r TIMESTEPS` days).
+
+```{r model.forecast}
+# Clear outcome variable
+cleared_new_data <- 
+  testing(data_split) %>% 
+  clear_outcome(date, temp, 20)
+
+# Forecast
+fcast <-
+  rnn_model %>%
+  predict(new_data = testing(data_split))
+
+fcast_vs_true <- 
+  bind_cols(testing(data_split), fcast$.pred)
+```
+
+
