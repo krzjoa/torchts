@@ -6,6 +6,8 @@
 #' @param hidden_size (integer) Hidden layer size
 #' @param h (integer) Horizon size
 #' @param dropout (logical) Use dropout
+#' @param batch_first (logical) Channel order
+#'
 #'
 #'
 #' @export
@@ -15,7 +17,7 @@ model_rnn <- torch::nn_module(
 
   initialize = function(layer = nn_gru,
                         input_size, output_size,
-                        hidden_size, h, dropout = 0){
+                        hidden_size, h, dropout = 0, batch_first = TRUE){
 
     self$rnn <-
       layer(
@@ -23,10 +25,11 @@ model_rnn <- torch::nn_module(
         hidden_size = hidden_size,
         num_layers  = 1,
         dropout     = dropout,
-        batch_first = TRUE
+        batch_first = batch_first
       )
 
     self$output <- nn_linear(hidden_size, output_size)
+    self$hidden_state <- NULL
 
   },
 
@@ -34,14 +37,15 @@ model_rnn <- torch::nn_module(
 
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, n_timesteps, hidden_size)
-    x <- self$rnn(x)[[1]]
+    x1 <- self$rnn(x)
+    x <- x1[[1]]
+    self$hidden_state <- x1[[2]]
 
-    # from the output, we only want the final timestep
-    # shape now is (batch_size, hidden_size)
+    # Final timestep with size (batch_size, hidden_size)
     x <- x[ , dim(x)[2], ]
 
     # feed this to a single output neuron
     # final shape then is (batch_size, 1)
-    self$output(x)
+    self$output(x)[,newaxis,]
   }
 )

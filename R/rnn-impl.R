@@ -158,10 +158,18 @@ predict.torchts_rnn <- function(object, new_data){
   # WARNING: Cannot be used parallely for now
 
   # For now we suppose it's continuous
+  # Check more conditions
   recursive_mode <- FALSE
+  n_outcomes     <- length(object$outcome)
+  batch_size     <- 5
 
-  if (object$outcome %in% colnames(new_data)) {
-    if (any(is.na(new_data[[object$outcome]]))) {
+  # Check, if outcome is predictor
+  if (any(object$outcome %in% colnames(new_data))) {
+    # Check, there are na values in predictor column
+    if (any(is.na(new_data[object$outcome]))) {
+
+      object$horizon
+
       recursive_mode <- TRUE
     }
   }
@@ -176,18 +184,33 @@ predict.torchts_rnn <- function(object, new_data){
     h           = object$horizon
   )
 
- new_data_dl  <- dataloader(new_data_ds, batch_size = 5)
+ new_data_dl <-
+   as_ts_dataloader(
+     new_data,
+     index       = object$index,
+     key         = object$key,
+     target      = object$outcome,
+     timesteps   = object$timesteps,
+     h           = object$horizon,
+     batch_size  = batch_size
+   )
+
+
+ new_data_dl  <- dataloader(new_data_ds, batch_size = batch_size)
 
   net <- object$net
   net$eval()
 
-  preds <- rep(NA, 20)
+  preds <- NULL
   iter  <- 1
+
+  # b <- dataloader_next(new_data_dl$.iter())
 
   coro::loop(for (b in new_data_dl) {
 
     output <- net(b$x)
-    preds  <- c(preds, as.numeric(output))
+    output <- output$reshape(c(-1, n_outcomes))
+    preds  <- rbind(preds, as_array(output))
 
     if (recursive_mode) {
       start <- (object$timesteps * iter) + 1

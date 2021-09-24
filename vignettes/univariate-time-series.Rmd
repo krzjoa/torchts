@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(torch)
 library(torchts)
 library(rsample)
-suppressMessages(library(dplyr))
+library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(parsnip)
 library(timetk)

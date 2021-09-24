@@ -28,14 +28,14 @@
 #'
 #' @export
 as_ts_dataloader <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          n_timesteps, batch_size, h = 1, sample_frac = 1, scale = TRUE){
+                          timesteps, batch_size, h = 1, sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataloader")
 }
 
 
 #' @export
-as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, target = NULL, n_timesteps, batch_size,
+as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
+                                     key = NULL, target = NULL, timesteps, batch_size,
                                      h = 1, sample_frac = 1, scale = TRUE){
   dataloader(
     as_ts_dataset(
@@ -44,7 +44,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
       index       = index,
       key         = key,
       target      = target,
-      n_timesteps = n_timesteps,
+      timesteps   = timesteps,
       h           = h,
       sample_frac = sample_frac,
       scale       = scale),

@@ -92,10 +92,7 @@ ts_dataset <- torch::dataset(
     targets <-
       purrr::map(self$target_columns, ~ self$data[(end + 1):(end + self$h), .x])
 
-    c(
-      inputs,
-      targets
-    )
+    c(inputs, targets)
 
   },
 

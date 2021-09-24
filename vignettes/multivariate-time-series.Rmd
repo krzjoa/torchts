@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 library(torch)
 library(torchts)
 library(rsample)
-suppressMessages(library(dplyr))
+library(dplyr, warn.conflicts = FALSE)
 library(ggplot2)
 library(parsnip)
 library(timetk)
@@ -88,6 +88,8 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 cleared_new_data <- 
   testing(data_split) %>% 
   clear_outcome(date, temp, 20)
+
+debugonce(torchts:::predict.torchts_rnn)
 
 # Forecast
 fcast <-
