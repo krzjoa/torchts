@@ -27,16 +27,21 @@
 #  as_ts_dataloader(temp ~ date, n_timesteps = 20, h = 1, batch_size = 32)
 #'
 #' @export
-as_ts_dataloader <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          timesteps, batch_size, h = 1, sample_frac = 1, scale = TRUE){
+as_ts_dataloader <- function(data, formula, index = NULL,
+                             key = NULL, target = NULL,
+                             timesteps, batch_size, h = 1,
+                             sample_frac = 1, scale = TRUE,
+                             mean = NULL, std = NULL){
   UseMethod("as_ts_dataloader")
 }
 
 
 #' @export
 as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, target = NULL, timesteps, batch_size,
-                                     h = 1, sample_frac = 1, scale = TRUE){
+                                     key = NULL, target = NULL,
+                                     timesteps, batch_size,
+                                     h = 1, sample_frac = 1, scale = TRUE,
+                                     mean = NULL, std = NULL){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -47,7 +52,9 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       timesteps   = timesteps,
       h           = h,
       sample_frac = sample_frac,
-      scale       = scale),
+      scale       = scale,
+      mean        = mean,
+      std         = std),
     batch_size = batch_size
     )
 }

@@ -66,17 +66,15 @@ rnn_fit <- function(formula, data,
   }
 
   # TODO: simplify
-  train_dataset <-
-    as_ts_dataset(
+  train_dl <-
+    as_ts_dataloader(
       data        = data,
       formula     = formula,
-      timesteps = timesteps,
+      timesteps   = timesteps,
       h           = horizon,
-      scale       = scale
+      scale       = scale,
+      batch_size  = batch_size
     )
-
-  train_dl <-
-    dataloader(train_dataset, batch_size = batch_size)
 
   input_size <-
     tail(dim(train_dataset$data), 1)
@@ -136,6 +134,15 @@ rnn_fit <- function(formula, data,
 
   }
 
+  if (scale) {
+    scale_params <- list(
+      mean = train_dl$mean,
+      std  = train_dl$std
+    )
+  } else {
+    scale_params <- scale
+  }
+
   # Return neural network structure
   structure(
     class = "torchts_rnn",
@@ -146,7 +153,8 @@ rnn_fit <- function(formula, data,
       outcome   = outcome,
       optim     = optimizer,
       timesteps = timesteps,
-      horizon   = horizon
+      horizon   = horizon,
+      scale     = scale_params
     )
   )
 
@@ -159,44 +167,22 @@ predict.torchts_rnn <- function(object, new_data){
 
   # For now we suppose it's continuous
   # Check more conditions
-  recursive_mode <- FALSE
   n_outcomes     <- length(object$outcome)
-  batch_size     <- 5
+  batch_size     <- 1
 
-  # Check, if outcome is predictor
-  if (any(object$outcome %in% colnames(new_data))) {
-    # Check, there are na values in predictor column
-    if (any(is.na(new_data[object$outcome]))) {
+  recursive_mode <- check_recursion(object, new_data)
 
-      object$horizon
-
-      recursive_mode <- TRUE
-    }
-  }
-
-  # Preparing
- new_data_ds <- as_ts_dataset(
-   new_data,
-    index       = object$index,
-    key         = object$key,
-    target      = object$outcome,
-    timesteps   = object$timesteps,
-    h           = object$horizon
-  )
-
- new_data_dl <-
-   as_ts_dataloader(
-     new_data,
-     index       = object$index,
-     key         = object$key,
-     target      = object$outcome,
-     timesteps   = object$timesteps,
-     h           = object$horizon,
-     batch_size  = batch_size
-   )
-
-
- new_data_dl  <- dataloader(new_data_ds, batch_size = batch_size)
+  # Preparing dataloader
+  new_data_dl <-
+     as_ts_dataloader(
+       new_data,
+       index       = object$index,
+       key         = object$key,
+       target      = object$outcome,
+       timesteps   = object$timesteps,
+       h           = object$horizon,
+       batch_size  = batch_size
+     )
 
   net <- object$net
   net$eval()
@@ -204,7 +190,11 @@ predict.torchts_rnn <- function(object, new_data){
   preds <- NULL
   iter  <- 1
 
-  # b <- dataloader_next(new_data_dl$.iter())
+
+  debugonce(new_data_dl$dataset$.getitem)
+  new_data_dl$dataset[1]
+
+  dataloader_next(new_data_dl$.iter())
 
   coro::loop(for (b in new_data_dl) {
 

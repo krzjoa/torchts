@@ -25,13 +25,16 @@ clear_outcome <- function(data, index, outcome, timesteps, key = NULL){
   index   <- as.character(substitute(index))
   outcome <- as.character(substitute(outcome))
 
+  if (outcome[1] == "c")
+    outcome <- outcome[-1]
+
   if (!is.null(key))
-    key       <- as.character(substitute(key))
+    key <- as.character(substitute(key))
 
   data %>%
     arrange(!!index) %>%
     group_by(!!key) %>%
-    mutate(!!outcome := c(.[[!!outcome]][1:timesteps], rep(NA, n() - timesteps)))
+    mutate(across(!!outcome, ~ c(.x[1:timesteps], rep(NA, n() - timesteps))))
 }
 
 
@@ -66,3 +69,25 @@ rep_if_one_element <- function(x, output_length){
   else
     return(x)
 }
+
+
+#' Check, if recursion should be used in forecasting
+check_recursion <- function(object, new_data){
+
+  # TODO: check, if this procedure is sufficient
+
+  recursive_mode <- FALSE
+
+  # Check, if outcome is predictor
+  if (any(object$outcome %in% colnames(new_data))) {
+    # Check, there are na values in predictor column
+    if (any(is.na(new_data[object$outcome]))) {
+      if (nrow(new_data) > object$horizon)
+        recursive_mode <- TRUE
+    }
+  }
+
+  recursive_mode
+}
+
+

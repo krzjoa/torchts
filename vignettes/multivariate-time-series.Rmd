@@ -87,14 +87,14 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 # Clear outcome variable
 cleared_new_data <- 
   testing(data_split) %>% 
-  clear_outcome(date, temp, 20)
+  clear_outcome(date, c(max_temp, min_temp), 20)
 
 debugonce(torchts:::predict.torchts_rnn)
 
 # Forecast
 fcast <-
   rnn_model %>%
-  predict(new_data = testing(data_split))
+  predict(new_data = cleared_new_data)
 
 fcast_vs_true <- 
   bind_cols(testing(data_split), fcast$.pred)

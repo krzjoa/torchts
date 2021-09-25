@@ -32,14 +32,16 @@
 #'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
-                          timesteps, h = 1, sample_frac = 1, scale = TRUE){
+                          timesteps, h = 1, sample_frac = 1,
+                          scale = TRUE, mean = NULL, std = NULL){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, timesteps,
-                                     h = 1, sample_frac = 1, scale = TRUE){
+                                     h = 1, sample_frac = 1,
+                                     scale = TRUE, mean = NULL, std = NULL){
 
 
   if (nrow(data) == 0) {

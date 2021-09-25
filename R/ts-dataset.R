@@ -8,6 +8,7 @@
 #' @param target_columns (list) Output specification
 #' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
 #' @param scale (logical) Scale feature columns
+#' @param mean Mean values
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -36,7 +37,8 @@ ts_dataset <- torch::dataset(
   initialize = function(data, timesteps, h, jump = h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
-                        sample_frac = 1, scale = TRUE) {
+                        sample_frac = 1, scale = TRUE,
+                        mean = NULL, std = NULL) {
 
     # TODO: check data types
     # TODO: check, if jump works correctly
@@ -60,8 +62,15 @@ ts_dataset <- torch::dataset(
     # How to keeo dimensions?
     if (scale) {
       self$col_map <- unique(unlist(input_columns))
-      self$mean    <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-      self$std     <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+
+      if (is.null(mean) & is.null(std)) {
+        self$mean <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+        self$std  <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      } else {
+        self$mean <- mean
+        self$std  <- std
+      }
+
     }
 
   },
