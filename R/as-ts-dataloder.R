@@ -30,8 +30,7 @@
 as_ts_dataloader <- function(data, formula, index = NULL,
                              key = NULL, target = NULL,
                              timesteps, batch_size, h = 1,
-                             sample_frac = 1, scale = TRUE,
-                             mean = NULL, std = NULL){
+                             sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataloader")
 }
 
@@ -40,8 +39,7 @@ as_ts_dataloader <- function(data, formula, index = NULL,
 as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL,
                                      timesteps, batch_size,
-                                     h = 1, sample_frac = 1, scale = TRUE,
-                                     mean = NULL, std = NULL){
+                                     h = 1, sample_frac = 1, scale = TRUE){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -52,9 +50,25 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       timesteps   = timesteps,
       h           = h,
       sample_frac = sample_frac,
-      scale       = scale,
-      mean        = mean,
-      std         = std),
+      scale       = scale),
     batch_size = batch_size
     )
 }
+
+#' Accessor for `scale_params` values in a dataloader object
+#' @export
+scale_params <- function(dataloader, ...){
+  UseMethod("scale_params")
+}
+
+#' @export
+scale_params.dataloader <- function(dataloader, ...){
+  # TODO: maybe don't use S3?
+  dataloader$dataset$scale_params
+}
+
+
+
+
+
+

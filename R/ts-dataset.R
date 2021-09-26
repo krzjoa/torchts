@@ -8,7 +8,6 @@
 #' @param target_columns (list) Output specification
 #' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
 #' @param scale (logical) Scale feature columns
-#' @param mean Mean values
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -37,8 +36,7 @@ ts_dataset <- torch::dataset(
   initialize = function(data, timesteps, h, jump = h,
                         input_columns  = list(x = NULL),
                         target_columns = list(y = NULL),
-                        sample_frac = 1, scale = TRUE,
-                        mean = NULL, std = NULL) {
+                        sample_frac = 1, scale = TRUE) {
 
     # TODO: check data types
     # TODO: check, if jump works correctly
@@ -49,7 +47,6 @@ ts_dataset <- torch::dataset(
     self$jump           <- jump
     self$input_columns  <- input_columns
     self$target_columns <- target_columns
-    self$scale          <- scale
 
     n <- (nrow(self$data) - self$timesteps) / self$jump
     n <- floor(n)
@@ -59,18 +56,21 @@ ts_dataset <- torch::dataset(
       size = n * sample_frac
     ))
 
-    # How to keeo dimensions?
-    if (scale) {
-      self$col_map <- unique(unlist(input_columns))
+    #' WARNING: columns names are supposed to be in such order
+    self$col_map <- unique(unlist(input_columns))
 
-      if (is.null(mean) & is.null(std)) {
-        self$mean <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-        self$std  <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-      } else {
-        self$mean <- mean
-        self$std  <- std
-      }
-
+    # If scale is a list and contains two values: mean and std
+    # TODO: unify naming - sd ather than std. See: recipes (https://recipes.tidymodels.org/reference/step_normalize.html)
+    # Compare: https://easystats.github.io/datawizard/reference/standardize.html
+    if (is.list(scale) & all(c("mean", "std") %in% names(scale))) {
+      self$mean  <- scale$mean
+      self$std   <- scale$std
+      self$scale <- TRUE
+    } else if (scale) {
+    # Otherwise, if scale is logical and TRUE, comute scaling params from the data
+      self$mean    <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$std     <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$scale   <- TRUE
     }
 
   },
@@ -107,6 +107,17 @@ ts_dataset <- torch::dataset(
 
   .length = function() {
     length(self$starts)
-  }
+  },
+
+  # Active bindings
+  # If there is no such params, returns list with two NULL values
+  active = list(
+    scale_params = function(){
+      if (self$scale)
+        list(mean = self$mean, std = self$std)
+      else
+        self$scale
+    }
+  )
 
 )

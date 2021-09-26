@@ -66,6 +66,7 @@ rnn_fit <- function(formula, data,
   }
 
   # TODO: simplify
+
   train_dl <-
     as_ts_dataloader(
       data        = data,
@@ -77,7 +78,7 @@ rnn_fit <- function(formula, data,
     )
 
   input_size <-
-    tail(dim(train_dataset$data), 1)
+    tail(dim(train_dl$dataset$data), 1)
 
   output_size <- length(outcome)
 
@@ -134,15 +135,6 @@ rnn_fit <- function(formula, data,
 
   }
 
-  if (scale) {
-    scale_params <- list(
-      mean = train_dl$mean,
-      std  = train_dl$std
-    )
-  } else {
-    scale_params <- scale
-  }
-
   # Return neural network structure
   structure(
     class = "torchts_rnn",
@@ -154,7 +146,7 @@ rnn_fit <- function(formula, data,
       optim     = optimizer,
       timesteps = timesteps,
       horizon   = horizon,
-      scale     = scale_params
+      scale     = scale_params(train_dl)
     )
   )
 
@@ -181,7 +173,8 @@ predict.torchts_rnn <- function(object, new_data){
        target      = object$outcome,
        timesteps   = object$timesteps,
        h           = object$horizon,
-       batch_size  = batch_size
+       batch_size  = batch_size,
+       scale       = object$scale
      )
 
   net <- object$net
@@ -190,11 +183,9 @@ predict.torchts_rnn <- function(object, new_data){
   preds <- NULL
   iter  <- 1
 
-
-  debugonce(new_data_dl$dataset$.getitem)
-  new_data_dl$dataset[1]
-
-  dataloader_next(new_data_dl$.iter())
+  # debugonce(new_data_dl$dataset$.getitem)
+  # new_data_dl$dataset[1]
+  # dataloader_next(new_data_dl$.iter())
 
   coro::loop(for (b in new_data_dl) {
 

@@ -7,7 +7,8 @@
 #' @param timesteps The time series chunk length
 #' @param h Forecast horizon
 #' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
-#' @param scale (logical) Scale feature columns
+#' @param scale (logical or list) Scale feature columns. Logical value or two-element list
+#' with values (mean, std)
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -33,7 +34,7 @@
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
                           timesteps, h = 1, sample_frac = 1,
-                          scale = TRUE, mean = NULL, std = NULL){
+                          scale = TRUE){
   UseMethod("as_ts_dataset")
 }
 
@@ -41,7 +42,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, target = NULL, timesteps,
                                      h = 1, sample_frac = 1,
-                                     scale = TRUE, mean = NULL, std = NULL){
+                                     scale = TRUE){
 
 
   if (nrow(data) == 0) {
