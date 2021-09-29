@@ -43,7 +43,7 @@ devtools::install_github("krzjoa/torchts")
 library(torchts)
 library(torch)
 library(rsample)
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 library(parsnip)
 
 max_temp_tarnow <- 

@@ -63,6 +63,7 @@ ts_dataset <- torch::dataset(
     # TODO: unify naming - sd ather than std. See: recipes (https://recipes.tidymodels.org/reference/step_normalize.html)
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
     if (is.list(scale) & all(c("mean", "std") %in% names(scale))) {
+      # TODO: additional check - length of scaling vector
       self$mean  <- scale$mean
       self$std   <- scale$std
       self$scale <- TRUE
@@ -76,6 +77,9 @@ ts_dataset <- torch::dataset(
   },
 
   .getitem = function(i) {
+
+    # if (dev)
+    #   browser()
 
     start <- self$starts[i * self$jump]
     end   <- start + self$timesteps - 1

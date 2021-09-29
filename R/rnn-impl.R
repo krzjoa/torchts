@@ -181,7 +181,7 @@ predict.torchts_rnn <- function(object, new_data){
   net$eval()
 
   preds <- NULL
-  iter  <- 1
+  iter  <- 0
 
   # debugonce(new_data_dl$dataset$.getitem)
   # new_data_dl$dataset[1]
@@ -193,9 +193,15 @@ predict.torchts_rnn <- function(object, new_data){
     output <- output$reshape(c(-1, n_outcomes))
     preds  <- rbind(preds, as_array(output))
 
+    # print(iter)
+    # print(preds)
+
+    if (dev)
+      browser()
+
     if (recursive_mode) {
-      start <- (object$timesteps * iter) + 1
-      end   <- (object$timesteps * iter) + object$horizon
+      start <- object$timesteps + iter * object$horizon + 1
+      end   <- object$timesteps + iter * object$horizon + object$horizon
       cols  <- unlist(new_data_dl$dataset$target_columns)
       new_data_dl$dataset$data[start:end, cols] <- output
     }
