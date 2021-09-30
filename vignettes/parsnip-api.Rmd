@@ -24,7 +24,7 @@ library(parsnip)
 library(timetk)
 ```
 
-## Multiple output
+## Preparing dataset
 
 `parsnip` API provides quick and convenient way to train time series models based on `torch` library.
 
@@ -34,7 +34,7 @@ First, let's prepare input data set using excelent `timetk` library. `weather_pl
 tarnow_temp <- 
   weather_pl %>% 
   filter(station == "TRN") %>% 
-  select(date, max_temp = tmax_daily, min_temp = tmin_daily)
+  select(date, tmax_daily, tmin_daily, press_mean_daily)
 
 tk_summary_diagnostics(tarnow_temp, date)
 ```
@@ -58,25 +58,23 @@ tk_summary_diagnostics(training(data_split), date)[, 1:3]
 # Testing dataset
 tk_summary_diagnostics(testing(data_split), date)[, 1:3]
 ```
+## Univariate time series
 
 ```{r training.parsnip.api}
 TIMESTEPS <- 20
 HORIZON   <- 1
-dev <- FALSE
-
-# debugonce(torchts::rnn_fit)
 
 # Training 
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
-    epochs       = 2,
+    epochs       = 3,
     hidden_units = 20,
     batch_size   = 32,
     scale        = TRUE 
   ) %>% 
-  fit(min_temp + max_temp ~ min_temp + max_temp + index(date), 
+  fit(tmax_daily ~ date, 
       data = training(data_split))
 ```
 
@@ -88,11 +86,74 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 # Clear outcome variable
 cleared_new_data <- 
   testing(data_split) %>% 
-  clear_outcome(date, c(max_temp, min_temp), 20)
+  clear_outcome(date, temp, 20)
+
+# Forecast
+fcast <-
+  rnn_model %>%
+  predict(new_data = testing(data_split))
+
+fcast_vs_true <- 
+  bind_cols(testing(data_split), fcast$.pred)
+```
+
+## Multivariate time series
+
+```{r training.parsnip.api}
+TIMESTEPS <- 20
+HORIZON   <- 1
+dev <- FALSE
+
+# Training 
+rnn_model <- 
+  rnn(
+    timesteps    = TIMESTEPS,
+    horizon      = HORIZON,
+    epochs       = 2,
+    hidden_units = 5,
+    batch_size   = 32,
+    scale        = TRUE 
+  ) %>% 
+  fit(tmax_daily ~ press_mean_daily + tmax_daily + index(date), 
+      data = training(data_split))
+```
+
+
+
+## Multivariate time series with multiple outcomes
+
+
+```{r training.parsnip.api}
+TIMESTEPS <- 20
+HORIZON   <- 1
+dev <- FALSE
+
+# Training 
+rnn_model <- 
+  rnn(
+    timesteps    = TIMESTEPS,
+    horizon      = HORIZON,
+    epochs       = 2,
+    hidden_units = 5,
+    batch_size   = 32,
+    scale        = TRUE 
+  ) %>% 
+  fit(tmin_daily + tmax_daily ~ tmin_daily + tmax_daily + index(date), 
+      data = training(data_split))
+```
+
+
+```{r model.forecast}
+# Clear outcome variable
+cleared_new_data <- 
+  testing(data_split) %>% 
+  clear_outcome(date, c(tmax_daily, tmin_daily), 20)
 
 # debugonce(torchts:::predict.torchts_rnn)
 
 dev <- TRUE
+
+rnn_model$preproc$y_var
 
 # Forecast
 fcast <-

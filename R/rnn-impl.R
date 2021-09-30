@@ -183,21 +183,11 @@ predict.torchts_rnn <- function(object, new_data){
   preds <- NULL
   iter  <- 0
 
-  # debugonce(new_data_dl$dataset$.getitem)
-  # new_data_dl$dataset[1]
-  # dataloader_next(new_data_dl$.iter())
-
   coro::loop(for (b in new_data_dl) {
 
     output <- net(b$x)
     output <- output$reshape(c(-1, n_outcomes))
     preds  <- rbind(preds, as_array(output))
-
-    # print(iter)
-    # print(preds)
-
-    if (dev)
-      browser()
 
     if (recursive_mode) {
       start <- object$timesteps + iter * object$horizon + 1
@@ -209,6 +199,10 @@ predict.torchts_rnn <- function(object, new_data){
     iter <- iter + 1
 
   })
+
+  # Adding colnames if more than one outcome
+  if (ncol(preds) > 1)
+    colnames(preds) <- object$outcome
 
   preds
 }

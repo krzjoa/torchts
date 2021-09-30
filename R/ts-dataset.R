@@ -64,8 +64,8 @@ ts_dataset <- torch::dataset(
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
     if (is.list(scale) & all(c("mean", "std") %in% names(scale))) {
       # TODO: additional check - length of scaling vector
-      self$mean  <- scale$mean
-      self$std   <- scale$std
+      self$mean  <- as_tensor(scale$mean)
+      self$std   <- as_tensor(scale$std)
       self$scale <- TRUE
     } else if (scale) {
     # Otherwise, if scale is logical and TRUE, comute scaling params from the data

@@ -64,12 +64,39 @@ test_that("Test as_ts_dataset without scaling", {
 
 })
 
-test_that("Set scaling values", {
+test_that("Set scaling values - passing numeric", {
 
   TIMESTEPS <- 20
   HORIZON   <- 1
   MEAN      <- 2
   STD       <- 3
+
+  tarnow_ds <-
+    tarnow_temp %>%
+    as_ts_dataset(
+      max_temp ~ date,
+      timesteps = TIMESTEPS,
+      h = HORIZON,
+      scale = list(mean = MEAN, std = STD)
+    )
+
+  # First slice
+  ds_slice <- tarnow_ds[1]
+
+  # Input is scaled
+  x_scaled <- (tarnow_temp$max_temp - MEAN) / STD
+
+  expect_equal(as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7)
+
+})
+
+
+test_that("Set scaling values - passing tensors", {
+
+  TIMESTEPS <- 20
+  HORIZON   <- 1
+  MEAN      <- as_tensor(2)
+  STD       <- as_tensor(3)
 
   tarnow_ds <-
     tarnow_temp %>%

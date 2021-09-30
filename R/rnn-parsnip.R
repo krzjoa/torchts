@@ -8,6 +8,8 @@
 #' @param hidden_units Number of hidden units
 #' @param dropout (logical or dials::dropout) Flag to use dropout
 #' @param batch_size (integer) Batch size
+#' @param stop_iter Number of epochs without desired improvement to stop
+#' @param loss_reduction Minimal loss reduction
 #' @param scale (logical) Scale input features
 #'
 #' @examples
@@ -46,6 +48,8 @@ rnn <- function(mode = "regression",
                 hidden_units = NULL,
                 dropout = NULL,
                 batch_size = 32,
+                stop_iter = NULL,
+                loss_reduction = NULL,
                 scale = TRUE){
 
   args <- list(

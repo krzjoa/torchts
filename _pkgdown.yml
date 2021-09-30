@@ -22,6 +22,10 @@ reference:
   - ts_dataset
   - as_ts_dataset
   - as_ts_dataloader
+- title: Metrics / Loss Functions
+  contents:
+  - nnf_mape
+  - nnf_wape
 - title: Data
   contents:
   - weather_pl
