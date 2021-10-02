@@ -5,6 +5,8 @@
 #' @param learn_rate (numeric) Learning rate
 #' @param hidden_units (integer) Number of hidden units
 #'
+#' @importFrom torch nn_gru
+#'
 #' @export
 rnn_fit <- function(formula, data,
                     learn_rate,
@@ -27,9 +29,10 @@ rnn_fit <- function(formula, data,
 
   # Extract column roles from formula
   # Use torchts_constants
-  key     <- filter(parsed_formula, .role == "key")$.var
-  index   <- filter(parsed_formula, .role == "index")$.var
-  outcome <- filter(parsed_formula, .role == "outcome")$.var
+  key        <- vars_with_role(parsed_formula, "key")
+  index      <- vars_with_role(parsed_formula, "index")
+  outcome    <- vars_with_role(parsed_formula, "outcome")
+  predictors <- vars_with_role(parsed_formula, "predictor")
 
   optim <- rlang::enquo(optim)
 
@@ -97,7 +100,7 @@ rnn_fit <- function(formula, data,
   optimizer <- call_optim(optim, net$parameters)
 
   # Training
-  for (epoch in 1:epochs) {
+  for (epoch in seq_len(epochs)) {
 
     net$train()
     train_loss <- c()
@@ -139,14 +142,15 @@ rnn_fit <- function(formula, data,
   structure(
     class = "torchts_rnn",
     list(
-      net       = net,
-      index     = index,
-      key       = key,
-      outcome   = outcome,
-      optim     = optimizer,
-      timesteps = timesteps,
-      horizon   = horizon,
-      scale     = scale_params(train_dl)
+      net        = net,
+      index      = index,
+      key        = key,
+      outcome    = outcome,
+      predictors = predictors,
+      optim      = optimizer,
+      timesteps  = timesteps,
+      horizon    = horizon,
+      scale      = scale_params(train_dl)
     )
   )
 
@@ -170,6 +174,7 @@ predict.torchts_rnn <- function(object, new_data){
        new_data,
        index       = object$index,
        key         = object$key,
+       predictors  = object$predictors,
        target      = object$outcome,
        timesteps   = object$timesteps,
        h           = object$horizon,

@@ -34,6 +34,10 @@ rnn(
 \item{batch_size}{(integer) Batch size}
 
 \item{scale}{(logical) Scale input features}
+
+\item{stop_iter}{Number of epochs without desired improvement to stop}
+
+\item{loss_reduction}{Minimal loss reduction}
 }
 \description{
 General interface to recurrent neural network models

@@ -4,18 +4,30 @@
 \alias{model_rnn}
 \title{A recurrent neural network model}
 \usage{
-model_rnn(layer = nn_gru, input_size, hidden_size, h, dropout = 0)
+model_rnn(
+  layer = nn_gru,
+  input_size,
+  output_size,
+  hidden_size,
+  h,
+  dropout = 0,
+  batch_first = TRUE
+)
 }
 \arguments{
 \item{layer}{A recurrent \code{torch} layer}
 
 \item{input_size}{(integer) Input size}
 
+\item{output_size}{(integer) Output size (number of target variables)}
+
 \item{hidden_size}{(integer) Hidden layer size}
 
 \item{h}{(integer) Horizon size}
 
 \item{dropout}{(logical) Use dropout}
+
+\item{batch_first}{(logical) Channel order}
 }
 \description{
 A recurrent neural network model

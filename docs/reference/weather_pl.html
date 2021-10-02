@@ -102,16 +102,10 @@ A subset of columns has been selected and date column was added." />
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -169,12 +163,12 @@ was downloaded using the <code>climate</code> package. Two places have been chos
     <pre class="examples"><div class='input'><span class='co'># Head of weather_pl</span>
 <span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>weather_pl</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;       station       date tmax_daily tmin_daily tmin_soil rr_daily rr_type
-#&gt; 11068  TARNÓW 2001-01-01        1.5       -5.2      -9.5      0.0        
-#&gt; 12175  TARNÓW 2001-01-02        3.0       -4.1      -6.6      0.0       W
-#&gt; 23174  TARNÓW 2001-01-03        3.3       -0.7      -3.8     10.7       S
-#&gt; 26174  TARNÓW 2001-01-04        8.3        1.0      -1.1      0.0        
-#&gt; 27174  TARNÓW 2001-01-05        7.0        0.7      -2.7      0.0        
-#&gt; 28174  TARNÓW 2001-01-06        8.6        2.7       1.3      0.0       W
+#&gt; 11068     TRN 2001-01-01        1.5       -5.2      -9.5      0.0        
+#&gt; 12175     TRN 2001-01-02        3.0       -4.1      -6.6      0.0       W
+#&gt; 23174     TRN 2001-01-03        3.3       -0.7      -3.8     10.7       S
+#&gt; 26174     TRN 2001-01-04        8.3        1.0      -1.1      0.0        
+#&gt; 27174     TRN 2001-01-05        7.0        0.7      -2.7      0.0        
+#&gt; 28174     TRN 2001-01-06        8.6        2.7       1.3      0.0       W
 #&gt;       rr_daytime rr_nightime press_mean_daily
 #&gt; 11068        0.0         0.0            991.7
 #&gt; 12175        0.0         0.0            985.0

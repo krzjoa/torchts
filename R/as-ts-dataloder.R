@@ -28,7 +28,8 @@
 #'
 #' @export
 as_ts_dataloader <- function(data, formula, index = NULL,
-                             key = NULL, target = NULL,
+                             key = NULL, predictors = NULL,
+                             target = NULL,
                              timesteps, batch_size, h = 1,
                              sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataloader")
@@ -37,7 +38,8 @@ as_ts_dataloader <- function(data, formula, index = NULL,
 
 #' @export
 as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, target = NULL,
+                                     key = NULL, predictors = NULL,
+                                     target = NULL,
                                      timesteps, batch_size,
                                      h = 1, sample_frac = 1, scale = TRUE){
   dataloader(

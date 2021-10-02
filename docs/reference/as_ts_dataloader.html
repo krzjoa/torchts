@@ -98,16 +98,10 @@
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -142,7 +136,7 @@
   index <span class='op'>=</span> <span class='cn'>NULL</span>,
   key <span class='op'>=</span> <span class='cn'>NULL</span>,
   target <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>n_timesteps</span>,
+  <span class='va'>timesteps</span>,
   <span class='va'>batch_size</span>,
   h <span class='op'>=</span> <span class='fl'>1</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
@@ -169,10 +163,6 @@
       <td><p>The key column(s)</p></td>
     </tr>
     <tr>
-      <th>n_timesteps</th>
-      <td><p>The time seris chunk length</p></td>
-    </tr>
-    <tr>
       <th>batch_size</th>
       <td><p>Batch size</p></td>
     </tr>
@@ -183,6 +173,10 @@
     <tr>
       <th>sample_frac</th>
       <td><p>Sample a fraction of rows (default: 1, i.e.: all the rows)</p></td>
+    </tr>
+    <tr>
+      <th>n_timesteps</th>
+      <td><p>The time seris chunk length</p></td>
     </tr>
     </table>
 
@@ -197,7 +191,7 @@
 
 <span class='co'># Splitting on training and test</span>
 <span class='va'>data_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_time_split</a></span><span class='op'>(</span><span class='va'>suwalki_temp</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error: `in_id` must be a positive integer vector.</span></div><div class='input'>
+
 
 </div></pre>
   </div>

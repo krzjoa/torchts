@@ -1,5 +1,4 @@
-#' @name as_tensor
-#' @title Convert an object to tensor
+#' Convert an object to tensor
 #
 #' @param .data A data.frame-like object
 #' @param ... Column names to wrap the data.frame-like object
@@ -71,6 +70,12 @@ as_tensor.default <- function(.data, dtype = NULL,
     requires_grad = requires_grad,
     pin_memory = pin_memory
   )
+}
+
+#' @export
+#' @rdname as_tensor
+as_tensor.torch_tensor <- function(.data, ...){
+  .data
 }
 
 #' @export

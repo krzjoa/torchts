@@ -93,10 +93,12 @@ test_that("Set scaling values - passing numeric", {
 
 test_that("Set scaling values - passing tensors", {
 
-  TIMESTEPS <- 20
-  HORIZON   <- 1
-  MEAN      <- as_tensor(2)
-  STD       <- as_tensor(3)
+  TIMESTEPS   <- 20
+  HORIZON     <- 1
+  MEAN        <- 2
+  STD         <- 3
+  MEAN_TENSOR <- as_tensor(MEAN)
+  STD_TENSOR  <- as_tensor(STD)
 
   tarnow_ds <-
     tarnow_temp %>%
@@ -104,7 +106,8 @@ test_that("Set scaling values - passing tensors", {
       max_temp ~ date,
       timesteps = TIMESTEPS,
       h = HORIZON,
-      scale = list(mean = MEAN, std = STD)
+      scale = list(mean = MEAN_TENSOR,
+                   std = STD_TENSOR)
     )
 
   # First slice
@@ -113,11 +116,11 @@ test_that("Set scaling values - passing tensors", {
   # Input is scaled
   x_scaled <- (tarnow_temp$max_temp - MEAN) / STD
 
-  expect_equal(as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7)
+  expect_equal(
+    as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7
+  )
 
 })
-
-
 
 test_that("Error when index not defined", {
   expect_error(
@@ -140,3 +143,4 @@ test_that("Error when passed empty data.frame", {
     )
   )
 })
+

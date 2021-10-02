@@ -10,7 +10,7 @@ as_ts_dataloader(
   index = NULL,
   key = NULL,
   target = NULL,
-  n_timesteps,
+  timesteps,
   batch_size,
   h = 1,
   sample_frac = 1,
@@ -26,13 +26,13 @@ as_ts_dataloader(
 
 \item{key}{The key column(s)}
 
-\item{n_timesteps}{The time seris chunk length}
-
 \item{batch_size}{Batch size}
 
 \item{h}{Forecast horizon}
 
 \item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
+
+\item{n_timesteps}{The time seris chunk length}
 }
 \description{
 Quick shortcut to create a torch dataloader based on the given dataset

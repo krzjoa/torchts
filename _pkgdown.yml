@@ -16,16 +16,17 @@ reference:
 - title: Modules
   contents:
   - model_rnn
-- title: Preparing data
+- title: Data transformations
   contents:
   - as_tensor
   - ts_dataset
   - as_ts_dataset
   - as_ts_dataloader
-- title: Metrics / Loss Functions
+  - as.vector
+- title: Metrics
   contents:
   - nnf_mape
-  - nnf_wape
+  - nnf_mae
 - title: Data
   contents:
   - weather_pl

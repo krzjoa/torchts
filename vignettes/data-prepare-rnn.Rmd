@@ -34,7 +34,7 @@ the input data frame.
 ## Data Wrangling
 ```{r preparing.data}
 walmart_foods_ca1_prepared <-
-  fst::read_fst("../data/walmart/walmart_foods_ca1_prepared.fst")
+  fst::read_fst("../data-dev/walmart/walmart_foods_ca1_prepared.fst")
 
 experiment_data <-
   walmart_foods_ca1_prepared %>%
@@ -198,9 +198,6 @@ X_train_tensor_rest <-
   filter(item_id == "FOODS_1_001") %>% 
   as_tensor(item_id, date, dtype = torch_long())
 
-# print(class(X_tensor_cat))
-# print(X_tensor_cat$shape)
-
 y_tensor <-
   train_data %>%
   select(item_id, date, value) %>%
@@ -225,10 +222,6 @@ X_test_tensor_rest <-
   as_tensor(item_id, date, dtype = torch_long())
 ```
 
-### Embedding for categorical variables
-
-First, let's create **a multiple embedding module**.
-A causal **embedding module** is a simple, but memory efficient operation, which allows us to transform a sequence of categorical features into sequence of embedding vectors.
 
 
 

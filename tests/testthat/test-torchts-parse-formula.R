@@ -116,6 +116,14 @@ test_that("Formula outcome variables order", {
 
 })
 
+test_that("Variables that not appear in the data.frame", {
+
+  expect_error(
+    torchts_parse_formula(max_temp + min_temperature ~ date, tarnow_temp)
+  )
+
+})
+
 
 # test_that("Test formula with multiple predictors and outcomes where index is first", {
 #

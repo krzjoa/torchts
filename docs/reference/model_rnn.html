@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="A recurrent neural network model — model_rnn" />
-<meta property="og:description" content="TODO: get rid off fwd_input_size etc.? Compare with other applications" />
+<meta property="og:description" content="A recurrent neural network model" />
 
 
 
@@ -98,16 +98,10 @@
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -133,68 +127,53 @@
     </div>
 
     <div class="ref-description">
-    <p>TODO: get rid off fwd_input_size etc.? Compare with other applications</p>
+    <p>A recurrent neural network model</p>
     </div>
 
     <pre class="usage"><span class='fu'>model_rnn</span><span class='op'>(</span>
   layer <span class='op'>=</span> <span class='va'>nn_gru</span>,
   <span class='va'>input_size</span>,
+  <span class='va'>output_size</span>,
   <span class='va'>hidden_size</span>,
   <span class='va'>h</span>,
-  num_layers <span class='op'>=</span> <span class='fl'>1</span>,
   dropout <span class='op'>=</span> <span class='fl'>0</span>,
-  output_activation <span class='op'>=</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/nn_linear.html'>nn_linear</a></span><span class='op'>(</span><span class='va'>hidden_size</span>, <span class='fl'>1</span><span class='op'>)</span>
+  batch_first <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>forward_layer</th>
-      <td><p>(nn_module_generator or nn_module) A module with forward recurrent layer. Default: <code>nn_gru</code></p></td>
+      <th>layer</th>
+      <td><p>A recurrent <code>torch</code> layer</p></td>
     </tr>
     <tr>
-      <th>backward_layer</th>
-      <td><p>(nn_module) A module with backward recurrent layer. Default: <code>NULL</code></p></td>
-    </tr>
-    <tr>
-      <th>fwd_input_size</th>
-      <td><p>(numeric) Input size for the forward recurrent layer</p></td>
-    </tr>
-    <tr>
-      <th>fwd_output_size</th>
-      <td><p>(numeric) Forward layer size (in other words: the forward layer output size)</p></td>
-    </tr>
-    <tr>
-      <th>bwd_input_size</th>
-      <td><p>(numeric) Input size for the backward recurrent layer</p></td>
-    </tr>
-    <tr>
-      <th>bwd_output_size</th>
-      <td><p>(numeric) Backward layer size (in other words: the forward layer output size)</p></td>
+      <th>input_size</th>
+      <td><p>(integer) Input size</p></td>
     </tr>
     <tr>
       <th>output_size</th>
-      <td><p>(numeric) Output size of the whole neural network. Default: 1</p></td>
+      <td><p>(integer) Output size (number of target variables)</p></td>
     </tr>
     <tr>
-      <th>final_activation</th>
-      <td><p>The final activation function</p></td>
+      <th>hidden_size</th>
+      <td><p>(integer) Hidden layer size</p></td>
     </tr>
     <tr>
-      <th>num_embeddings</th>
-      <td><p>Dictionary sizes for the particular features</p></td>
+      <th>h</th>
+      <td><p>(integer) Horizon size</p></td>
     </tr>
     <tr>
-      <th>embedding_dim</th>
-      <td><p>Starting from the simpliest example</p></td>
+      <th>dropout</th>
+      <td><p>(logical) Use dropout</p></td>
+    </tr>
+    <tr>
+      <th>batch_first</th>
+      <td><p>(logical) Channel order</p></td>
     </tr>
     </table>
 
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

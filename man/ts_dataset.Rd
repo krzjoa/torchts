@@ -8,6 +8,7 @@ ts_dataset(
   data,
   timesteps,
   h,
+  jump = h,
   input_columns = list(x = NULL),
   target_columns = list(y = NULL),
   sample_frac = 1,
@@ -20,6 +21,8 @@ ts_dataset(
 \item{timesteps}{(integer) Number of timesteps for input tensor}
 
 \item{h}{(integer) Forecast horizon: number of timesteps for output tensor}
+
+\item{jump}{(integer) Jump length. By default: horizon length}
 
 \item{input_columns}{(list) Output specification}
 

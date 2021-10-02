@@ -98,16 +98,10 @@
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -144,8 +138,8 @@
   <span class='va'>dropout</span>,
   timesteps <span class='op'>=</span> <span class='fl'>20</span>,
   horizon <span class='op'>=</span> <span class='fl'>1</span>,
-  layers <span class='op'>=</span> <span class='fl'>1</span>,
   optim <span class='op'>=</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/optim_adam.html'>optim_adam</a></span><span class='op'>(</span><span class='op'>)</span>,
+  validation <span class='op'>=</span> <span class='cn'>NULL</span>,
   batch_size <span class='op'>=</span> <span class='fl'>1</span>,
   epochs <span class='op'>=</span> <span class='fl'>10</span>,
   scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -156,20 +150,20 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>optim</th>
-      <td><p>An optimizer with arguments</p></td>
+      <th>formula</th>
+      <td><p>A formula describing, how to use the data</p></td>
     </tr>
     <tr>
-      <th>x</th>
-      <td><p>Input features</p></td>
+      <th>data</th>
+      <td><p>(data.frame)</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>Targets</p></td>
+      <th>learn_rate</th>
+      <td><p>(numeric) Learning rate</p></td>
     </tr>
     <tr>
-      <th>categorical_features</th>
-      <td><p>List of categorical feature columns from data.frame x</p></td>
+      <th>hidden_units</th>
+      <td><p>(integer) Number of hidden units</p></td>
     </tr>
     </table>
 

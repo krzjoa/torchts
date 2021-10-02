@@ -25,13 +25,14 @@ as_ts_dataset(
 
 \item{key}{The key column(s)}
 
-\item{timesteps}{The time seris chunk length}
+\item{timesteps}{The time series chunk length}
 
 \item{h}{Forecast horizon}
 
 \item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
 
-\item{scale}{(logical) Scale feature columns}
+\item{scale}{(logical or list) Scale feature columns. Logical value or two-element list
+with values (mean, std)}
 }
 \description{
 Create a torch dataset for time series data

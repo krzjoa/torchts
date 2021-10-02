@@ -90,4 +90,18 @@ check_recursion <- function(object, new_data){
   recursive_mode
 }
 
+#' Remove parsnip model
+#' For development purposes only
+remove_model <- function(model = "rnn"){
+  env <- parsnip:::get_model_env()
+  model_names <- grep(model, names(env), value = TRUE)
+  rm(list = model_names, envir = env)
+}
+
+
+vars_with_role <- function(parsed_formula, role){
+  parsed_formula$.var[parsed_formula$.role == role]
+}
+
+
 

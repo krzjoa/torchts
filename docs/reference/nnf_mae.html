@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>An auxilliary function to call optimizer — call_optim • torchts</title>
+<title>Mean Absolute Scaled Error — nnf_mae • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="An auxilliary function to call optimizer — call_optim" />
-<meta property="og:description" content="An auxilliary function to call optimizer" />
+<meta property="og:title" content="Mean Absolute Scaled Error — nnf_mae" />
+<meta property="og:description" content="Mean Absolute Scaled Error" />
 
 
 
@@ -121,18 +121,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>An auxilliary function to call optimizer</h1>
+    <h1>Mean Absolute Scaled Error</h1>
     
-    <div class="hidden name"><code>call_optim.Rd</code></div>
+    <div class="hidden name"><code>nnf_mae.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>An auxilliary function to call optimizer</p>
+    <p>Mean Absolute Scaled Error</p>
     </div>
 
-    <pre class="usage"><span class='fu'>call_optim</span><span class='op'>(</span><span class='va'>optim</span>, <span class='va'>params</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>nnf_mae</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>target</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>input</th>
+      <td><p>tensor (N,*) where ** means, any number of additional dimensions</p></td>
+    </tr>
+    <tr>
+      <th>target</th>
+      <td><p>tensor (N,*) , same shape as the input</p></td>
+    </tr>
+    </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Computed according to the formula:
+$$MAE = \frac{1}{n}\displaystyle\sum_{t=1}^{n}\abs{target - input}$$</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://yardstick.tidymodels.org/reference/mae.html'>mae</a></code></p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

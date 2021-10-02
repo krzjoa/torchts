@@ -48,8 +48,8 @@ rnn <- function(mode = "regression",
                 hidden_units = NULL,
                 dropout = NULL,
                 batch_size = 32,
-                stop_iter = NULL,
-                loss_reduction = NULL,
+                #stop_iter = NULL,
+                #loss_reduction = NULL,
                 scale = TRUE){
 
   args <- list(

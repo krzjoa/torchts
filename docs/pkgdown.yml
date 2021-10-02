@@ -3,9 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   data-prepare-rnn: data-prepare-rnn.html
-  missing-data: missing-data.html
-  multivariate-time-series: multivariate-time-series.html
+  parsnip-api: parsnip-api.html
   prepare-tensor: prepare-tensor.html
-  univariate-time-series: univariate-time-series.html
-last_built: 2021-09-11T20:24Z
+last_built: 2021-10-01T20:35Z
 

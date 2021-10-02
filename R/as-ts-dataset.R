@@ -32,7 +32,8 @@
 #' train_ds[1]
 #'
 #' @export
-as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL,
+as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
+                          predictor = NULL, target = NULL,
                           timesteps, h = 1, sample_frac = 1,
                           scale = TRUE){
   UseMethod("as_ts_dataset")
@@ -40,10 +41,10 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL, target = NULL
 
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, target = NULL, timesteps,
+                                     key = NULL, predictor = NULL,
+                                     target = NULL, timesteps,
                                      h = 1, sample_frac = 1,
                                      scale = TRUE){
-
 
   if (nrow(data) == 0) {
     stop("The data object is empty!")
@@ -68,13 +69,15 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   } else {
 
-    .input_columns <- list(
-      x = setdiff(colnames(data), c(key, index))
-    )
+    # .input_columns <- list(
+    #   x = setdiff(colnames(data), c(key, index))
+    # )
 
+    # TODO: possible mutiple elemtns in the list
+
+    .input_columns  <- list(x = predictor)
     .target_columns <- list(y = target)
-
-    .index_columns <- index
+    .index_columns  <- index
 
   }
 

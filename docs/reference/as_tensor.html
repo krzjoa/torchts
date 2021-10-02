@@ -112,16 +112,10 @@ creates a n-dimensional tensor with the following shape
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -176,6 +170,16 @@ When passing optional column names, function:</p><ul>
 <span class='co'># S3 method for default</span>
 <span class='fu'>as_tensor</span><span class='op'>(</span>
   <span class='va'>.data</span>,
+  dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
+  device <span class='op'>=</span> <span class='cn'>NULL</span>,
+  requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+<span class='co'># S3 method for data.frame</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span>
+  <span class='va'>.data</span>,
+  <span class='va'>...</span>,
   dtype <span class='op'>=</span> <span class='cn'>NULL</span>,
   device <span class='op'>=</span> <span class='cn'>NULL</span>,
   requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,

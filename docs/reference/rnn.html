@@ -98,16 +98,10 @@
       <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
-    </li>
-    <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
     <li>
       <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
     </li>
   </ul>
 </li>
@@ -145,6 +139,8 @@
   hidden_units <span class='op'>=</span> <span class='cn'>NULL</span>,
   dropout <span class='op'>=</span> <span class='cn'>NULL</span>,
   batch_size <span class='op'>=</span> <span class='fl'>32</span>,
+  stop_iter <span class='op'>=</span> <span class='cn'>NULL</span>,
+  loss_reduction <span class='op'>=</span> <span class='cn'>NULL</span>,
   scale <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
@@ -184,6 +180,14 @@
       <td><p>(integer) Batch size</p></td>
     </tr>
     <tr>
+      <th>stop_iter</th>
+      <td><p>Number of epochs without desired improvement to stop</p></td>
+    </tr>
+    <tr>
+      <th>loss_reduction</th>
+      <td><p>Minimal loss reduction</p></td>
+    </tr>
+    <tr>
       <th>scale</th>
       <td><p>(logical) Scale input features</p></td>
     </tr>
@@ -203,7 +207,7 @@
  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, temp <span class='op'>=</span> <span class='va'>tmax_daily</span><span class='op'>)</span>
 
 <span class='va'>data_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_time_split</a></span><span class='op'>(</span><span class='va'>tarnow_temp</span><span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='error'>Error: `in_id` must be a positive integer vector.</span></div><div class='input'>
 <span class='va'>rnn_model</span> <span class='op'>&lt;-</span>
    <span class='fu'>rnn</span><span class='op'>(</span>
      timesteps <span class='op'>=</span> <span class='fl'>20</span>,
@@ -211,11 +215,11 @@
      epochs <span class='op'>=</span> <span class='fl'>10</span>,
      hidden_units <span class='op'>=</span> <span class='fl'>32</span>
    <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in rnn(timesteps = 20, horizon = 1, epochs = 10, hidden_units = 32): nieużywane argumenty (timesteps = 20, horizon = 1)</span></div><div class='input'>
+
 <span class='va'>rnn_model</span> <span class='op'>&lt;-</span>
    <span class='va'>rnn_model</span> <span class='op'>%&gt;%</span>
    <span class='fu'><a href='https://generics.r-lib.org/reference/fit.html'>fit</a></span><span class='op'>(</span><span class='va'>temp</span> <span class='op'>~</span> <span class='va'>date</span>, data <span class='op'>=</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in fit(., temp ~ date, data = training(data_split)): nie znaleziono obiektu 'rnn_model'</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Engine set to `torchts`.</span></div><div class='output co'>#&gt; <span class='error'>Error in analysis(x): nie znaleziono obiektu 'data_split'</span></div><div class='input'>
 
 </div></pre>
   </div>

@@ -27,9 +27,10 @@
 #' View(torchts_parse_formula(min_temp ~ max_temp + date, tarnow_temp))
 torchts_parse_formula <- function(formula, data){
 
-  #' TODO: simplify?
+  # TODO: simplify?
 
   date_types <- c("Date", "POSIXt", "POSIXlt", "POSIXct")
+  available_cols <- colnames(data)
 
   formula_terms <- terms(formula, data = data)
   lhs <- as.character(rlang::f_lhs(formula))
@@ -102,6 +103,18 @@ torchts_parse_formula <- function(formula, data){
     output <-
       bind_rows(output, .predictors)
   }
+
+
+  # Checking, if all the variable in the formula appear in the data
+  if (any(is.na(output$.type))) {
+    vars_not_in_data <- unique(output$.var[is.na(output$.type)])
+    vars_not_in_data <- paste(vars_not_in_data, sep = ", ")
+    stop(sprintf(
+      "Following variables does not appear in the data: %s",
+      vars_not_in_data
+    ))
+  }
+
 
   output
 }

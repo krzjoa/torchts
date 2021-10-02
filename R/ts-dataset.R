@@ -38,6 +38,9 @@ ts_dataset <- torch::dataset(
                         target_columns = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
 
+    if (dev)
+      browser()
+
     # TODO: check data types
     # TODO: check, if jump works correctly
     self$data           <- data
@@ -56,7 +59,7 @@ ts_dataset <- torch::dataset(
       size = n * sample_frac
     ))
 
-    #' WARNING: columns names are supposed to be in such order
+    # WARNING: columns names are supposed to be in such order
     self$col_map <- unique(unlist(input_columns))
 
     # If scale is a list and contains two values: mean and std
@@ -72,6 +75,8 @@ ts_dataset <- torch::dataset(
       self$mean    <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
       self$std     <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
       self$scale   <- TRUE
+    } else {
+      self$scale <- FALSE
     }
 
   },
