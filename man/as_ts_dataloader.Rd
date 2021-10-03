@@ -9,6 +9,7 @@ as_ts_dataloader(
   formula,
   index = NULL,
   key = NULL,
+  predictors = NULL,
   target = NULL,
   timesteps,
   batch_size,

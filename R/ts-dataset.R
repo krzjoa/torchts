@@ -38,9 +38,6 @@ ts_dataset <- torch::dataset(
                         target_columns = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
 
-    if (dev)
-      browser()
-
     # TODO: check data types
     # TODO: check, if jump works correctly
     self$data           <- data

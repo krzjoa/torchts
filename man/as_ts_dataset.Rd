@@ -9,6 +9,7 @@ as_ts_dataset(
   formula,
   index = NULL,
   key = NULL,
+  predictor = NULL,
   target = NULL,
   timesteps,
   h = 1,

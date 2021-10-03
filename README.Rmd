@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 [![Documentation](https://img.shields.io/badge/documentation-path.chain-orange.svg?colorB=E91E63)](https://krzjoa.github.io/torchts/)
 [![Travis build status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="kjoachimiak" data-color="#FFDD00" data-emoji=""  data-font="Cookie" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#000000" data-coffee-color="#ffffff" ></script>
+<a href="https://www.buymeacoffee.com/kjoachimiak" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 <!-- badges: end -->
 
 > Time series models with torch
@@ -46,28 +46,29 @@ library(rsample)
 library(dplyr, warn.conflicts = FALSE)
 library(parsnip)
 
-max_temp_tarnow <- 
-  poland_weather %>% 
+tarnow_temp <- 
+  weather_pl %>% 
   filter(station == "TRN") %>% 
-  select(date, temp = tmax_daily)
+  select(date, tmax_daily)
 
 # Splitting on training and test
-data_split <- initial_time_split(max_temp_tarnow)
+data_split <- 
+  time_series_split(
+    tarnow_temp, date, 
+    initial = "18 years",
+    assess  = "2 years", 
+    lag     = 20
+  )
 
 # Training 
-model <- 
+rnn_model <- 
   rnn(epochs = 3, hidden_units = 32) %>% 
-  fit(temp ~ temp + index(date), 
+  fit(tmax_daily ~ date, 
       data = training(data_split))
 
 prediction <-
-  model %>%
+  rnn_model %>%
   predict(new_data = testing(data_split))
-
-View(bind_cols(
-  testing(data_split), prediction$.pred
-))
-
 
 ```
 
@@ -79,8 +80,6 @@ are only used to determine dimension sizes - they are removed after that
 and are not present in the final tensor.
 
 ```{r example}
-library(torchts)
-suppressMessages(library(dplyr))
 data("mts-examples", package="MTS")
 
 dim(ibmspko)

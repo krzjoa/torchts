@@ -3,15 +3,19 @@
 
 # torchts
 
-> Time series models with torch
-
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/torchts)](https://CRAN.R-project.org/package=torchts)
+[![Documentation](https://img.shields.io/badge/documentation-path.chain-orange.svg?colorB=E91E63)](https://krzjoa.github.io/torchts/)
 [![Travis build
 status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
+<a href="https://www.buymeacoffee.com/kjoachimiak" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 <!-- badges: end -->
+
+> Time series models with torch
 
 ## Installation
 
@@ -33,53 +37,2598 @@ devtools::install_github("krzjoa/torchts")
 library(torchts)
 library(torch)
 library(rsample)
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+library(dplyr, warn.conflicts = FALSE)
 library(parsnip)
 
-data_set <-
-  read.csv("https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv")
+max_temp_tarnow <- 
+  weather_pl %>% 
+  filter(station == "TRN") %>% 
+  select(date, tmax_daily)
 
 # Splitting on training and test
-data_split <- initial_time_split(data_set)
+data_split <- initial_time_split(max_temp_tarnow)
 
 # Training 
 model <- 
-  rnn(epochs = 10, hidden_units = 32) %>% 
-  fit(Temp ~ Temp + index(Date), 
+  rnn(epochs = 3, hidden_units = 32) %>% 
+  fit(tmax_daily ~ date, 
       data = training(data_split))
 #> Warning: Engine set to `torchts`.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (18,1) that is different to the input size
+#> (18,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
 #> 
-#> Epoch 1, training: loss: 95.42544 
+#> Epoch 1 | training: 219.32616
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (18,1) that is different to the input size
+#> (18,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
 #> 
-#> Epoch 2, training: loss: 48.88457 
+#> Epoch 2 | training: 127.22923
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (32,1) that is different to the input size
+#> (32,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
+#> Warning in target$shape == input$shape: długość dłuszego obiektu nie jest
+#> wielokrotnością długości krótszego obiektu
+#> Warning: Using a target size (18,1) that is different to the input size
+#> (18,1,1). This will likely lead to incorrect results due to broadcasting. Please
+#> ensure they have the same size.
 #> 
-#> Epoch 3, training: loss: 29.60288 
-#> 
-#> Epoch 4, training: loss: 21.21282 
-#> 
-#> Epoch 5, training: loss: 16.75105 
-#> 
-#> Epoch 6, training: loss: 13.32213 
-#> 
-#> Epoch 7, training: loss: 10.93875 
-#> 
-#> Epoch 8, training: loss: 9.33267 
-#> 
-#> Epoch 9, training: loss: 8.31204 
-#> 
-#> Epoch 10, training: loss: 7.67917
+#> Epoch 3 | training: 91.92129
 
-# prediction <- 
-#   model %>% 
-#   predict(new_data = testing(data_split))
+prediction <-
+  model %>%
+  predict(new_data = testing(data_split))
 ```
 
 ### Transforming data.frames to tensors

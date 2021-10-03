@@ -3,6 +3,7 @@
 \name{as_tensor}
 \alias{as_tensor}
 \alias{as_tensor.default}
+\alias{as_tensor.torch_tensor}
 \alias{as_tensor.data.frame}
 \alias{as_tensor.ts}
 \title{Convert an object to tensor}
@@ -23,6 +24,8 @@ as_tensor(
   requires_grad = FALSE,
   pin_memory = FALSE
 )
+
+\method{as_tensor}{torch_tensor}(.data, ...)
 
 \method{as_tensor}{data.frame}(
   .data,

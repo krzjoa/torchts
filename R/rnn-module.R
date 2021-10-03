@@ -8,7 +8,7 @@
 #' @param dropout (logical) Use dropout
 #' @param batch_first (logical) Channel order
 #'
-#'
+#' @importFrom torch nn_gru nn_linear
 #'
 #' @export
 model_rnn <- torch::nn_module(
@@ -17,7 +17,8 @@ model_rnn <- torch::nn_module(
 
   initialize = function(layer = nn_gru,
                         input_size, output_size,
-                        hidden_size, h, dropout = 0, batch_first = TRUE){
+                        hidden_size, h,
+                        dropout = 0, batch_first = TRUE){
 
     self$rnn <-
       layer(
