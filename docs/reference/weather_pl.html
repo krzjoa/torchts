@@ -99,19 +99,21 @@ A subset of columns has been selected and date column was added." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
       <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
-    </li>
-    <li>
-      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -126,13 +128,13 @@ A subset of columns has been selected and date column was added." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Weather data from Polish "poles of extreme temperatures" in 2001-2020</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/data-weather-pl.R'><code>R/data-weather-pl.R</code></a></small>
     <div class="hidden name"><code>weather_pl.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>The data comes from IMGW (Institute of Meteorology and Water Management) and
-was downloaded using the <code>climate</code> package. Two places have been chosen:</p><ul>
+was downloaded using the climate package. Two places have been chosen:</p><ul>
 <li><p>TRN - Tarnów ("pole of warmth")</p></li>
 <li><p>SWK - Suwałki ("pole of cold")</p></li>
 </ul><p>A subset of columns has been selected and <code>date</code> column was added.</p>
@@ -158,6 +160,11 @@ was downloaded using the <code>climate</code> package. Two places have been chos
 
 </dl>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://github.com/bczernecki/climate'>climate</a>
+<a href='https://danepubliczne.imgw.pl/'>IMGW public data</a>
+<a href='https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/'>IMGW public data (direct access to folders)</a></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># Head of weather_pl</span>

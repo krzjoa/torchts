@@ -94,19 +94,21 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
       <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
-    </li>
-    <li>
-      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -200,7 +202,7 @@
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-preparing-data" class="hasAnchor"><a href="#section-preparing-data" class="anchor"></a>Preparing data</h2>
+          <h2 id="section-data-transformations" class="hasAnchor"><a href="#section-data-transformations" class="anchor"></a>Data transformations</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -233,11 +235,17 @@
           <p><code><a href="as_ts_dataloader.html">as_ts_dataloader()</a></code> </p>
         </td>
         <td><p>Quick shortcut to create a torch dataloader based on the given dataset</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as.vector.torch_tensor.html">as.vector(<i>&lt;torch_tensor&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Convert <code>torch_tensor</code> to a vector</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-metrics-loss-functions" class="hasAnchor"><a href="#section-metrics-loss-functions" class="anchor"></a>Metrics / Loss Functions</h2>
+          <h2 id="section-metrics" class="hasAnchor"><a href="#section-metrics" class="anchor"></a>Metrics</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -277,6 +285,12 @@
           <p><code><a href="weather_pl.html">weather_pl</a></code> </p>
         </td>
         <td><p>Weather data from Polish "poles of extreme temperatures" in 2001-2020</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="tiny_m5.html">tiny_m5</a></code> </p>
+        </td>
+        <td><p>A prepared subset from M5 Walmart Challenge Dataset in one data frame</p></td>
       </tr>
     </tbody>
     </table>

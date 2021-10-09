@@ -54,18 +54,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
       <a href="articles/parsnip-api.html">Multivariate Time Series</a>
     </li>
-    <li>
-      <a href="articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -80,11 +84,11 @@
 <div id="torchts" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#torchts" class="anchor"></a>torchts</h1></div>
+<!-- badges: start -->
+
 <blockquote>
 <p>Time series models with torch</p>
 </blockquote>
-<!-- badges: start -->
-<p><a href="https://travis-ci.com/krzjoa/torchts"><img src="https://travis-ci.com/krzjoa/torchts.svg?branch=master" alt="Travis build status"></a> <a href="https://ci.appveyor.com/project/krzjoa/torchts"><img src="https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&amp;svg=true" alt="AppVeyor build status"></a> <!-- badges: end --></p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -102,62 +106,36 @@
 <h2 class="hasAnchor">
 <a href="#parsnip-models" class="anchor"></a>parsnip models</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">torchts</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/krzjoa/torchts">torchts</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://torch.mlverse.org/docs">torch</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsample.tidymodels.org">rsample</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://parsnip.tidymodels.org">parsnip</a></span><span class="op">)</span>
 
-<span class="va">data_set</span> <span class="op">&lt;-</span>
-  <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"https://raw.githubusercontent.com/jbrownlee/Datasets/master/daily-min-temperatures.csv"</span><span class="op">)</span>
+<span class="va">max_temp_tarnow</span> <span class="op">&lt;-</span> 
+  <span class="va">weather_pl</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">station</span> <span class="op">==</span> <span class="st">"TRN"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">tmax_daily</span><span class="op">)</span>
 
 <span class="co"># Splitting on training and test</span>
-<span class="va">data_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">initial_time_split</a></span><span class="op">(</span><span class="va">data_set</span><span class="op">)</span>
+<span class="va">data_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">initial_time_split</a></span><span class="op">(</span><span class="va">max_temp_tarnow</span><span class="op">)</span>
 
 <span class="co"># Training </span>
 <span class="va">model</span> <span class="op">&lt;-</span> 
-  <span class="fu"><a href="reference/rnn.html">rnn</a></span><span class="op">(</span>epochs <span class="op">=</span> <span class="fl">10</span>, hidden_units <span class="op">=</span> <span class="fl">32</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://generics.r-lib.org/reference/fit.html">fit</a></span><span class="op">(</span><span class="va">Temp</span> <span class="op">~</span> <span class="va">Temp</span> <span class="op">+</span> <span class="fu">index</span><span class="op">(</span><span class="va">Date</span><span class="op">)</span>, 
+  <span class="fu"><a href="reference/rnn.html">rnn</a></span><span class="op">(</span>epochs <span class="op">=</span> <span class="fl">3</span>, hidden_units <span class="op">=</span> <span class="fl">32</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://generics.r-lib.org/reference/fit.html">fit</a></span><span class="op">(</span><span class="va">tmax_daily</span> <span class="op">~</span> <span class="va">date</span>, 
       data <span class="op">=</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">training</a></span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Warning: Engine set to `torchts`.</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 1, training: loss: 95.42544 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 2, training: loss: 48.88457 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 3, training: loss: 29.60288 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 4, training: loss: 21.21282 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 5, training: loss: 16.75105 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 6, training: loss: 13.32213 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 7, training: loss: 10.93875 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 8, training: loss: 9.33267 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 9, training: loss: 8.31204 </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Epoch 10, training: loss: 7.67917</span>
 
-<span class="co"># prediction &lt;- </span>
-<span class="co">#   model %&gt;% </span>
-<span class="co">#   predict(new_data = testing(data_split))</span></pre></div>
+<span class="va">prediction</span> <span class="op">&lt;-</span>
+  <span class="va">model</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span>new_data <span class="op">=</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">testing</a></span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span><span class="op">)</span></pre></div>
 <div id="transforming-dataframes-to-tensors" class="section level3">
 <h3 class="hasAnchor">
 <a href="#transforming-dataframes-to-tensors" class="anchor"></a>Transforming data.frames to tensors</h3>
 <p>In <code>as_tensor</code> function we can specify columns, that are used to create a tensor out of the input <code>data.frame</code>. Listed column names are only used to determine dimension sizes - they are removed after that and are not present in the final tensor.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">torchts</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/krzjoa/torchts">torchts</a></span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"mts-examples"</span>, package<span class="op">=</span><span class="st">"MTS"</span><span class="op">)</span>
 
@@ -193,7 +171,16 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
+    <div class="links">
+<h2>Links</h2>
+<ul class="list-unstyled">
+<li>Browse source code at <br><a href="https://github.com/krzjoa/torchts/">https://​github.com/​krzjoa/​torchts/​</a>
+</li>
+<li>Report a bug at <br><a href="https://github.com/krzjoa/torchts/issues">https://​github.com/​krzjoa/​torchts/​issues</a>
+</li>
+</ul>
+</div>
+<div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -208,7 +195,17 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://CRAN.R-project.org/package=torchts"><img src="https://www.r-pkg.org/badges/version/torchts" alt="CRAN status"></a></li>
+<li><a href="https://krzjoa.github.io/torchts/"><img src="https://img.shields.io/badge/documentation-path.chain-orange.svg?colorB=E91E63" alt="Documentation"></a></li>
+<li><a href="https://travis-ci.com/krzjoa/torchts"><img src="https://travis-ci.com/krzjoa/torchts.svg?branch=master" alt="Travis build status"></a></li>
+<li><a href="https://ci.appveyor.com/project/krzjoa/torchts"><img src="https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&amp;svg=true" alt="AppVeyor build status"></a></li>
+<li><a href="https://www.buymeacoffee.com/kjoachimiak"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="“Buy Me A Coffee”"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 

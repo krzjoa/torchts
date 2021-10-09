@@ -6,11 +6,9 @@ library(tsintermittent)
 library(tsutils)
 library(ggplot2)
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 #                                  LOADING DATA                                #
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-
 
 # sales_long <-
 #   fst::read_fst(here::here("data-dev/walmart/sales_long.fst"))

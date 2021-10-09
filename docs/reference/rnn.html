@@ -95,19 +95,21 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
       <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
-    </li>
-    <li>
-      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -122,7 +124,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>General interface to recurrent neural network models</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/rnn-parsnip.R'><code>R/rnn-parsnip.R</code></a></small>
     <div class="hidden name"><code>rnn.Rd</code></div>
     </div>
 
@@ -139,8 +141,6 @@
   hidden_units <span class='op'>=</span> <span class='cn'>NULL</span>,
   dropout <span class='op'>=</span> <span class='cn'>NULL</span>,
   batch_size <span class='op'>=</span> <span class='fl'>32</span>,
-  stop_iter <span class='op'>=</span> <span class='cn'>NULL</span>,
-  loss_reduction <span class='op'>=</span> <span class='cn'>NULL</span>,
   scale <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
 
@@ -180,6 +180,10 @@
       <td><p>(integer) Batch size</p></td>
     </tr>
     <tr>
+      <th>scale</th>
+      <td><p>(logical) Scale input features</p></td>
+    </tr>
+    <tr>
       <th>stop_iter</th>
       <td><p>Number of epochs without desired improvement to stop</p></td>
     </tr>
@@ -187,15 +191,11 @@
       <th>loss_reduction</th>
       <td><p>Minimal loss reduction</p></td>
     </tr>
-    <tr>
-      <th>scale</th>
-      <td><p>(logical) Scale input features</p></td>
-    </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>torchts</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://parsnip.tidymodels.org'>parsnip</a></span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>

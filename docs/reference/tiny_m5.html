@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Training helper — train_batch • torchts</title>
+<title>A prepared subset from M5 Walmart Challenge Dataset in one data frame — tiny_m5 • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Training helper — train_batch" />
-<meta property="og:description" content="Training helper" />
+<meta property="og:title" content="A prepared subset from M5 Walmart Challenge Dataset in one data frame — tiny_m5" />
+<meta property="og:description" content="A pieced of data cut from the training dataset used in the M5 challenges on Kaggle.
+M5 is a challenge from a series organized by Spyros Makridakis." />
 
 
 
@@ -123,19 +124,76 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Training helper</h1>
-    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/batch-helpers.R'><code>R/batch-helpers.R</code></a></small>
-    <div class="hidden name"><code>train_batch.Rd</code></div>
+    <h1>A prepared subset from M5 Walmart Challenge Dataset in one data frame</h1>
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/data-tiny-m5.R'><code>R/data-tiny-m5.R</code></a></small>
+    <div class="hidden name"><code>tiny_m5.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Training helper</p>
+    <p>A pieced of data cut from the training dataset used in the M5 challenges on Kaggle.
+M5 is a challenge from a series organized by Spyros Makridakis.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>train_batch</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>target</span>, <span class='va'>net</span>, <span class='va'>optimizer</span>, loss_fun <span class='op'>=</span> <span class='va'>nnf_mse_loss</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>tiny_m5</span></pre>
 
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
+    
+<dl>
+<dt>item_id</dt><dd><p>The id of the product</p></dd>
+<dt>dept_id</dt><dd><p>The id of the department the product belongs to</p></dd>
+<dt>cat_id</dt><dd><p>The id of the category the product belongs to</p></dd>
+<dt>store_id</dt><dd><p>The id of the store where the product is sold</p></dd>
+<dt>state_id</dt><dd><p>The State where the store is located</p></dd>
+<dt>value</dt><dd><p>The number of sold units</p></dd>
+<dt>date</dt><dd><p>The date in a “y-m-d” format</p></dd>
+<dt>wm_yr_wk</dt><dd><p>The id of the week the date belongs to</p></dd>
+<dt>weekday</dt><dd><p>The type of the day (Saturday, Sunday, …, Friday)</p></dd>
+<dt>wday</dt><dd><p>The id of the weekday, starting from Saturday</p></dd>
+<dt>month</dt><dd><p>The month of the date</p></dd>
+<dt>year</dt><dd><p>The year of the date</p></dd>
+<dt>event_name_1</dt><dd><p>If the date includes an event, the name of this event</p></dd>
+<dt>event_type_1</dt><dd><p>If the date includes an event, the type of this event</p></dd>
+<dt>event_name_2</dt><dd><p>If the date includes a second event, the name of this event</p></dd>
+<dt>event_type_2</dt><dd><p>If the date includes a second event, the type of this event</p></dd>
+<dt>snap</dt><dd><p>A binary variable (0 or 1) indicating whether the stores of CA, TX or WI allow SNAP1 purchases on the examined date. 1 indicates that SNAP purchases are allowed</p></dd>
+<dt>sell_price</dt><dd><p>he price of the product for the given week/store.
+The price is provided per week (average across seven days). If not available, this means that the product was not sold during the examined week.
+Note that although prices are constant at weekly basis, they may change through time (both training and test set)</p></dd>
+
+</dl>
+
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><a href='https://www.kaggle.com/c/m5-forecasting-accuracy'>M5 Forecasting - Accuracy</a>
+<a href='https://www.kaggle.com/c/m5-forecasting-uncertainty'>M5 Forecasting - Uncertainty</a>
+<a href='https://www.sciencedirect.com/science/article/pii/S0169207021001187'>The M5 competition: Background, organization, and implementation</a></p></div>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># Head of tiny_m5</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>tiny_m5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;         item_id   dept_id  cat_id store_id state_id value       date wm_yr_wk
+#&gt; 1 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-01-29    11101
+#&gt; 2 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-01-30    11101
+#&gt; 3 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-01-31    11101
+#&gt; 4 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-02-01    11101
+#&gt; 5 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-02-02    11101
+#&gt; 6 HOBBIES_1_158 HOBBIES_1 HOBBIES     CA_1       CA     0 2011-02-03    11101
+#&gt;     weekday wday month year event_name_1 event_type_1 event_name_2 event_type_2
+#&gt; 1  Saturday    1     1 2011                                                    
+#&gt; 2    Sunday    2     1 2011                                                    
+#&gt; 3    Monday    3     1 2011                                                    
+#&gt; 4   Tuesday    4     2 2011                                                    
+#&gt; 5 Wednesday    5     2 2011                                                    
+#&gt; 6  Thursday    6     2 2011                                                    
+#&gt;   snap sell_price
+#&gt; 1    0         NA
+#&gt; 2    0         NA
+#&gt; 3    0         NA
+#&gt; 4    1         NA
+#&gt; 5    1         NA
+#&gt; 6    1         NA</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

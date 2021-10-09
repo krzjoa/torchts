@@ -109,19 +109,21 @@ creates a n-dimensional tensor with the following shape
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
       <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
-    </li>
-    <li>
-      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -136,7 +138,7 @@ creates a n-dimensional tensor with the following shape
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Convert an object to tensor</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/as-tensor.R'><code>R/as-tensor.R</code></a></small>
     <div class="hidden name"><code>as_tensor.Rd</code></div>
     </div>
 
@@ -175,6 +177,9 @@ When passing optional column names, function:</p><ul>
   requires_grad <span class='op'>=</span> <span class='cn'>FALSE</span>,
   pin_memory <span class='op'>=</span> <span class='cn'>FALSE</span>
 <span class='op'>)</span>
+
+<span class='co'># S3 method for torch_tensor</span>
+<span class='fu'>as_tensor</span><span class='op'>(</span><span class='va'>.data</span>, <span class='va'>...</span><span class='op'>)</span>
 
 <span class='co'># S3 method for data.frame</span>
 <span class='fu'>as_tensor</span><span class='op'>(</span>
@@ -265,11 +270,13 @@ When passing optional column names, function:</p><ul>
 <span class='co'># Transformation with column-wise data wrapping</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Dołączanie pakietu: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>Następujące obiekty zostały zakryte z ‘package:stats’:</span>
+#&gt; <span class='message'>Attaching package: ‘dplyr’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:testthat’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>Następujące obiekty zostały zakryte z ‘package:base’:</span>
+#&gt; <span class='message'>    matches</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
 #&gt; <span class='message'></span>
-#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>torchts</span><span class='op'>)</span>
+#&gt; <span class='message'>    filter, lag</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:base’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    intersect, setdiff, setequal, union</span></div><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
 
 <span class='co'># ts class - default</span>
 <span class='va'>air_passengers</span> <span class='op'>&lt;-</span> <span class='fu'>as_tensor</span><span class='op'>(</span><span class='va'>AirPassengers</span><span class='op'>)</span>

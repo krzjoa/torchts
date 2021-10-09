@@ -1,7 +1,7 @@
 #' Weather data from Polish "poles of extreme temperatures" in 2001-2020
 #'
 #' The data comes from IMGW (Institute of Meteorology and Water Management) and
-#' was downloaded using the `climate` package. Two places have been chosen:
+#' was downloaded using the [climate] package. Two places have been chosen:
 #' \itemize{
 #' \item{TRN - Tarnów ("pole of warmth")}
 #' \item{SWK - Suwałki ("pole of cold")}
@@ -21,6 +21,11 @@
 #' \item{rr_nightime}{Total precipitation during night [mm]}
 #' \item{press_mean_daily}{Daily mean pressure at station level [hPa]}
 #' }
+#'
+#' @seealso
+#' [climate](https://github.com/bczernecki/climate)
+#' [IMGW public data](https://danepubliczne.imgw.pl/)
+#' [IMGW public data (direct access to folders)](https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/)
 #'
 #' @examples
 #' # Head of weather_pl

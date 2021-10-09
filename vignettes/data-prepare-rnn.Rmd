@@ -1,8 +1,8 @@
 ---
-title: "Preparing data for RNN models"
+title: "Preparing data for recurrent models"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Preparing data for RNN models}
+  %\VignetteIndexEntry{Preparing data for recurrent models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,49 +15,34 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(magrittr)
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 library(torch)
 library(torchts)
 ```
 
-## Downloading M5 challenge data set
-```{r downloading.data}
-# Downloading Walmart data
-# Walmart data
-```
+## Look at the `tiny_m5`
 
-The M5 challenge data set is quite large, so it will be good to reduce
-the input data frame.
+If you practice time series modeling, you probably may hear about the M5 challenge by [Spyros Makridakis](https://en.wikipedia.org/wiki/Spyros_Makridakis), hosted on Kaggle.
+It's an excellent data set, I we want to play with demand time series. The whole dataset is really large, so we rather can 
+use a subset to demonstrate, how to work with such data.
 
-
-## Data Wrangling
 ```{r preparing.data}
-walmart_foods_ca1_prepared <-
-  fst::read_fst("../data-dev/walmart/walmart_foods_ca1_prepared.fst")
+unique(tiny_m5$store_id)
 
-experiment_data <-
-  walmart_foods_ca1_prepared %>%
-  filter(dept_id == "FOODS_1") %>%
-  select(-snap_TX, -snap_WI) %>%
-  select(item_id, d, wm_yr_wk, id, dept_id, value,
-         date, wday, month, year, event_name_1,
-         event_type_1, event_name_2, event_type_2, snap_CA,
-         sell_price)
-
-experiment_data <-
-  experiment_data %>%
-  mutate(date = lubridate::as_date(date)) %>%
-  mutate(across(where(is.factor), as.character))
-
-experiment_data <-
-  experiment_data %>%
-  select(item_id, date,value, wday,
-         month, year, snap_CA, sell_price) %>% 
+ca_1_data <-
+  tiny_m5 %>% 
+  filter(store_id == "CA_1") %>% 
+  select(item_id, store_id, date, value, wday,
+         month, year, snap, sell_price) %>% 
     arrange(item_id, date)
-```
 
-We assume that we want to create a **three-dimensional tensor**, the each dimension of 
+ca_1_data %>% 
+  group_by(item_id) %>% 
+  summarise(n = n()) 
+
+skimr::skim(ca_1_data)
+```
+We want to create a **three-dimensional tensor**, the each dimension of 
 presents:
 
 * **item**
@@ -68,60 +53,15 @@ This assumption makes us to keep the data "complete", i.e. every single item tim
 has to have the same **length**. The first dimension is "free", and the completeness of 
 the last dimension is guaranteed by the data.frame structure itself (each row has the same number of columns).
 
+As we can observed in the output of `skim` function, there are time series with missing data.
+
 For simplicity's sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we'll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we'll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.
 
-
-```{r filtering.data}
-data_summary <- 
-  experiment_data %>% 
-    group_by(item_id) %>% 
-    summarise(
-      len = n(),
-      first_date = min(date),
-      last_date  = max(date)
-    ) %>% 
-    ungroup() %>% 
-    group_by(len, first_date, last_date) %>% 
-    summarise(
-      n = n(),
-      item_id = list(item_id)
-    ) %>% 
-    arrange(desc(n))
-
-print(head(data_summary))
-```
-We choose a subset consisting of 101 products - each product has:
-
- * lenght: 1913 days
- * first_date: 2011-01-29
- * last_date: 2016-04-24
-
-If we check the tme difference between these two dates
-
-```{r time.diff}
-as.Date('2016-04-24') - as.Date('2011-01-29')
-```
-we'll can see that there are no gaps in the subset we've just selected, so 
-we have not to do any additional filtering or aligning.
-
-```{r data.subset}
-selected_items <- 
-  data_summary[1, ] %>% 
-  pull(item_id) %>% 
-  unlist()
-
-experiment_data <- 
-  experiment_data %>% 
-  filter(item_id %in% selected_items)
-
-print(nrow(experiment_data))
-```
-Let's take a look on the data we've already prepared.
 
 ## Transorming to tensor
 
 ```{r prepared.data}
-head(experiment_data)
+head(ca_1_data)
 ```
 The first column, `item_id`, describes the item we already the item and the second one (`date`) - a current time step. These two columns will be used to create a data "fold", i.e. form a 3D tensor. As we mentioned above, the completness of the time moments is crucial to obtain a proper result from this transformation.
 
@@ -131,97 +71,19 @@ If it comes, to the rest of columns:
 * `wday` is a categorical variable
 * `month` is a categorical variable
 * `year` *can* be treated as categorical, but in this case we may remove this variable and introduce a counter instead
-* `snap_CA` is a categorical variable
+* `snap` is a categorical variable
 * `sell_price` is a real-valued variable
 
 Summarizing, we have three categorical variables, which should be represented in some way.
 The most efficient manner to represent categorical variables in neural network is **embedding** layer.  
 In fact, it works similar to a **linear** (**dense**)  layer. The difference is that instead of performing resource-consuming dot product between weight matrix and the input one-hot encoded sparse matrix, we just use an index to select "right" row from the weight matrix.
 
-Because of this index-based nature of embedding, we need to transform all the categorical features to 1-n to range.
-```{r unique.cat}
-experiment_data %>% 
-  select(wday, month, snap_CA) %>% 
-  sapply(unique)
-```
-In this case the only variable we need to recode is snap_Ca.
-
-```{r recode.var}
-experiment_data <- 
-  experiment_data %>% 
-  mutate(snap_CA = ifelse(snap_CA == 0, 1, 2))
-```
-
-```{r dict.size}
-d_size <-
-  experiment_data %>%
-  select(
-    wday, month,
-    snap_CA
-  ) %>%
-  dict_size()
-```
-
 Let's transform tabular data into tensor. A good way to do it is to use 
 a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
 is a `data.frame` object, which we want to transform into a `torch_tensor`.
 
-```{r prepare.tensor}
-product_data <- 
-  experiment_data %>% 
-  filter(item_id == "FOODS_1_001") %>% 
-  mutate(shifted_value = lag(value, 25))
-
-train_data <- 
-  product_data %>% 
-  head(nrow(.) - 50) %>% 
-  na.omit()
-
-test_data <- 
-  product_data %>% 
-  tail(50)
-
-# Train tensors
-X_train_tensor_cat <-
-  train_data %>%
-  select(
-    item_id, date, wday, month
-  ) %>%
-  filter(item_id == "FOODS_1_001") %>% 
-  as_tensor(item_id, date, dtype = torch_long())
-
-X_train_tensor_rest <- 
-  train_data %>%
-  select(
-    item_id, date, shifted_value 
-  ) %>%
-  filter(item_id == "FOODS_1_001") %>% 
-  as_tensor(item_id, date, dtype = torch_long())
-
-y_tensor <-
-  train_data %>%
-  select(item_id, date, value) %>%
-  filter(item_id == "FOODS_1_001") %>% 
-  as_tensor(item_id, date, dtype = torch_float())
-
-## Test data
-X_test_tensor_cat <-
-  test_data %>%
-  select(
-    item_id, date, wday, month
-  ) %>%
-  filter(item_id == "FOODS_1_001") %>% 
-  as_tensor(item_id, date, dtype = torch_long())
-
-X_test_tensor_rest <- 
-  test_data %>%
-  select(
-    item_id, date, shifted_value
-  ) %>%
-  filter(item_id == "FOODS_1_001") %>% 
-  as_tensor(item_id, date, dtype = torch_long())
-```
+## as_ts_dataset
 
 
-
+## as_ts_dataloaders
 

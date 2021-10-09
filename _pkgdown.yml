@@ -22,7 +22,7 @@ reference:
   - ts_dataset
   - as_ts_dataset
   - as_ts_dataloader
-  - as.vector
+  - as.vector.torch_tensor
 - title: Metrics
   contents:
   - nnf_mape
@@ -30,3 +30,4 @@ reference:
 - title: Data
   contents:
   - weather_pl
+  - tiny_m5

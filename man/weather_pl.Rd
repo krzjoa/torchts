@@ -23,7 +23,7 @@ weather_pl
 }
 \description{
 The data comes from IMGW (Institute of Meteorology and Water Management) and
-was downloaded using the \code{climate} package. Two places have been chosen:
+was downloaded using the \link{climate} package. Two places have been chosen:
 \itemize{
 \item{TRN - Tarnów ("pole of warmth")}
 \item{SWK - Suwałki ("pole of cold")}
@@ -33,5 +33,10 @@ A subset of columns has been selected and \code{date} column was added.
 \examples{
 # Head of weather_pl
 head(weather_pl)
+}
+\seealso{
+\href{https://github.com/bczernecki/climate}{climate}
+\href{https://danepubliczne.imgw.pl/}{IMGW public data}
+\href{https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/}{IMGW public data (direct access to folders)}
 }
 \keyword{datasets}
