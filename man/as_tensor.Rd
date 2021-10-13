@@ -9,7 +9,7 @@
 \title{Convert an object to tensor}
 \usage{
 as_tensor(
-  .data,
+  data,
   ...,
   dtype = NULL,
   device = NULL,
@@ -18,17 +18,17 @@ as_tensor(
 )
 
 \method{as_tensor}{default}(
-  .data,
+  data,
   dtype = NULL,
   device = NULL,
   requires_grad = FALSE,
   pin_memory = FALSE
 )
 
-\method{as_tensor}{torch_tensor}(.data, ...)
+\method{as_tensor}{torch_tensor}(data, ...)
 
 \method{as_tensor}{data.frame}(
-  .data,
+  data,
   ...,
   dtype = NULL,
   device = NULL,
@@ -37,7 +37,7 @@ as_tensor(
 )
 
 \method{as_tensor}{ts}(
-  .data,
+  data,
   by = NULL,
   dtype = NULL,
   device = NULL,
@@ -46,9 +46,9 @@ as_tensor(
 )
 }
 \arguments{
-\item{.data}{A data.frame-like object}
+\item{data}{A data.frame-like object, \code{array}, \code{ts} or \code{torch_tensor}}
 
-\item{...}{Column names to wrap the data.frame-like object}
+\item{...}{Column names to reshape the data.frame-like object into a n-dimensional tensor}
 
 \item{dtype}{A torch_dtype instance}
 
@@ -57,6 +57,9 @@ as_tensor(
 \item{requires_grad}{If autograd should record operations on the returned tensor.}
 
 \item{pin_memory}{If set, returned tensor would be allocated in the pinned memory.}
+}
+\value{
+An object of \code{torch_tensor} class
 }
 \description{
 The function converts an a data.frame-like object to torch_tensor instance.
@@ -78,12 +81,14 @@ When passing optional column names, function:
 }
 }
 \examples{
+library(dplyr, warn.conflicts = FALSE)
+library(torchts)
+
 # Simple data.frame-to-torch_tensor transformation
-as_tensor(mtcars)
+as_tensor(head(mtcars))
 
 # Transformation with column-wise data wrapping
-library(dplyr)
-library(torchts)
+
 
 # ts class - default
 air_passengers <- as_tensor(AirPassengers)
@@ -94,11 +99,10 @@ dim(air_passengers)
 air_passengers <-
   AirPassengers \%>\%
   as_tensor(frequency(.))
+
 class(air_passengers)
 dim(air_passengers)
 
 # ts class using arbitrary frequency
-
-euro_stock
 
 }

@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/torchts)](https://CRAN.R-project.org/package=torchts)
 [![Travis build status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-ci.com/krzjoa/torchts)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
+[![Codecov test coverage](https://codecov.io/gh/krzjoa/torchts/branch/master/graph/badge.svg)](https://codecov.io/gh/krzjoa/torchts?branch=master)
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/kjoachimiak)
 <!-- badges: end -->
 

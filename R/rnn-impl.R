@@ -100,6 +100,8 @@ rnn_fit <- function(formula, data,
   optimizer <- call_optim(optim, net$parameters)
 
   # Training
+  # Info in Keras
+  # 938/938 [==============================] - 1s 1ms/step - loss: 0.0563 - acc: 0.9829 - val_loss: 0.1041 - val_acc: 0.9692
   for (epoch in seq_len(epochs)) {
 
     net$train()
@@ -132,8 +134,8 @@ rnn_fit <- function(formula, data,
     }
 
     cat(sprintf(
-      "\nEpoch %d | training: %3.5f %s \n",
-      epoch, mean(train_loss), valid_loss_info
+      "\nEpoch %d/%d | training: %3.5f %s \n",
+      epoch, epochs, mean(train_loss), valid_loss_info
     ))
 
   }

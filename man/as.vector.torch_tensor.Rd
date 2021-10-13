@@ -6,6 +6,22 @@
 \usage{
 \method{as.vector}{torch_tensor}(x, mode = "any")
 }
+\arguments{
+\item{x}{(\code{torch_tensor}) A \code{torch} tensor}
+
+\item{mode}{(\code{character}) A character string with one of possible vector modes:
+"any", "list", "expression" or other basic types like "character", "integer" etc.}
+}
+\value{
+A vector of desired type.
+All attributes are removed from the result if it is of an atomic mode,
+but not in general for a list result.
+}
 \description{
-Convert \code{torch_tensor} to a vector
+\code{as.vector.torch_tensor} attempts to coerce a \code{torch_tensor} into a vector of
+mode \code{mode} (the default is to coerce to whichever vector mode is most convenient):
+if the result is atomic all attributes are removed.
+}
+\seealso{
+\link[base:vector]{base::as.vector}
 }

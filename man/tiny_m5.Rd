@@ -43,5 +43,6 @@ head(tiny_m5)
 \href{https://www.kaggle.com/c/m5-forecasting-accuracy}{M5 Forecasting - Accuracy}
 \href{https://www.kaggle.com/c/m5-forecasting-uncertainty}{M5 Forecasting - Uncertainty}
 \href{https://www.sciencedirect.com/science/article/pii/S0169207021001187}{The M5 competition: Background, organization, and implementation}
+\href{https://business-science.github.io/timetk/reference/index.html#section-time-series-datasets}{Other Walmart datasets in timetk}
 }
 \keyword{datasets}
