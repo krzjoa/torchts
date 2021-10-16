@@ -15,7 +15,7 @@
 #'
 #' * `torch_tensor`
 #'
-#'    Returns identical `torch_tensor`, but change dtype or device if specified.
+#'    Returns identical `torch_tensor`, but changes dtype or device if specified.
 #'    Three dots arguments are ignored for now.
 #'
 #' * `data.frame`
@@ -38,8 +38,8 @@
 #'
 #' * `ts`
 #'
-#'   If `by` is not specified, it returns a tensor of shape (1, length(object), 1).
-#'   If we use any `by`, the output shape is (length(data)/by, by, 1)
+#'   If `by` is not specified, it returns a tensor of shape `(1, length(object), 1)`.
+#'   If we use any `by`, the output shape is `(length(data)/by, by, 1)`
 #'
 #' @return
 #' An object of `torch_tensor` class
@@ -146,6 +146,8 @@ as_tensor.data.frame <- function(data, ...,
   # }
 
   # TODO: check different types (for instance: numeric and integer)
+  # TODO: add data.table (keys)
+  # TODO: add tsibble
 
   ALLOWED_TYPES <- c("Date", "numeric", "inter")
 

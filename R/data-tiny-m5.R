@@ -22,15 +22,18 @@
 #' \item{event_name_2}{If the date includes a second event, the name of this event}
 #' \item{event_type_2}{If the date includes a second event, the type of this event}
 #' \item{snap}{A binary variable (0 or 1) indicating whether the stores of CA, TX or WI allow SNAP1 purchases on the examined date. 1 indicates that SNAP purchases are allowed}
-#' \item{sell_price}{he price of the product for the given week/store.
+#' \item{sell_price}{The price of the product for the given week/store.
 #' The price is provided per week (average across seven days). If not available, this means that the product was not sold during the examined week.
 #' Note that although prices are constant at weekly basis, they may change through time (both training and test set)}
 #' }
 #'
 #' @seealso
 #' [M5 Forecasting - Accuracy](https://www.kaggle.com/c/m5-forecasting-accuracy)
+#'
 #' [M5 Forecasting - Uncertainty](https://www.kaggle.com/c/m5-forecasting-uncertainty)
+#'
 #' [The M5 competition: Background, organization, and implementation](https://www.sciencedirect.com/science/article/pii/S0169207021001187)
+#'
 #' [Other Walmart datasets in timetk](https://business-science.github.io/timetk/reference/index.html#section-time-series-datasets)
 #'
 #' @examples

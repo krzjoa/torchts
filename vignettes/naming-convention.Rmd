@@ -1,0 +1,31 @@
+---
+title: "Naming convention"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Naming convention}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+It should not be surprising that in any field of human activity, when many persons work (more or less) independently across the world, the same thing can be known by different terms. For example, in the classical statistics, the same variables can be described as "explanatory variables" or "predictors" while in the related ML world they are called "features" or "input variables". For more elaborate text on this topic, read [Statistical Modeling: The Two Cultures](https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.full) by Leo Breiman or concise subchapter from [EMA book](https://ema.drwhy.ai/introduction.html#teminology) by P. Biecek and T. Burzykowski (they refer to Breiman's paper).
+
+In this vignette we consider not only the data science terminology, but also the names existing in different packages' APIs (what is, obviously, partially based on the scientific naming).
+
+In the table below you can see, what names is decided to use, where they come from and what are their synonyms in the scientific world or among the other R packages API etc.
+
+|**Name** | **Explanation**| **Consistent with** | **Other names**|
+|:-------:|----------------|---------------------|----------------|
+|`index`  | A time variable like `Date`| Inspired by `index` variable in [`tsibble`](https://tsibble.tidyverts.org) package | `.date_var` in [`timetk`](https://business-science.github.io/timetk/)|
+|`key`  |A variable (or variables) to distinguish different time series in the dataset| • `tsibble` package<br/> • SQL databases<br/> • data.table | `id` in [`modeltime.gluonts`](https://business-science.github.io/modeltime.gluonts) (for example: [`deep_ar`](https://business-science.github.io/modeltime.gluonts/reference/deep_ar.html))|
+|`timesteps`| | | |
+|`horizon`| | | |
+|`predictors`| | | • ML: *features* or *input variables* <br/> • Statistics: *explanatory variables*|
+|`outcomes`| | | `outputs`, `targets`|
+
