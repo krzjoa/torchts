@@ -4,14 +4,17 @@
 #' @param formula A formula describing, how to use the data
 #' @param index The index column
 #' @param key The key column(s)
+#' @param predictors Input variables
+#' @param outcomes Target variables
 #' @param timesteps The time series chunk length
-#' @param h Forecast horizon
+#' @param horizon Forecast horizon
 #' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
 #' @param scale (logical or list) Scale feature columns. Logical value or two-element list
 #' with values (mean, std)
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#'
 #' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
 #' @examples
@@ -33,16 +36,16 @@
 #'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
-                          predictor = NULL, target = NULL,
-                          timesteps, h = 1, sample_frac = 1,
+                          predictors = NULL, outcomes = NULL,
+                          timesteps, horizon = 1, sample_frac = 1,
                           scale = TRUE){
   UseMethod("as_ts_dataset")
 }
 
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, predictor = NULL,
-                                     target = NULL, timesteps,
+                                     key = NULL, predictors = NULL,
+                                     outcomes = NULL, timesteps,
                                      h = 1, sample_frac = 1,
                                      scale = TRUE){
 
@@ -56,11 +59,11 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     parsed_formula <- torchts_parse_formula(formula, data = data)
 
-    .input_columns <- list(
+    .predictors_columns <- list(
       x = parsed_formula[parsed_formula$.role == "predictor", ]$.var
     )
 
-    .target_columns <- list(
+    .outcomes_columns <- list(
       y = parsed_formula[parsed_formula$.role == "outcome", ]$.var
     )
 
@@ -75,8 +78,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     # TODO: possible mutiple elemtns in the list
 
-    .input_columns  <- list(x = predictor)
-    .target_columns <- list(y = target)
+    .predictors_columns  <- list(x = predictor)
+    .outcomes_columns <- list(y = outcomes)
     .index_columns  <- index
 
   }
@@ -91,11 +94,11 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     select(-!!.index_columns) %>%
     colnames()
 
-  .input_column_idx <-
-    purrr::map(.input_columns, ~ match(.x, column_order))
+  .predictors_idx <-
+    purrr::map(.predictors_columns, ~ match(.x, column_order))
 
-  .target_column_idx <-
-    purrr::map(.target_columns, ~ match(.x, column_order))
+  .outcomes_idx <-
+    purrr::map(.outcomes_columns, ~ match(.x, column_order))
 
   # TODO: hardcoded!!!
   data_tensor <-
@@ -104,9 +107,9 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
   ts_dataset(
     data           = data_tensor,
     timesteps      = timesteps,
-    h              = h,
-    input_columns  = .input_column_idx,
-    target_columns = .target_column_idx,
+    h              = horizon,
+    input_columns  = .predictors_idx,
+    target_columns = .outcomes_idx,
     sample_frac    = sample_frac,
     scale          = scale
   )

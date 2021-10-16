@@ -69,7 +69,7 @@ Possible arguments differ a little bit depending on the input object class.
 \itemize{
 \item \code{torch_tensor}
 
-Returns identical \code{torch_tensor}, but change dtype or device if specified.
+Returns identical \code{torch_tensor}, but changes dtype or device if specified.
 Three dots arguments are ignored for now.
 \item \code{data.frame}
 
@@ -91,8 +91,8 @@ When passing optional column names, function:
 }
 \item \code{ts}
 
-If \code{by} is not specified, it returns a tensor of shape (1, length(object), 1).
-If we use any \code{by}, the output shape is (length(data)/by, by, 1)
+If \code{by} is not specified, it returns a tensor of shape \verb{(1, length(object), 1)}.
+If we use any \code{by}, the output shape is \verb{(length(data)/by, by, 1)}
 }
 }
 \examples{

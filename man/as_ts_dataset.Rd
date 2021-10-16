@@ -9,10 +9,10 @@ as_ts_dataset(
   formula,
   index = NULL,
   key = NULL,
-  predictor = NULL,
-  target = NULL,
+  predictors = NULL,
+  outcomes = NULL,
   timesteps,
-  h = 1,
+  horizon = 1,
   sample_frac = 1,
   scale = TRUE
 )
@@ -26,9 +26,13 @@ as_ts_dataset(
 
 \item{key}{The key column(s)}
 
+\item{predictors}{Input variables}
+
+\item{outcomes}{Target variables}
+
 \item{timesteps}{The time series chunk length}
 
-\item{h}{Forecast horizon}
+\item{horizon}{Forecast horizon}
 
 \item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
 
@@ -40,6 +44,7 @@ Create a torch dataset for time series data
 }
 \note{
 If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+
 See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
 }
 \examples{

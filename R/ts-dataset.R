@@ -1,20 +1,21 @@
 #' Create a time series dataset object
 #'
-#' @param data (torch_tensor) An input data object
-#' @param timesteps (integer) Number of timesteps for input tensor
-#' @param h (integer) Forecast horizon: number of timesteps for output tensor
-#' @param jump (integer) Jump length. By default: horizon length
-#' @param input_columns (list) Output specification
-#' @param target_columns (list) Output specification
-#' @param sample_fram (numeric) A numeric value > 0. and <= 1 to sample a subset of data
-#' @param scale (logical) Scale feature columns
+#' @param data (`torch_tensor`) An input data object
+#' @param timesteps (`integer`) Number of timesteps for input tensor
+#' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor
+#' @param jump (`integer`) Jump length. By default: horizon length
+#' @param predictors (`list`) Output specification
+#' @param outcomes (`list`) Output specification
+#' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data
+#' @param scale (`logical` or `list`) Scale feature columns
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#'
 #' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
 #' @examples
-#' suppressMessages(library(dplyr))
+#' library(dplyr, warn.conflicts = FALSE)
 #' library(torchts)
 #' data("mts-examples", package="MTS")
 #'
@@ -25,7 +26,7 @@
 #' ibm_tensor <- as_tensor(ibmspko, date)
 #'
 #' ibm_dataset <-
-#'     ts_dataset(ibm_tensor, timesteps = 7, h = 7)
+#'     ts_dataset(ibm_tensor, timesteps = 7, horizon = 7)
 #'
 #' ibm_dataset$.getitem(1)
 #'
@@ -33,20 +34,22 @@
 ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
-  initialize = function(data, timesteps, h, jump = h,
-                        input_columns  = list(x = NULL),
-                        target_columns = list(y = NULL),
+  initialize = function(data, timesteps, horizon, jump = horizon,
+                        predictors  = list(x = NULL),
+                        outcomes = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
 
     # TODO: check data types
     # TODO: check, if jump works correctly
+    # TODO: example with weather_pl
+
     self$data           <- data
-    self$margin         <- max(timesteps, h)
+    self$margin         <- max(timesteps, horizon)
     self$timesteps      <- timesteps
-    self$h              <- h
+    self$horizon        <- horizon
     self$jump           <- jump
-    self$input_columns  <- input_columns
-    self$target_columns <- target_columns
+    self$predictors  <- predictors
+    self$outcomes <- outcomes
 
     n <- (nrow(self$data) - self$timesteps) / self$jump
     n <- floor(n)
@@ -57,7 +60,7 @@ ts_dataset <- torch::dataset(
     ))
 
     # WARNING: columns names are supposed to be in such order
-    self$col_map <- unique(unlist(input_columns))
+    self$col_map <- unique(unlist(predictors))
 
     # If scale is a list and contains two values: mean and std
     # TODO: unify naming - sd ather than std. See: recipes (https://recipes.tidymodels.org/reference/step_normalize.html)
@@ -93,19 +96,19 @@ ts_dataset <- torch::dataset(
     if (self$scale) {
       inputs <-
         purrr::map(
-          self$input_columns,
+          self$predictors,
           ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map)]) /
             self$std[.., match(.x, self$col_map)]
         )
     } else {
       inputs <-
         purrr::map(
-          self$input_columns, ~ self$data[start:end, .x, drop = FALSE]
+          self$predictors, ~ self$data[start:end, .x, drop = FALSE]
         )
     }
 
     targets <-
-      purrr::map(self$target_columns, ~ self$data[(end + 1):(end + self$h), .x])
+      purrr::map(self$outcomes, ~ self$data[(end + 1):(end + self$horizon), .x])
 
     c(inputs, targets)
 

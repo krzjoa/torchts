@@ -18,14 +18,16 @@ It should not be surprising that in any field of human activity, when many perso
 
 In this vignette we consider not only the data science terminology, but also the names existing in different packages' APIs (what is, obviously, partially based on the scientific naming).
 
-In the table below you can see, what names is decided to use, where they come from and what are their synonyms in the scientific world or among the other R packages API etc.
+In the table below you can see, what names is decided to use, where they come from and what are their synonyms in the scientific world or among the other R/Python packages API etc.
 
 |**Name** | **Explanation**| **Consistent with** | **Other names**|
 |:-------:|----------------|---------------------|----------------|
-|`index`  | A time variable like `Date`| Inspired by `index` variable in [`tsibble`](https://tsibble.tidyverts.org) package | `.date_var` in [`timetk`](https://business-science.github.io/timetk/)|
-|`key`  |A variable (or variables) to distinguish different time series in the dataset| • `tsibble` package<br/> • SQL databases<br/> • data.table | `id` in [`modeltime.gluonts`](https://business-science.github.io/modeltime.gluonts) (for example: [`deep_ar`](https://business-science.github.io/modeltime.gluonts/reference/deep_ar.html))|
-|`timesteps`| | | |
-|`horizon`| | | |
-|`predictors`| | | • ML: *features* or *input variables* <br/> • Statistics: *explanatory variables*|
-|`outcomes`| | | `outputs`, `targets`|
+|`index`  | A time variable like `Date`| Inspired by `index` variable in [`tsibble`](https://tsibble.tidyverts.org) package | • `.date_var` in [`timetk`](https://business-science.github.io/timetk/) <br/> • `time_idx` in `Python` library [`pytorch-forecasting`](https://pytorch-forecasting.readthedocs.io/en/latest/api/pytorch_forecasting.data.timeseries.TimeSeriesDataSet.html)|
+|`key`  |A variable (or variables) to distinguish different time series in the dataset| • `tsibble` package<br/> • SQL databases<br/> • data.table | • `id` in [`modeltime.gluonts`](https://business-science.github.io/modeltime.gluonts) (for example: [`deep_ar`](https://business-science.github.io/modeltime.gluonts/reference/deep_ar.html)) <br/> • `group_ids` in `Python` library [`pytorch-forecasting`](https://pytorch-forecasting.readthedocs.io/en/latest/api/pytorch_forecasting.data.timeseries.TimeSeriesDataSet.html)|
+|`timesteps`|A number of timesteps used to train the model| *Timestep* is a commonly used word in Deep Learning terminology to describe a "moment" in a time series (sequence). |Meaning partially reflected by: <br/> • `lookback_length` in `modeltime.gluonts` (e.g.  [`nbeats`](https://business-science.github.io/modeltime.gluonts/reference/nbeats.html)) <br/> • `lookback` in [`forecastML`](https://github.com/nredell/forecastML#vignettes)|
+|`horizon`| Length of a output sequence, i.e. how many steps ahead we'd like to forecast. If we consider that each future timestep refer to a separate horizon, `horizon` is the maximal *horizon* of the forecast | • `horizons` in [`forecastML`](https://github.com/nredell/forecastML#vignettes) <br/> • [FPP book](https://otexts.com/fpp3/arima-forecasting.html) by Hyndman and Athanasopoulos </br> • term used in scientific papers, e.g. [Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting](https://arxiv.org/pdf/1912.09363.pdf) by Lim et al., by meaning in the context of this particular paper slightly differ (refers to a single timestep in the forecast, not to the maximal length of forecast)|• `prediction_length` in `modeltime.gluonts` (e.g.  [`nbeats`](https://business-science.github.io/modeltime.gluonts/reference/nbeats.html)) <br/> • `h` in [`forecast`](https://pkg.robjhyndman.com/forecast/reference/forecast.html) package|
+|`predictors`| Input variables | [`recipes`](https://recipes.tidymodels.org/reference/index.html) package API from `tidymodels` | • ML: *features* or *input variables* <br/> • Statistics: *explanatory variables*, *independent variables* etc. |
+|`outcomes`| Target variables | • [`recipes`](https://recipes.tidymodels.org/reference/index.html) package API from `tidymodels` <br/>  • `outcome_col` variable and *outcome* term in vignettes in [`forecastML`](https://github.com/nredell/forecastML#vignettes) |  • ML: *outputs*, *targets* <br/> • Statistics: *response*, *dependent variables* etc. <br/> • `target` in `Python` library [`pytorch-forecasting`](https://pytorch-forecasting.readthedocs.io/en/latest/api/pytorch_forecasting.data.timeseries.TimeSeriesDataSet.html)|
 
+
+Bear in mind that API may evolve. Especially, if I would like to implement new engines to `parsnip` models provided in `modeltime.gluonts`, we have to stick to the same name arguments in both cases.

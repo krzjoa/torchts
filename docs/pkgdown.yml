@@ -3,6 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   data-prepare-rnn: data-prepare-rnn.html
+  naming-convention: naming-convention.html
   parsnip-api: parsnip-api.html
-last_built: 2021-10-15T23:54Z
+last_built: 2021-10-16T21:55Z
 
