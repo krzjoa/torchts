@@ -25,7 +25,7 @@ as_tensor(
   pin_memory = FALSE
 )
 
-\method{as_tensor}{torch_tensor}(data, ...)
+\method{as_tensor}{torch_tensor}(data, ..., dtype = NULL, device = NULL, requires_grad = FALSE)
 
 \method{as_tensor}{data.frame}(
   data,
@@ -57,12 +57,22 @@ as_tensor(
 \item{requires_grad}{If autograd should record operations on the returned tensor.}
 
 \item{pin_memory}{If set, returned tensor would be allocated in the pinned memory.}
+
+\item{by}{For \code{ts} objects only. The length of time series to reshape the time series into tensor.}
 }
 \value{
 An object of \code{torch_tensor} class
 }
 \description{
-The function converts an a data.frame-like object to torch_tensor instance.
+The function converts an an object to \code{torch_tensor} instance.
+Possible arguments differ a little bit depending on the input object class.
+\itemize{
+\item \code{torch_tensor}
+
+Returns identical \code{torch_tensor}, but change dtype or device if specified.
+Three dots arguments are ignored for now.
+\item \code{data.frame}
+
 If no column names are specified (as "three dots"), the function
 simply transforms the input data to \code{matrix} and then to \code{torch_tensor}.
 
@@ -79,6 +89,11 @@ When passing optional column names, function:
 \item creates a n-dimensional tensor with the following shape
 (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)
 }
+\item \code{ts}
+
+If \code{by} is not specified, it returns a tensor of shape (1, length(object), 1).
+If we use any \code{by}, the output shape is (length(data)/by, by, 1)
+}
 }
 \examples{
 library(dplyr, warn.conflicts = FALSE)
@@ -88,7 +103,12 @@ library(torchts)
 as_tensor(head(mtcars))
 
 # Transformation with column-wise data wrapping
+weather_tensor <-
+  weather_pl \%>\%
+  select(-rr_type) \%>\%
+  as_tensor(station, date)
 
+dim(weather_tensor)
 
 # ts class - default
 air_passengers <- as_tensor(AirPassengers)
@@ -104,5 +124,10 @@ class(air_passengers)
 dim(air_passengers)
 
 # ts class using arbitrary frequency
+air_passengers <-
+ as_tensor(AirPassengers, 6)
+
+class(air_passengers)
+dim(air_passengers)
 
 }

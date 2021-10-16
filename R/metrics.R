@@ -2,8 +2,8 @@
 
 #' Mean Absolute Percentage Error
 #'
-#' @param input tensor (N,*) where ** means, any number of additional dimensions
-#' @param target tensor (N,*) , same shape as the input
+#' @param input (`torch_tensor`) A tensor of actual values
+#' @param target (`torch_tensor`) A tensor with the same shape as the input
 #'
 #' @details
 #' Computed according to the formula:
@@ -28,8 +28,8 @@ nnf_mape <- function(input, target){
 
 #' Mean Absolute Scaled Error
 #'
-#' @param input tensor (N,*) where ** means, any number of additional dimensions
-#' @param target tensor (N,*) , same shape as the input
+#' @param input (`torch_tensor`) A tensor of actual values
+#' @param target (`torch_tensor`) A tensor with the same shape as the input
 #'
 #' @details
 #'

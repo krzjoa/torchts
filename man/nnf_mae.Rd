@@ -7,9 +7,9 @@
 nnf_mae(input, target)
 }
 \arguments{
-\item{input}{tensor (N,*) where ** means, any number of additional dimensions}
+\item{input}{(\code{torch_tensor}) A tensor of actual values}
 
-\item{target}{tensor (N,*) , same shape as the input}
+\item{target}{(\code{torch_tensor}) A tensor with the same shape as the input}
 }
 \description{
 Mean Absolute Scaled Error

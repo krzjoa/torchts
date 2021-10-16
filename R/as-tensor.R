@@ -2,6 +2,7 @@
 #
 #' @param data A data.frame-like object, `array`, `ts` or `torch_tensor`
 #' @param ... Column names to reshape the data.frame-like object into a n-dimensional tensor
+#' @param by For `ts` objects only. The length of time series to reshape the time series into tensor.
 #' @param dtype A torch_dtype instance
 #' @param device A device created with torch_device()
 #' @param requires_grad If autograd should record operations on the returned tensor.
@@ -9,21 +10,36 @@
 #'
 #' @description
 #'
-#' The function converts an a data.frame-like object to torch_tensor instance.
-#' If no column names are specified (as "three dots"), the function
-#' simply transforms the input data to `matrix` and then to `torch_tensor`.
+#' The function converts an an object to `torch_tensor` instance.
+#' Possible arguments differ a little bit depending on the input object class.
 #'
-#' The second scenario assumes that we need a `torch_tensor`,
-#' which has more than two dimensions and some columns contains
-#' indicators, how this wrapping should be performed.
+#' * `torch_tensor`
 #'
-#' It's especially useful when transforming a data.frame containing
-#' multiple (and, possibly, multivariate) time series.
-#' When passing optional column names, function:
-#' * arranges a data.frame by the given columns
-#' * removes these columns from the data.frame
-#' * creates a n-dimensional tensor with the following shape
-#' (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)
+#'    Returns identical `torch_tensor`, but change dtype or device if specified.
+#'    Three dots arguments are ignored for now.
+#'
+#' * `data.frame`
+#'
+#'   If no column names are specified (as "three dots"), the function
+#'   simply transforms the input data to `matrix` and then to `torch_tensor`.
+#'
+#'   The second scenario assumes that we need a `torch_tensor`,
+#'   which has more than two dimensions and some columns contains
+#'   indicators, how this wrapping should be performed.
+#'
+#'   It's especially useful when transforming a data.frame containing
+#'   multiple (and, possibly, multivariate) time series.
+#'   When passing optional column names, function:
+#'
+#'   * arranges a data.frame by the given columns
+#'   * removes these columns from the data.frame
+#'   * creates a n-dimensional tensor with the following shape
+#'   (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)
+#'
+#' * `ts`
+#'
+#'   If `by` is not specified, it returns a tensor of shape (1, length(object), 1).
+#'   If we use any `by`, the output shape is (length(data)/by, by, 1)
 #'
 #' @return
 #' An object of `torch_tensor` class
@@ -36,7 +52,12 @@
 #' as_tensor(head(mtcars))
 #'
 #' # Transformation with column-wise data wrapping
+#' weather_tensor <-
+#'   weather_pl %>%
+#'   select(-rr_type) %>%
+#'   as_tensor(station, date)
 #'
+#' dim(weather_tensor)
 #'
 #' # ts class - default
 #' air_passengers <- as_tensor(AirPassengers)
@@ -52,6 +73,11 @@
 #' dim(air_passengers)
 #'
 #' # ts class using arbitrary frequency
+#' air_passengers <-
+#'  as_tensor(AirPassengers, 6)
+#'
+#' class(air_passengers)
+#' dim(air_passengers)
 #'
 #' @export
 as_tensor <- function(data, ..., dtype = NULL,
@@ -78,7 +104,20 @@ as_tensor.default <- function(data, dtype = NULL,
 
 #' @export
 #' @rdname as_tensor
-as_tensor.torch_tensor <- function(data, ...){
+as_tensor.torch_tensor <- function(data, ...,
+                                   dtype = NULL,
+                                   device = NULL,
+                                   requires_grad = FALSE){
+  data <- data$to(
+    dtype  = dtype,
+    device = device
+  )
+
+  # Inplace operation
+  data$requires_grad_(requires_grad)
+
+  # data$pin_memory()
+
   data
 }
 
@@ -106,9 +145,27 @@ as_tensor.data.frame <- function(data, ...,
   #
   # }
 
+  # TODO: check different types (for instance: numeric and integer)
+
+  ALLOWED_TYPES <- c("Date", "numeric", "inter")
+
+  # Check column types
+  col_types <- sapply(data, class)
+  not_allowed <- !(col_types %in% ALLOWED_TYPES)
+
   exprs <- rlang::exprs(...)
 
   if (length(exprs) == 0) {
+
+    if (length(unique(col_types)) > 1)
+      stop(glue::glue(
+        "Cannot convert this object to torch_tensor.
+       Various column types found. If no colnames are specified
+       in the as_tensor function, you have to convert all them to one,
+       convertible numeric-like type.
+       Date, character, list etc. cannot be correctly interpreted."
+      ))
+
     return(torch::torch_tensor(
       as.matrix(data),
       dtype = dtype,
@@ -174,6 +231,7 @@ as_tensor.ts <- function(data, by = NULL,
     requires_grad  = requires_grad,
     pin_memory = pin_memory
   )
+
 }
 
 
