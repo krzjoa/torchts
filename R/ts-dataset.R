@@ -1,13 +1,16 @@
-#' Create a time series dataset object
+#' Create a time series dataset from a `torch_tensor` matrix
 #'
-#' @param data (`torch_tensor`) An input data object
-#' @param timesteps (`integer`) Number of timesteps for input tensor
-#' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor
-#' @param jump (`integer`) Jump length. By default: horizon length
-#' @param predictors (`list`) Output specification
-#' @param outcomes (`list`) Output specification
-#' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data
-#' @param scale (`logical` or `list`) Scale feature columns
+#' @param data (`torch_tensor`) An input data object. For now it only accepts two-dimensional tensor, i.e. matrices.
+#' Each row is a timestep of a **single** time series.
+#' @param timesteps (`integer`) Number of timesteps for input tensor.
+#' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor.
+#' @param jump (`integer`) Jump length. By default: horizon length.
+#' @param predictors_spec (`list`) Input specification.
+#' It should be a list with names representing names of tensors served by dataset, and values being feature indices.
+#' @param outcomes_spec (`list`) Target specification, see: examples section.
+#' It should be a list with names representing names of tensors served b
+#' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
+#' @param scale (`logical` or `list`) Scale feature columns. Boolean flag or list with `mean` and `sd` values.
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -17,39 +20,52 @@
 #' @examples
 #' library(dplyr, warn.conflicts = FALSE)
 #' library(torchts)
-#' data("mts-examples", package="MTS")
 #'
-#' ibmspko <-
-#'     ibmspko %>%
-#'     select(date, ibm)
+#' weather_pl_tensor <-
+#'   weather_pl %>%
+#'   filter(station == "TRN") %>%
+#'   select(-station, -rr_type) %>%
+#'   as_tensor(date)
 #'
-#' ibm_tensor <- as_tensor(ibmspko, date)
+#' # We obtained a matrix (i.e. tabular data in the form of 2-dimensional tensor)
+#' dim(weather_pl_tensor)
 #'
-#' ibm_dataset <-
-#'     ts_dataset(ibm_tensor, timesteps = 7, horizon = 7)
+#' weather_pl_dataset <-
+#'    ts_dataset(
+#'      data = weather_pl_tensor,
+#'      timesteps = 28,
+#'      horizon = 7,
+#'      predictors_spec = list(x = 2:7),
+#'      outcomes_spec   = list(y = 1),
+#'      scale = TRUE
+#'    )
 #'
-#' ibm_dataset$.getitem(1)
+#' weather_pl_dataset$.getitem(1)
 #'
 #' @export
 ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
   initialize = function(data, timesteps, horizon, jump = horizon,
-                        predictors  = list(x = NULL),
-                        outcomes = list(y = NULL),
+                        predictors_spec  = list(x = NULL),
+                        outcomes_spec = list(y = NULL),
                         sample_frac = 1, scale = TRUE) {
+
+    # Change unit test where non-tabular data handling is added
+    if (length(dim(data)) > 2)
+      stop("Data tensor has more than two dimensions.
+            Handling of such objects in ts_dataset is not implemented yet.
+            Provide a tabular-like tensor.")
 
     # TODO: check data types
     # TODO: check, if jump works correctly
-    # TODO: example with weather_pl
-
-    self$data           <- data
-    self$margin         <- max(timesteps, horizon)
-    self$timesteps      <- timesteps
-    self$horizon        <- horizon
-    self$jump           <- jump
-    self$predictors  <- predictors
-    self$outcomes <- outcomes
+    self$data            <- data
+    self$margin          <- max(timesteps, horizon)
+    self$timesteps       <- timesteps
+    self$horizon         <- horizon
+    self$jump            <- jump
+    self$predictors_spec <- predictors_spec
+    self$outcomes_spec   <- outcomes_spec
 
     n <- (nrow(self$data) - self$timesteps) / self$jump
     n <- floor(n)
@@ -60,21 +76,20 @@ ts_dataset <- torch::dataset(
     ))
 
     # WARNING: columns names are supposed to be in such order
-    self$col_map <- unique(unlist(predictors))
+    self$col_map <- unique(unlist(predictors_spec))
 
     # If scale is a list and contains two values: mean and std
-    # TODO: unify naming - sd ather than std. See: recipes (https://recipes.tidymodels.org/reference/step_normalize.html)
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
-    if (is.list(scale) & all(c("mean", "std") %in% names(scale))) {
+    if (is.list(scale) & all(c("mean", "sd") %in% names(scale))) {
       # TODO: additional check - length of scaling vector
       self$mean  <- as_tensor(scale$mean)
-      self$std   <- as_tensor(scale$std)
+      self$sd    <- as_tensor(scale$sd)
       self$scale <- TRUE
     } else if (scale) {
     # Otherwise, if scale is logical and TRUE, comute scaling params from the data
-      self$mean    <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-      self$std     <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-      self$scale   <- TRUE
+      self$mean  <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$sd    <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$scale <- TRUE
     } else {
       self$scale <- FALSE
     }
@@ -82,9 +97,6 @@ ts_dataset <- torch::dataset(
   },
 
   .getitem = function(i) {
-
-    # if (dev)
-    #   browser()
 
     start <- self$starts[i * self$jump]
     end   <- start + self$timesteps - 1
@@ -96,19 +108,19 @@ ts_dataset <- torch::dataset(
     if (self$scale) {
       inputs <-
         purrr::map(
-          self$predictors,
+          self$predictors_spec,
           ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map)]) /
-            self$std[.., match(.x, self$col_map)]
+            self$sd[.., match(.x, self$col_map)]
         )
     } else {
       inputs <-
         purrr::map(
-          self$predictors, ~ self$data[start:end, .x, drop = FALSE]
+          self$predictors_spec, ~ self$data[start:end, .x, drop = FALSE]
         )
     }
 
     targets <-
-      purrr::map(self$outcomes, ~ self$data[(end + 1):(end + self$horizon), .x])
+      purrr::map(self$outcomes_spec, ~ self$data[(end + 1):(end + self$horizon), .x])
 
     c(inputs, targets)
 
@@ -123,7 +135,7 @@ ts_dataset <- torch::dataset(
   active = list(
     scale_params = function(){
       if (self$scale)
-        list(mean = self$mean, std = self$std)
+        list(mean = self$mean, sd = self$sd)
       else
         self$scale
     }

@@ -1,18 +1,13 @@
 #' Quick shortcut to create a torch dataloader based on the given dataset
 #'
-#' @param data (data.frame)
-#' @param formula A formula describing, how to use the data
-#' @param index The index column
-#' @param key The key column(s)
-#' @param n_timesteps The time seris chunk length
-#' @param h Forecast horizon
-#' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
-#' @param batch_size Batch size
+#' @inheritParams as_ts_dataset
+#' @param batch_size Batch size.
 #'
 #' @importFrom torch dataloader
 #'
 #' @examples
 #' library(rsample)
+#' library(dplyr, warn.conflicts = FALSE)
 #'
 #' suwalki_temp <-
 #'    weather_pl %>%
@@ -24,13 +19,18 @@
 #'
 # train_ds <-
 #  training(data_split) %>%
-#  as_ts_dataloader(temp ~ date, n_timesteps = 20, h = 1, batch_size = 32)
+#  as_ts_dataloader(temp ~ date, n_timesteps = 20, horizon = 1, batch_size = 32)
+#'
+#' train_ds
+#'
+#' dataloader_next(dataloader_make_iter(train_ds))
 #'
 #' @export
 as_ts_dataloader <- function(data, formula, index = NULL,
-                             key = NULL, predictors = NULL,
-                             target = NULL,
-                             timesteps, batch_size, h = 1,
+                             key = NULL,
+                             predictors = NULL,
+                             outcomes = NULL,
+                             timesteps, batch_size, horizon = 1,
                              sample_frac = 1, scale = TRUE){
   UseMethod("as_ts_dataloader")
 }
@@ -39,18 +39,19 @@ as_ts_dataloader <- function(data, formula, index = NULL,
 #' @export
 as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
-                                     target = NULL,
+                                     outcomes = NULL,
                                      timesteps, batch_size,
-                                     h = 1, sample_frac = 1, scale = TRUE){
+                                     horizon = 1, sample_frac = 1, scale = TRUE){
   dataloader(
     as_ts_dataset(
       data        = data,
       formula     = formula,
       index       = index,
       key         = key,
-      target      = target,
+      predictors  = predictors,
+      outcomes    = outcomes,
       timesteps   = timesteps,
-      h           = h,
+      horizon     = horizon,
       sample_frac = sample_frac,
       scale       = scale),
     batch_size = batch_size
@@ -60,6 +61,7 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
 #' Accessor for `scale_params` values in a dataloader object
 #' @export
 scale_params <- function(dataloader, ...){
+  # TODO: change name?
   UseMethod("scale_params")
 }
 

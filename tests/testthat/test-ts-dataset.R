@@ -1,146 +1,87 @@
-tarnow_temp <-
-  weather_pl %>%
-  filter(station == "TRN") %>%
-  select(date, max_temp = tmax_daily, min_temp = tmin_daily)
+test_that("Test ts_dataset", {
 
-test_that("Test as_ts_dataset scaling", {
+  weather_pl_tensor <-
+    weather_pl %>%
+    filter(station == "TRN") %>%
+    select(-station, -rr_type) %>%
+    as_tensor(date)
 
-  TIMESTEPS <- 20
-  HORIZON   <- 1
+  weather_pl_dataset <-
+     ts_dataset(
+       data = weather_pl_tensor,
+       timesteps = 28,
+       horizon = 7,
+       predictors_spec = list(x = 2:7),
+       outcomes_spec   = list(y = 1),
+       scale = TRUE
+     )
 
-  tarnow_ds <-
-    tarnow_temp %>%
-    as_ts_dataset(max_temp ~ date, timesteps = TIMESTEPS, h = HORIZON)
+  batch <-
+    weather_pl_dataset$.getitem(1)
 
-  # First slice
-  ds_slice <- tarnow_ds[1]
-
-  # Input is scaled
-  x_mean   <- mean(tarnow_temp$max_temp)
-  x_std    <- sd(tarnow_temp$max_temp)
-  x_scaled <- (tarnow_temp$max_temp - x_mean) / x_std
-
-  expect_equal(as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7)
-
-  # Target is not scaled
-  expect_equal(
-    as.vector(ds_slice$y),
-    tarnow_temp$max_temp[TIMESTEPS + HORIZON],
-    tolerance = 1e-7
-  )
-
-})
-
-test_that("Test as_ts_dataset without scaling", {
-
-  TIMESTEPS <- 20
-  HORIZON   <- 1
-
-  tarnow_ds <-
-    tarnow_temp %>%
-    as_ts_dataset(
-      max_temp ~ date,
-      timesteps = TIMESTEPS,
-      h = HORIZON,
-      scale = FALSE
-    )
-
-  # First slice
-  ds_slice <- tarnow_ds[1]
-
-  # Input is scaled
-  expect_equal(
-    as.vector(ds_slice$x),
-    tarnow_temp$max_temp[1:TIMESTEPS],
-    tolerance = 1e-7
-  )
-
-  # Target is not scaled
-  expect_equal(
-    as.vector(ds_slice$y),
-    tarnow_temp$max_temp[TIMESTEPS + HORIZON],
-    tolerance = 1e-7
-  )
-
-})
-
-test_that("Set scaling values - passing numeric", {
-
-  TIMESTEPS <- 20
-  HORIZON   <- 1
-  MEAN      <- 2
-  STD       <- 3
-
-  tarnow_ds <-
-    tarnow_temp %>%
-    as_ts_dataset(
-      max_temp ~ date,
-      timesteps = TIMESTEPS,
-      h = HORIZON,
-      scale = list(mean = MEAN, std = STD)
-    )
-
-  # First slice
-  ds_slice <- tarnow_ds[1]
-
-  # Input is scaled
-  x_scaled <- (tarnow_temp$max_temp - MEAN) / STD
-
-  expect_equal(as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7)
+  expect_equal(dim(batch$x), c(28, 6))
+  expect_equal(dim(batch$y), 7)
 
 })
 
 
-test_that("Set scaling values - passing tensors", {
+test_that("Passing non-tabular data as first argument", {
 
-  TIMESTEPS   <- 20
-  HORIZON     <- 1
-  MEAN        <- 2
-  STD         <- 3
-  MEAN_TENSOR <- as_tensor(MEAN)
-  STD_TENSOR  <- as_tensor(STD)
+  weather_pl_tensor <-
+    weather_pl %>%
+    select(-rr_type) %>%
+    as_tensor(station, date)
 
-  tarnow_ds <-
-    tarnow_temp %>%
-    as_ts_dataset(
-      max_temp ~ date,
-      timesteps = TIMESTEPS,
-      h = HORIZON,
-      scale = list(mean = MEAN_TENSOR,
-                   std = STD_TENSOR)
-    )
-
-  # First slice
-  ds_slice <- tarnow_ds[1]
-
-  # Input is scaled
-  x_scaled <- (tarnow_temp$max_temp - MEAN) / STD
-
-  expect_equal(
-    as.vector(ds_slice$x), x_scaled[1:TIMESTEPS], tolerance = 1e-7
-  )
-
-})
-
-test_that("Error when index not defined", {
   expect_error(
-      as_ts_dataset(
-        tarnow_temp,
-        max_temp ~ min_temp,
-        timesteps = TIMESTEPS,
-        h = HORIZON
-      )
-  )
-})
-
-test_that("Error when passed empty data.frame", {
-  expect_error(
-    as_ts_dataset(
-      tarnow_temp %>% filter(date < as.Date("2001-01-01")),
-      max_temp ~ min_temp,
-      timesteps = TIMESTEPS,
-      h = HORIZON
+    ts_dataset(
+      data = weather_pl_tensor,
+      timesteps = 28,
+      horizon = 7,
+      predictors_spec = list(x = 2:7),
+      outcomes_spec   = list(y = 1),
+      scale = TRUE
     )
   )
+
 })
+
+
+test_that("Test ts_dataset jump option", {
+
+  weather_pl_tensor <-
+    weather_pl %>%
+    filter(station == "TRN") %>%
+    select(-station, -rr_type) %>%
+    as_tensor(date)
+
+  DS_2_JUMP <- 7
+
+  ds_1 <-
+    ts_dataset(
+      data = weather_pl_tensor,
+      timesteps = 28,
+      horizon = 7,
+      jump = 1,
+      predictors_spec = list(x = 2:7),
+      outcomes_spec   = list(y = 1),
+      scale = TRUE
+    )
+
+  ds_2 <-
+    ts_dataset(
+      data = weather_pl_tensor,
+      timesteps = 28,
+      horizon = 7,
+      jump = DS_2_JUMP,
+      predictors_spec = list(x = 2:7),
+      outcomes_spec   = list(y = 1),
+      scale = TRUE
+    )
+
+  expected_ds_2_length <- floor(length(ds_1) / DS_2_JUMP)
+
+  expect_equal(length(ds_2), expected_ds_2_length)
+})
+
+# TODO: add additional test to check scaling
 

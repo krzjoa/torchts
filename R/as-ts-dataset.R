@@ -1,15 +1,16 @@
-#' Create a torch dataset for time series data
+#' Create a torch dataset for time series data from a `data.frame`-like object
 #'
-#' @param data (data.frame)
-#' @param formula A formula describing, how to use the data
-#' @param index The index column
-#' @param key The key column(s)
-#' @param predictors Input variables
-#' @param outcomes Target variables
-#' @param timesteps The time series chunk length
-#' @param horizon Forecast horizon
-#' @param sample_frac Sample a fraction of rows (default: 1, i.e.: all the rows)
-#' @param scale (logical or list) Scale feature columns. Logical value or two-element list
+#' @param data (`data.frame`) An input data.frame object with.
+#' For now only **single** data frames are handled with no categorical features.
+#' @param formula (`formula`) A formula describing, how to use the data
+#' @param index (`character`) The index column name.
+#' @param key (`character`) The key column name(s). Use only if formula was not specified.
+#' @param predictors (`character`) Input variable names. Use only if formula was not specified.
+#' @param outcomes (`character`) Target variable names. Use only if formula was not specified.
+#' @param timesteps (`integer`) The time series chunk length.
+#' @param horizon (`integer`) Forecast horizon.
+#' @param sample_frac (`numeric`) Sample a fraction of rows (default: 1, i.e.: all the rows).
+#' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
 #'
 #' @note
@@ -30,7 +31,7 @@
 #'
 #' train_ds <-
 #'  training(data_split) %>%
-#'  as_ts_dataset(temp ~ date, timesteps = 20, h = 1)
+#'  as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
 #'
 #' train_ds[1]
 #'
@@ -42,11 +43,22 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
   UseMethod("as_ts_dataset")
 }
 
+
+#'@export
+as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
+                                  predictors = NULL, outcomes = NULL,
+                                  timesteps, horizon = 1, sample_frac = 1,
+                                  scale = TRUE){
+  stop(sprintf(
+    "Object of class %s in not handled for now.", class(data)
+  ))
+}
+
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, timesteps,
-                                     h = 1, sample_frac = 1,
+                                     horizon = 1, sample_frac = 1,
                                      scale = TRUE){
 
   if (nrow(data) == 0) {
@@ -76,13 +88,18 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     #   x = setdiff(colnames(data), c(key, index))
     # )
 
-    # TODO: possible mutiple elemtns in the list
+    # TODO: possible multiple elements in the list
 
     .predictors_columns  <- list(x = predictor)
-    .outcomes_columns <- list(y = outcomes)
-    .index_columns  <- index
+    .outcomes_columns    <- list(y = outcomes)
+    .index_columns       <- index
 
   }
+
+  if (any(!sapply(data %>% select(-all_of(.index_columns)), is.numeric)))
+    stop("Data contains non-numeric columns (other than index column), but they are not handled for now.
+          Specifying categorical variables will be available in near future.")
+
 
   if (is.null(.index_columns) | length(.index_columns) == 0)
     stop("No time index column defined! Add at least one time-based variable.")
@@ -94,10 +111,10 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     select(-!!.index_columns) %>%
     colnames()
 
-  .predictors_idx <-
+  .predictors_spec <-
     purrr::map(.predictors_columns, ~ match(.x, column_order))
 
-  .outcomes_idx <-
+  .outcomes_spec <-
     purrr::map(.outcomes_columns, ~ match(.x, column_order))
 
   # TODO: hardcoded!!!
@@ -105,12 +122,12 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     as_tensor(data, !!.index_columns)
 
   ts_dataset(
-    data           = data_tensor,
-    timesteps      = timesteps,
-    h              = horizon,
-    input_columns  = .predictors_idx,
-    target_columns = .outcomes_idx,
-    sample_frac    = sample_frac,
-    scale          = scale
+    data            = data_tensor,
+    timesteps       = timesteps,
+    horizon         = horizon,
+    predictors_spec = .predictors_spec,
+    outcomes_spec   = .outcomes_spec,
+    sample_frac     = sample_frac,
+    scale           = scale
   )
 }
