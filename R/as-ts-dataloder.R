@@ -1,7 +1,7 @@
 #' Quick shortcut to create a torch dataloader based on the given dataset
 #'
 #' @inheritParams as_ts_dataset
-#' @param batch_size Batch size.
+#' @param batch_size (`numeric`) Batch size.
 #'
 #' @importFrom torch dataloader
 #'
@@ -17,9 +17,9 @@
 #' # Splitting on training and test
 #' data_split <- initial_time_split(suwalki_temp)
 #'
-# train_ds <-
-#  training(data_split) %>%
-#  as_ts_dataloader(temp ~ date, n_timesteps = 20, horizon = 1, batch_size = 32)
+#' train_ds <-
+#'  training(data_split) %>%
+#'  as_ts_dataloader(temp ~ date, n_timesteps = 20, horizon = 1, batch_size = 32)
 #'
 #' train_ds
 #'

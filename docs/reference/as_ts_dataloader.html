@@ -183,7 +183,7 @@ For now only <strong>single</strong> data frames are handled with no categorical
     </tr>
     <tr>
       <th>batch_size</th>
-      <td><p>Batch size.</p></td>
+      <td><p>(<code>numeric</code>) Batch size.</p></td>
     </tr>
     <tr>
       <th>horizon</th>
@@ -213,7 +213,10 @@ with values (mean, std)</p></td>
 <span class='co'># Splitting on training and test</span>
 <span class='va'>data_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_time_split</a></span><span class='op'>(</span><span class='va'>suwalki_temp</span><span class='op'>)</span>
 
-
+<span class='va'>train_ds</span> <span class='op'>&lt;-</span>
+ <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+ <span class='fu'>as_ts_dataloader</span><span class='op'>(</span><span class='va'>temp</span> <span class='op'>~</span> <span class='va'>date</span>, n_timesteps <span class='op'>=</span> <span class='fl'>20</span>, horizon <span class='op'>=</span> <span class='fl'>1</span>, batch_size <span class='op'>=</span> <span class='fl'>32</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in as_ts_dataloader(., temp ~ date, n_timesteps = 20, horizon = 1,     batch_size = 32): nieużywany argument (n_timesteps = 20)</span></div><div class='input'>
 <span class='va'>train_ds</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'train_ds'</span></div><div class='input'>
 <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>train_ds</span><span class='op'>)</span><span class='op'>)</span>

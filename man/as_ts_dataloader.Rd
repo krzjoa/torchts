@@ -34,7 +34,7 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{timesteps}{(\code{integer}) The time series chunk length.}
 
-\item{batch_size}{Batch size.}
+\item{batch_size}{(\code{numeric}) Batch size.}
 
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
@@ -58,6 +58,9 @@ suwalki_temp <-
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
+train_ds <-
+ training(data_split) \%>\%
+ as_ts_dataloader(temp ~ date, n_timesteps = 20, horizon = 1, batch_size = 32)
 
 train_ds
 
