@@ -2,7 +2,7 @@
 % Please edit documentation in R/as-ts-dataset.R
 \name{as_ts_dataset}
 \alias{as_ts_dataset}
-\title{Create a torch dataset for time series data}
+\title{Create a torch dataset for time series data from a \code{data.frame}-like object}
 \usage{
 as_ts_dataset(
   data,
@@ -18,29 +18,30 @@ as_ts_dataset(
 )
 }
 \arguments{
-\item{data}{(data.frame)}
+\item{data}{(\code{data.frame}) An input data.frame object with.
+For now only \strong{single} data frames are handled with no categorical features.}
 
-\item{formula}{A formula describing, how to use the data}
+\item{formula}{(\code{formula}) A formula describing, how to use the data}
 
-\item{index}{The index column}
+\item{index}{(\code{character}) The index column name.}
 
-\item{key}{The key column(s)}
+\item{key}{(\code{character}) The key column name(s). Use only if formula was not specified.}
 
-\item{predictors}{Input variables}
+\item{predictors}{(\code{character}) Input variable names. Use only if formula was not specified.}
 
-\item{outcomes}{Target variables}
+\item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
 
-\item{timesteps}{The time series chunk length}
+\item{timesteps}{(\code{integer}) The time series chunk length.}
 
-\item{horizon}{Forecast horizon}
+\item{horizon}{(\code{integer}) Forecast horizon.}
 
-\item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
+\item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
 
-\item{scale}{(logical or list) Scale feature columns. Logical value or two-element list
+\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
 }
 \description{
-Create a torch dataset for time series data
+Create a torch dataset for time series data from a \code{data.frame}-like object
 }
 \note{
 If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -60,7 +61,7 @@ data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
- as_ts_dataset(temp ~ date, timesteps = 20, h = 1)
+ as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
 
 train_ds[1]
 

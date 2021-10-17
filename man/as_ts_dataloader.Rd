@@ -10,36 +10,45 @@ as_ts_dataloader(
   index = NULL,
   key = NULL,
   predictors = NULL,
-  target = NULL,
+  outcomes = NULL,
   timesteps,
   batch_size,
-  h = 1,
+  horizon = 1,
   sample_frac = 1,
   scale = TRUE
 )
 }
 \arguments{
-\item{data}{(data.frame)}
+\item{data}{(\code{data.frame}) An input data.frame object with.
+For now only \strong{single} data frames are handled with no categorical features.}
 
-\item{formula}{A formula describing, how to use the data}
+\item{formula}{(\code{formula}) A formula describing, how to use the data}
 
-\item{index}{The index column}
+\item{index}{(\code{character}) The index column name.}
 
-\item{key}{The key column(s)}
+\item{key}{(\code{character}) The key column name(s). Use only if formula was not specified.}
 
-\item{batch_size}{Batch size}
+\item{predictors}{(\code{character}) Input variable names. Use only if formula was not specified.}
 
-\item{h}{Forecast horizon}
+\item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
 
-\item{sample_frac}{Sample a fraction of rows (default: 1, i.e.: all the rows)}
+\item{timesteps}{(\code{integer}) The time series chunk length.}
 
-\item{n_timesteps}{The time seris chunk length}
+\item{batch_size}{Batch size.}
+
+\item{horizon}{(\code{integer}) Forecast horizon.}
+
+\item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
+
+\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
+with values (mean, std)}
 }
 \description{
 Quick shortcut to create a torch dataloader based on the given dataset
 }
 \examples{
 library(rsample)
+library(dplyr, warn.conflicts = FALSE)
 
 suwalki_temp <-
    weather_pl \%>\%
@@ -49,5 +58,9 @@ suwalki_temp <-
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
+
+train_ds
+
+dataloader_next(dataloader_make_iter(train_ds))
 
 }

@@ -43,7 +43,7 @@
 <meta property="og:description" content="The function converts an an object to torch_tensor instance.
 Possible arguments differ a little bit depending on the input object class.
 torch_tensor
-Returns identical torch_tensor, but change dtype or device if specified.
+Returns identical torch_tensor, but changes dtype or device if specified.
 Three dots arguments are ignored for now.
 data.frame
 If no column names are specified (as &quot;three dots&quot;), the function
@@ -158,7 +158,7 @@ If we use any by, the output shape is (length(data)/by, by, 1)
     <p>The function converts an an object to <code>torch_tensor</code> instance.
 Possible arguments differ a little bit depending on the input object class.</p><ul>
 <li><p><code>torch_tensor</code></p>
-<p>Returns identical <code>torch_tensor</code>, but change dtype or device if specified.
+<p>Returns identical <code>torch_tensor</code>, but changes dtype or device if specified.
 Three dots arguments are ignored for now.</p></li>
 <li><p><code>data.frame</code></p>
 <p>If no column names are specified (as "three dots"), the function
@@ -175,8 +175,8 @@ When passing optional column names, function:</p><ul>
 (n_distinct(column_name_1), n_distinct(column_name_2), ..., number of other columns)</p></li>
 </ul></li>
 <li><p><code>ts</code></p>
-<p>If <code>by</code> is not specified, it returns a tensor of shape (1, length(object), 1).
-If we use any <code>by</code>, the output shape is (length(data)/by, by, 1)</p></li>
+<p>If <code>by</code> is not specified, it returns a tensor of shape <code>(1, length(object), 1)</code>.
+If we use any <code>by</code>, the output shape is <code>(length(data)/by, by, 1)</code></p></li>
 </ul>
 
     </div>

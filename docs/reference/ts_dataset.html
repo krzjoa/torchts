@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a time series dataset object — ts_dataset • torchts</title>
+<title>Create a time series dataset from a torch_tensor matrix — ts_dataset • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Create a time series dataset object — ts_dataset" />
-<meta property="og:description" content="Create a time series dataset object" />
+<meta property="og:title" content="Create a time series dataset from a torch_tensor matrix — ts_dataset" />
+<meta property="og:description" content="Create a time series dataset from a torch_tensor matrix" />
 
 
 
@@ -126,22 +126,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a time series dataset object</h1>
+    <h1>Create a time series dataset from a <code>torch_tensor</code> matrix</h1>
     <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/ts-dataset.R'><code>R/ts-dataset.R</code></a></small>
     <div class="hidden name"><code>ts_dataset.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Create a time series dataset object</p>
+    <p>Create a time series dataset from a <code>torch_tensor</code> matrix</p>
     </div>
 
     <pre class="usage"><span class='fu'>ts_dataset</span><span class='op'>(</span>
   <span class='va'>data</span>,
   <span class='va'>timesteps</span>,
-  <span class='va'>h</span>,
-  jump <span class='op'>=</span> <span class='va'>h</span>,
-  input_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
-  target_columns <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
+  <span class='va'>horizon</span>,
+  jump <span class='op'>=</span> <span class='va'>horizon</span>,
+  predictors_spec <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
+  outcomes_spec <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
   scale <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
@@ -151,108 +151,112 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>(torch_tensor) An input data object</p></td>
+      <td><p>(<code>torch_tensor</code>) An input data object. For now it only accepts two-dimensional tensor, i.e. matrices.
+Each row is a timestep of a <strong>single</strong> time series.</p></td>
     </tr>
     <tr>
       <th>timesteps</th>
-      <td><p>(integer) Number of timesteps for input tensor</p></td>
+      <td><p>(<code>integer</code>) Number of timesteps for input tensor.</p></td>
     </tr>
     <tr>
-      <th>h</th>
-      <td><p>(integer) Forecast horizon: number of timesteps for output tensor</p></td>
+      <th>horizon</th>
+      <td><p>(<code>integer</code>) Forecast horizon: number of timesteps for output tensor.</p></td>
     </tr>
     <tr>
       <th>jump</th>
-      <td><p>(integer) Jump length. By default: horizon length</p></td>
+      <td><p>(<code>integer</code>) Jump length. By default: horizon length.</p></td>
     </tr>
     <tr>
-      <th>input_columns</th>
-      <td><p>(list) Output specification</p></td>
+      <th>predictors_spec</th>
+      <td><p>(<code>list</code>) Input specification.
+It should be a list with names representing names of tensors served by dataset, and values being feature indices.</p></td>
     </tr>
     <tr>
-      <th>target_columns</th>
-      <td><p>(list) Output specification</p></td>
+      <th>outcomes_spec</th>
+      <td><p>(<code>list</code>) Target specification, see: examples section.
+It should be a list with names representing names of tensors served b</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>(logical) Scale feature columns</p></td>
+      <td><p>(<code>logical</code> or <code>list</code>) Scale feature columns. Boolean flag or list with <code>mean</code> and <code>sd</code> values.</p></td>
     </tr>
     <tr>
       <th>sample_fram</th>
-      <td><p>(numeric) A numeric value &gt; 0. and &lt;= 1 to sample a subset of data</p></td>
+      <td><p>(<code>numeric</code>) A numeric value &gt; 0. and &lt;= 1 to sample a subset of data.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>If <code>scale</code> is TRUE, only the input vaiables are scale and not the outcome ones.
-See: <a href='https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re'>Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)</a></p>
+    <p>If <code>scale</code> is TRUE, only the input vaiables are scale and not the outcome ones.</p>
+<p>See: <a href='https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re'>Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>, warn.conflicts <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"mts-examples"</span>, package<span class='op'>=</span><span class='st'>"MTS"</span><span class='op'>)</span>
 
-<span class='va'>ibmspko</span> <span class='op'>&lt;-</span>
-    <span class='va'>ibmspko</span> <span class='op'>%&gt;%</span>
-    <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>ibm</span><span class='op'>)</span>
+<span class='va'>weather_pl_tensor</span> <span class='op'>&lt;-</span>
+  <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"TRN"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>station</span>, <span class='op'>-</span><span class='va'>rr_type</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='as_tensor.html'>as_tensor</a></span><span class='op'>(</span><span class='va'>date</span><span class='op'>)</span>
 
-<span class='va'>ibm_tensor</span> <span class='op'>&lt;-</span> <span class='fu'><a href='as_tensor.html'>as_tensor</a></span><span class='op'>(</span><span class='va'>ibmspko</span>, <span class='va'>date</span><span class='op'>)</span>
+<span class='co'># We obtained a matrix (i.e. tabular data in the form of 2-dimensional tensor)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>weather_pl_tensor</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] 7305    7</div><div class='input'>
+<span class='va'>weather_pl_dataset</span> <span class='op'>&lt;-</span>
+   <span class='fu'>ts_dataset</span><span class='op'>(</span>
+     data <span class='op'>=</span> <span class='va'>weather_pl_tensor</span>,
+     timesteps <span class='op'>=</span> <span class='fl'>28</span>,
+     horizon <span class='op'>=</span> <span class='fl'>7</span>,
+     predictors_spec <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fl'>2</span><span class='op'>:</span><span class='fl'>7</span><span class='op'>)</span>,
+     outcomes_spec   <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>,
+     scale <span class='op'>=</span> <span class='cn'>TRUE</span>
+   <span class='op'>)</span>
 
-<span class='va'>ibm_dataset</span> <span class='op'>&lt;-</span>
-    <span class='fu'>ts_dataset</span><span class='op'>(</span><span class='va'>ibm_tensor</span>, timesteps <span class='op'>=</span> <span class='fl'>7</span>, h <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span>
-
-<span class='va'>ibm_dataset</span><span class='op'>$</span><span class='fu'>.getitem</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>weather_pl_dataset</span><span class='op'>$</span><span class='fu'>.getitem</span><span class='op'>(</span><span class='fl'>1</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; $x
 #&gt; torch_tensor
-#&gt; (1,.,.) = 
-#&gt;   0.1990
-#&gt; 
-#&gt; (2,.,.) = 
-#&gt;   0.8220
-#&gt; 
-#&gt; (3,.,.) = 
-#&gt;   0.3616
-#&gt; 
-#&gt; (4,.,.) = 
-#&gt;   1.1640
-#&gt; 
-#&gt; (5,.,.) = 
-#&gt;  -0.3123
-#&gt; 
-#&gt; (6,.,.) = 
-#&gt;  -0.1697
-#&gt; 
-#&gt; (7,.,.) = 
-#&gt;  -1.0544
-#&gt; [ CPUFloatType{7,1,1} ]
+#&gt; -0.0922  0.0464 -0.1401 -0.3091  0.0742 -0.0211
+#&gt; -0.2213 -0.0154  2.8149  0.7516  3.5983 -0.1023
+#&gt; -0.6862 -0.4724  1.1527  2.1759 -0.2641 -0.0738
+#&gt; -0.8412 -0.8799 -0.2509 -0.3091 -0.0949  0.0623
+#&gt; -0.8670 -0.9540 -0.1401  0.0546 -0.2641  0.0865
+#&gt; -1.0220 -0.9911 -0.2694 -0.2182 -0.2077  0.1962
+#&gt; -1.1641 -1.3122 -0.2879 -0.2485 -0.2077  0.3806
+#&gt; -1.6032 -1.7939 -0.3433 -0.2788 -0.2641  0.4618
+#&gt; -1.2932 -1.0529 -0.3617 -0.3091 -0.2641  0.4245
+#&gt; -1.4095 -1.5963 -0.3617 -0.3091 -0.2641  0.3608
+#&gt; -1.7065 -1.6704 -0.3617 -0.3091 -0.2641  0.3038
+#&gt; -1.9131 -1.9174 -0.3617 -0.3091 -0.2641  0.2884
+#&gt; -2.1198 -2.0780 -0.3617 -0.3091 -0.2641  0.2928
+#&gt; -2.1972 -2.1521 -0.3617 -0.3091 -0.2641  0.3060
+#&gt; -2.0294 -1.9545 -0.3617 -0.3091 -0.2641  0.3433
+#&gt; -1.3320 -1.0652 -0.3617 -0.3091 -0.2641  0.2401
+#&gt; -1.2157 -1.0652 -0.3617 -0.3091 -0.2641  0.0974
+#&gt; -0.8800 -0.8799 -0.0662 -0.3091  0.1870  0.0338
+#&gt; -0.3892 -0.3118  1.1342 -0.2788  1.9913  0.0030
+#&gt; -0.3634 -0.4353  0.3401 -0.3091  0.8072 -0.1001
+#&gt; -0.4538 -0.4724 -0.3617 -0.3091 -0.2641 -0.2340
+#&gt; -0.6733 -0.7688 -0.3617 -0.3091 -0.2641 -0.1813
+#&gt; -0.8025 -0.9046 -0.3617 -0.3091 -0.2641 -0.0496
+#&gt; -1.0478 -0.9787  0.4509 -0.3091  0.9764  0.0996
+#&gt; -0.8541 -0.6329  1.0973  1.2364  0.5253  0.0140
+#&gt; -1.2028 -1.0652 -0.3063 -0.2182 -0.2641  0.0601
+#&gt; -1.1512 -0.9787 -0.2509 -0.2485 -0.1513 -0.0035
+#&gt; -2.1198 -2.3250 -0.3248 -0.3091 -0.2077 -0.0145
+#&gt; [ CPUFloatType{28,6} ]
 #&gt; 
 #&gt; $y
 #&gt; torch_tensor
-#&gt; (1,.,.) = 
-#&gt;  0.001 *
-#&gt;  -7.8410
-#&gt; 
-#&gt; (2,.,.) = 
-#&gt;  0.001 *
-#&gt;  -7.9140
-#&gt; 
-#&gt; (3,.,.) = 
-#&gt;  -0.1478
-#&gt; 
-#&gt; (4,.,.) = 
-#&gt;  -0.1338
-#&gt; 
-#&gt; (5,.,.) = 
-#&gt;  -0.1357
-#&gt; 
-#&gt; (6,.,.) = 
-#&gt;   0.1408
-#&gt; 
-#&gt; (7,.,.) = 
-#&gt;  0.01 *
-#&gt;   2.5840
-#&gt; [ CPUFloatType{7,1,1} ]
+#&gt;  -3.2000
+#&gt;   6.5000
+#&gt;  11.2000
+#&gt;  11.4000
+#&gt;  11.9000
+#&gt;  16.4000
+#&gt;   8.4000
+#&gt; [ CPUFloatType{7} ]
 #&gt; </div><div class='input'>
 </div></pre>
   </div>

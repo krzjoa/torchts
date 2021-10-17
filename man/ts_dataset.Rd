@@ -2,57 +2,70 @@
 % Please edit documentation in R/ts-dataset.R
 \name{ts_dataset}
 \alias{ts_dataset}
-\title{Create a time series dataset object}
+\title{Create a time series dataset from a \code{torch_tensor} matrix}
 \usage{
 ts_dataset(
   data,
   timesteps,
-  h,
-  jump = h,
-  input_columns = list(x = NULL),
-  target_columns = list(y = NULL),
+  horizon,
+  jump = horizon,
+  predictors_spec = list(x = NULL),
+  outcomes_spec = list(y = NULL),
   sample_frac = 1,
   scale = TRUE
 )
 }
 \arguments{
-\item{data}{(torch_tensor) An input data object}
+\item{data}{(\code{torch_tensor}) An input data object. For now it only accepts two-dimensional tensor, i.e. matrices.
+Each row is a timestep of a \strong{single} time series.}
 
-\item{timesteps}{(integer) Number of timesteps for input tensor}
+\item{timesteps}{(\code{integer}) Number of timesteps for input tensor.}
 
-\item{h}{(integer) Forecast horizon: number of timesteps for output tensor}
+\item{horizon}{(\code{integer}) Forecast horizon: number of timesteps for output tensor.}
 
-\item{jump}{(integer) Jump length. By default: horizon length}
+\item{jump}{(\code{integer}) Jump length. By default: horizon length.}
 
-\item{input_columns}{(list) Output specification}
+\item{predictors_spec}{(\code{list}) Input specification.
+It should be a list with names representing names of tensors served by dataset, and values being feature indices.}
 
-\item{target_columns}{(list) Output specification}
+\item{outcomes_spec}{(\code{list}) Target specification, see: examples section.
+It should be a list with names representing names of tensors served b}
 
-\item{scale}{(logical) Scale feature columns}
+\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Boolean flag or list with \code{mean} and \code{sd} values.}
 
-\item{sample_fram}{(numeric) A numeric value > 0. and <= 1 to sample a subset of data}
+\item{sample_fram}{(\code{numeric}) A numeric value > 0. and <= 1 to sample a subset of data.}
 }
 \description{
-Create a time series dataset object
+Create a time series dataset from a \code{torch_tensor} matrix
 }
 \note{
 If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+
 See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
 }
 \examples{
-suppressMessages(library(dplyr))
+library(dplyr, warn.conflicts = FALSE)
 library(torchts)
-data("mts-examples", package="MTS")
 
-ibmspko <-
-    ibmspko \%>\%
-    select(date, ibm)
+weather_pl_tensor <-
+  weather_pl \%>\%
+  filter(station == "TRN") \%>\%
+  select(-station, -rr_type) \%>\%
+  as_tensor(date)
 
-ibm_tensor <- as_tensor(ibmspko, date)
+# We obtained a matrix (i.e. tabular data in the form of 2-dimensional tensor)
+dim(weather_pl_tensor)
 
-ibm_dataset <-
-    ts_dataset(ibm_tensor, timesteps = 7, h = 7)
+weather_pl_dataset <-
+   ts_dataset(
+     data = weather_pl_tensor,
+     timesteps = 28,
+     horizon = 7,
+     predictors_spec = list(x = 2:7),
+     outcomes_spec   = list(y = 1),
+     scale = TRUE
+   )
 
-ibm_dataset$.getitem(1)
+weather_pl_dataset$.getitem(1)
 
 }
