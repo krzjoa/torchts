@@ -7,7 +7,7 @@
 #' @param jump (`integer`) Jump length. By default: horizon length.
 #' @param predictors_spec (`list`) Input specification.
 #' It should be a list with names representing names of tensors served by dataset, and values being feature indices.
-#' @param outcomes_spec (`list`) Target specification, see: examples section.
+#' @param outcomes_spec (`list`) Target specification.
 #' It should be a list with names representing names of tensors served b
 #' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
 #' @param scale (`logical` or `list`) Scale feature columns. Boolean flag or list with `mean` and `sd` values.

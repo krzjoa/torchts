@@ -17,27 +17,27 @@ rnn(
 )
 }
 \arguments{
-\item{mode}{(character) Model mode, default: 'regression'}
+\item{mode}{(\code{character}) Model mode, default: 'regression'.}
 
-\item{timesteps}{(integer or torchts::timesteps) Number of timesteps to look back}
+\item{timesteps}{(\code{integer}) Number of timesteps to look back.}
 
-\item{horizon}{(integer) Forecast horizon}
+\item{horizon}{(\code{integer}) Forecast horizon.}
 
-\item{learn_rate}{(numeric or dials::learn_rate) Learning rate}
+\item{learn_rate}{(\code{numeric} or \verb{[dials::learn_rate]}) Learning rate.}
 
-\item{epochs}{(integer or dials::epochs) Number of epochs}
+\item{epochs}{(\code{integer} or \verb{[dials::epochs]}) Number of epochs.}
 
-\item{hidden_units}{Number of hidden units}
+\item{hidden_units}{(\code{integer}) Number of hidden units.}
 
-\item{dropout}{(logical or dials::dropout) Flag to use dropout}
+\item{dropout}{(\code{logical} or \verb{[dials::dropout]}) Flag to use dropout.}
 
-\item{batch_size}{(integer) Batch size}
+\item{batch_size}{(\code{integer}) Batch size.}
 
-\item{scale}{(logical) Scale input features}
+\item{scale}{(\code{logical}) Scale input features.}
 
-\item{stop_iter}{Number of epochs without desired improvement to stop}
+\item{stop_iter}{(\code{integer}) Number of epochs without desired improvement to stop.}
 
-\item{loss_reduction}{Minimal loss reduction}
+\item{loss_reduction}{(\code{numeric}) Minimal loss reduction.}
 }
 \description{
 General interface to recurrent neural network models
@@ -45,7 +45,7 @@ General interface to recurrent neural network models
 \examples{
 library(torchts)
 library(parsnip)
-suppressMessages(library(dplyr))
+library(dplyr, warn.conflicts = FALSE)
 library(rsample)
 
 # Univariate time series

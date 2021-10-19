@@ -2,33 +2,69 @@
 % Please edit documentation in R/rnn-module.R
 \name{model_rnn}
 \alias{model_rnn}
-\title{A recurrent neural network model}
+\title{A configurable recurrent neural network model}
 \usage{
 model_rnn(
   layer = nn_gru,
   input_size,
   output_size,
   hidden_size,
-  h,
+  horizon = 1,
+  final_module = nn_linear(hidden_size, output_size * horizon),
   dropout = 0,
   batch_first = TRUE
 )
 }
 \arguments{
-\item{layer}{A recurrent \code{torch} layer}
+\item{layer}{(\code{nn_module}) A recurrent \code{torch} layer.}
 
-\item{input_size}{(integer) Input size}
+\item{input_size}{(\code{integer}) Input size.}
 
-\item{output_size}{(integer) Output size (number of target variables)}
+\item{output_size}{(\code{integer}) Output size (number of target variables).}
 
-\item{hidden_size}{(integer) Hidden layer size}
+\item{hidden_size}{(\code{integer}) A size of recurrent hidden layer.}
 
-\item{h}{(integer) Horizon size}
+\item{horizon}{(\code{integer}) Horizon size. How many steps ahead produce from the last n steps?}
 
-\item{dropout}{(logical) Use dropout}
+\item{final_module}{(\code{nn_module}) If not null, applied instead of default linear layer.}
 
-\item{batch_first}{(logical) Channel order}
+\item{dropout}{(\code{logical}) Use dropout.}
+
+\item{batch_first}{(\code{logical}) Channel order.}
 }
 \description{
-A recurrent neural network model
+New features will be added in near featre, e.g. categorical feature handling and so on.
+}
+\examples{
+library(dplyr, warn.conflicts = FALSE)
+library(torch)
+library(torchts)
+
+# Preparing data
+weather_dl <-
+  weather_pl \%>\%
+  filter(station == "TRN") \%>\%
+  select(date, tmax_daily) \%>\%
+  as_ts_dataloader(
+    tmax_daily ~ date,
+    timesteps = 30,
+    batch_size = 32
+  )
+
+# Creating a model
+rnn_net <-
+  model_rnn(
+    input_size  = 1,
+    output_size = 1,
+    hidden_size = 10
+  )
+
+print(rnn_net)
+
+# Prediction example on non-trained neural network
+batch <-
+  dataloader_next(dataloader_make_iter(weather_dl))
+
+rnn_net(batch$x)
+
 }

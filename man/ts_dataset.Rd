@@ -28,7 +28,7 @@ Each row is a timestep of a \strong{single} time series.}
 \item{predictors_spec}{(\code{list}) Input specification.
 It should be a list with names representing names of tensors served by dataset, and values being feature indices.}
 
-\item{outcomes_spec}{(\code{list}) Target specification, see: examples section.
+\item{outcomes_spec}{(\code{list}) Target specification.
 It should be a list with names representing names of tensors served b}
 
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Boolean flag or list with \code{mean} and \code{sd} values.}

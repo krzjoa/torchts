@@ -2,16 +2,17 @@
 % Please edit documentation in R/rnn-impl.R
 \name{rnn_fit}
 \alias{rnn_fit}
-\title{Basic RNN model for time series forecasting}
+\title{RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API}
 \usage{
 rnn_fit(
   formula,
   data,
   learn_rate,
   hidden_units,
-  dropout,
+  dropout = FALSE,
   timesteps = 20,
   horizon = 1,
+  recurrent_layer = nn_gru,
   optim = optim_adam(),
   validation = NULL,
   batch_size = 1,
@@ -21,14 +22,34 @@ rnn_fit(
 )
 }
 \arguments{
-\item{formula}{A formula describing, how to use the data}
+\item{formula}{(\code{formula}) A formula describing, how to use the data}
 
-\item{data}{(data.frame)}
+\item{data}{(\code{data.frame}) A input data.frame.}
 
-\item{learn_rate}{(numeric) Learning rate}
+\item{learn_rate}{(\code{numeric}) Learning rate.}
 
-\item{hidden_units}{(integer) Number of hidden units}
+\item{hidden_units}{(\code{integer}) Number of hidden units.}
+
+\item{dropout}{(\code{logical}) Use dropout (default = FALSE).}
+
+\item{timesteps}{(\code{integer}) Number of timesteps used to produce a forecast.}
+
+\item{horizon}{(\code{integer}) Forecast horizon.}
+
+\item{recurrent_layer}{(\code{nn_rnn_base}) A \code{torch} recurrent layer.}
+
+\item{optim}{(\code{function}) A function returning a \code{torch} optimizer (like \code{optim_adam})
+or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be handled and feed with
+\code{params} and \code{lr} arguments.}
+
+\item{validation}{(\code{data.frame} or \code{numeric}) Validation dataset or percent of TODO.}
+
+\item{batch_size}{(\code{integer}) Batch size.}
+
+\item{epochs}{(\code{integer}) Number of epochs to train the network.}
+
+\item{loss_fn}{(\code{function}) A \code{torch} loss function.}
 }
 \description{
-Basic RNN model for time series forecasting
+RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API
 }

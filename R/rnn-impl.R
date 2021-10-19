@@ -1,19 +1,33 @@
-#' Basic RNN model for time series forecasting
+#' RNN model for time series forecasting - `torchts` engine for `parsnip` API
 #'
-#' @param formula A formula describing, how to use the data
-#' @param data (data.frame)
-#' @param learn_rate (numeric) Learning rate
-#' @param hidden_units (integer) Number of hidden units
+#' @param formula (`formula`) A formula describing, how to use the data
+#' @param data (`data.frame`) A input data.frame.
+#' @param learn_rate (`numeric`) Learning rate.
+#' @param hidden_units (`integer`) Number of hidden units.
+#' @param dropout (`logical`) Use dropout (default = FALSE).
+#' @param timesteps (`integer`) Number of timesteps used to produce a forecast.
+#' @param horizon (`integer`) Forecast horizon.
+#' @param recurrent_layer (`nn_rnn_base`) A `torch` recurrent layer.
+#' @param optim (`function`) A function returning a `torch` optimizer (like `optim_adam`)
+#' or R expression like `optim_adam(amsgrad = TRUE)`. Such expression will be handled and feed with
+#' `params` and `lr` arguments.
+#' @param validation (`data.frame` or `numeric`) Validation dataset or percent of TODO.
+#' @param batch_size (`integer`) Batch size.
+#' @param epochs (`integer`) Number of epochs to train the network.
+#' @param loss_fn (`function`) A `torch` loss function.
 #'
 #' @importFrom torch nn_gru
+#' @importFrom rsample training testing
 #'
 #' @export
-rnn_fit <- function(formula, data,
+rnn_fit <- function(formula,
+                    data,
                     learn_rate,
                     hidden_units,
-                    dropout,
+                    dropout = FALSE,
                     timesteps = 20,
                     horizon = 1,
+                    recurrent_layer = nn_gru,
                     optim = optim_adam(),
                     validation = NULL,
                     batch_size = 1,
@@ -37,38 +51,35 @@ rnn_fit <- function(formula, data,
   optim <- rlang::enquo(optim)
 
   # Validation if defined
-  if (!is.null(validation) &
-      !is.data.frame(validation)) {
+  if (!is.null(validation)) {
+    if(!is.numeric(validation)) {
 
-    # TODO: implement own ts_split? (optimization)
+      data_split <-
+        timetk::time_series_split(
+          data     = data,
+          date_var = index,
+          lag      = timesteps,
+          initial  = floor(nrow(data) * (1 - validation)),
+          assess   = floor(nrow(data) * validation)
+        )
 
-    browser()
+      data       <- rsample::training(data_split)
+      validation <- rsample::testing(data_split)
 
-    split <- timetk::time_series_split(
-
-    )
-    # split <-
-    #   timetk::time_series_split(
-    #     data     = data,
-    #     date_var = index,
-    #     initial  =
-    #   )
+    }
 
     # TODO: simplify
-    train_dl <-
-      as_ts_dataset(
-        data        = data,
+    valid_dl <-
+      as_ts_dataloader(
+        data        = validation,
         formula     = formula,
         timesteps   = timesteps,
-        h           = horizon,
-        scale       = scale
+        horizon     = horizon,
+        scale       = scale,
+        batch_size  = batch_size
       )
 
-    train_dl <-
-      dataloader(train_dataset, batch_size = batch_size)
   }
-
-  # TODO: simplify
 
   train_dl <-
     as_ts_dataloader(
@@ -88,12 +99,12 @@ rnn_fit <- function(formula, data,
   # Creating a model
   net <-
     model_rnn(
-        layer             = nn_gru,
-        input_size        = input_size,
-        output_size       = output_size,
-        hidden_size       = hidden_units,
-        h                 = horizon,
-        dropout           = 0
+        layer       = recurrent_layer,
+        input_size  = input_size,
+        output_size = output_size,
+        hidden_size = hidden_units,
+        horizon     = horizon,
+        dropout     = dropout
     )
 
   # Preparing optimizer

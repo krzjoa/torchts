@@ -1,21 +1,21 @@
 #' General interface to recurrent neural network models
 #'
-#' @param mode (character) Model mode, default: 'regression'
-#' @param timesteps (integer or torchts::timesteps) Number of timesteps to look back
-#' @param horizon (integer) Forecast horizon
-#' @param learn_rate (numeric or dials::learn_rate) Learning rate
-#' @param epochs (integer or dials::epochs) Number of epochs
-#' @param hidden_units Number of hidden units
-#' @param dropout (logical or dials::dropout) Flag to use dropout
-#' @param batch_size (integer) Batch size
-#' @param stop_iter Number of epochs without desired improvement to stop
-#' @param loss_reduction Minimal loss reduction
-#' @param scale (logical) Scale input features
+#' @param mode (`character`) Model mode, default: 'regression'.
+#' @param timesteps (`integer`) Number of timesteps to look back.
+#' @param horizon (`integer`) Forecast horizon.
+#' @param learn_rate (`numeric` or `[dials::learn_rate]`) Learning rate.
+#' @param epochs (`integer` or `[dials::epochs]`) Number of epochs.
+#' @param hidden_units (`integer`) Number of hidden units.
+#' @param dropout (`logical` or `[dials::dropout]`) Flag to use dropout.
+#' @param batch_size (`integer`) Batch size.
+#' @param stop_iter (`integer`) Number of epochs without desired improvement to stop.
+#' @param loss_reduction (`numeric`) Minimal loss reduction.
+#' @param scale (`logical`) Scale input features.
 #'
 #' @examples
 #' library(torchts)
 #' library(parsnip)
-#' suppressMessages(library(dplyr))
+#' library(dplyr, warn.conflicts = FALSE)
 #' library(rsample)
 #'
 #' # Univariate time series
