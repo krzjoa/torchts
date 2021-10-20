@@ -1,9 +1,9 @@
 #' A configurable recurrent neural network model
 #'
 #' @description
-#' New features will be added in near featre, e.g. categorical feature handling and so on.
+#' New features will be added in near future, e.g. categorical feature handling and so on.
 #'
-#' @param layer (`nn_module`) A recurrent `torch` layer.
+#' @param rnn_layer (`nn_rnn_base`) A recurrent `torch` layer.
 #' @param input_size (`integer`) Input size.
 #' @param output_size (`integer`) Output size (number of target variables).
 #' @param hidden_size (`integer`) A size of recurrent hidden layer.
@@ -51,7 +51,7 @@ model_rnn <- torch::nn_module(
 
   "model_rnn",
 
-  initialize = function(layer = nn_gru,
+  initialize = function(rnn_layer = nn_gru,
                         input_size, output_size,
                         hidden_size, horizon = 1,
                         final_module = nn_linear(hidden_size, output_size * horizon),
@@ -60,7 +60,7 @@ model_rnn <- torch::nn_module(
     self$horizon <- horizon
 
     self$rnn <-
-      layer(
+      rnn_layer(
         input_size  = input_size,
         hidden_size = hidden_size,
         num_layers  = 1,

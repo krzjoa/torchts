@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Training helper — train_batch • torchts</title>
+<title>Fit a neural network — fit_network • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Training helper — train_batch" />
-<meta property="og:description" content="Training helper" />
+<meta property="og:title" content="Fit a neural network — fit_network" />
+<meta property="og:description" content="Fit a neural network" />
 
 
 
@@ -126,16 +126,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Training helper</h1>
+    <h1>Fit a neural network</h1>
     <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/training-helpers.R'><code>R/training-helpers.R</code></a></small>
-    <div class="hidden name"><code>train_batch.Rd</code></div>
+    <div class="hidden name"><code>fit_network.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Training helper</p>
+    <p>Fit a neural network</p>
     </div>
 
-    <pre class="usage"><span class='fu'>train_batch</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>target</span>, <span class='va'>net</span>, <span class='va'>optimizer</span>, loss_fun <span class='op'>=</span> <span class='va'>nnf_mse_loss</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>fit_network</span><span class='op'>(</span><span class='va'>net</span>, <span class='va'>train_dl</span>, valid_dl <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>epochs</span>, <span class='va'>optimizer</span>, <span class='va'>loss_fn</span><span class='op'>)</span></pre>
 
 
 

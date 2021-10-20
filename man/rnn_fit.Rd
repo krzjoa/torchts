@@ -7,12 +7,12 @@
 rnn_fit(
   formula,
   data,
-  learn_rate,
+  learn_rate = 0.9,
   hidden_units,
   dropout = FALSE,
   timesteps = 20,
   horizon = 1,
-  recurrent_layer = nn_gru,
+  rnn_layer = nn_gru,
   optim = optim_adam(),
   validation = NULL,
   batch_size = 1,
@@ -36,7 +36,7 @@ rnn_fit(
 
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
-\item{recurrent_layer}{(\code{nn_rnn_base}) A \code{torch} recurrent layer.}
+\item{rnn_layer}{(\code{nn_rnn_base}) A \code{torch} recurrent layer.}
 
 \item{optim}{(\code{function}) A function returning a \code{torch} optimizer (like \code{optim_adam})
 or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be handled and feed with
@@ -52,4 +52,43 @@ or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be 
 }
 \description{
 RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API
+}
+\examples{
+library(dplyr, warn.conflicts = FALSE)
+library(torch)
+library(torchts)
+library(timetk)
+
+# Preparing a dataset
+tarnow_temp <-
+   weather_pl \%>\%
+   filter(station == "TRN") \%>\%
+   select(date, tmax_daily, tmin_daily, press_mean_daily)
+
+# Splitting dataset
+data_split <-
+   time_series_split(
+      tarnow_temp, date,
+      initial = "18 years",
+      assess  = "2 years",
+      lag     = 20
+   )
+
+# Training a model
+rnn_model <-
+   rnn_fit(
+     tmax_daily ~ date,
+     data = training(data_split),
+     hidden_units = 10,
+     timesteps = 20,
+     horizon   = 1,
+     epochs = 1,
+     batch_size = 32
+   )
+
+# Prediction
+
+
+
+
 }

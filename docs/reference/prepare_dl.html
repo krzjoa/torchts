@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Training helper — train_batch • torchts</title>
+<title>Prepare dataloders — prepare_dl • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Training helper — train_batch" />
-<meta property="og:description" content="Training helper" />
+<meta property="og:title" content="Prepare dataloders — prepare_dl" />
+<meta property="og:description" content="Prepare dataloders" />
 
 
 
@@ -126,17 +126,64 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Training helper</h1>
-    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/training-helpers.R'><code>R/training-helpers.R</code></a></small>
-    <div class="hidden name"><code>train_batch.Rd</code></div>
+    <h1>Prepare dataloders</h1>
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/resolve-dataloaders.R'><code>R/resolve-dataloaders.R</code></a></small>
+    <div class="hidden name"><code>prepare_dl.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Training helper</p>
+    <p>Prepare dataloders</p>
     </div>
 
-    <pre class="usage"><span class='fu'>train_batch</span><span class='op'>(</span><span class='va'>input</span>, <span class='va'>target</span>, <span class='va'>net</span>, <span class='va'>optimizer</span>, loss_fun <span class='op'>=</span> <span class='va'>nnf_mse_loss</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prepare_dl</span><span class='op'>(</span>
+  <span class='va'>data</span>,
+  <span class='va'>formula</span>,
+  <span class='va'>index</span>,
+  <span class='va'>timesteps</span>,
+  <span class='va'>horizon</span>,
+  validation <span class='op'>=</span> <span class='cn'>NULL</span>,
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  <span class='va'>batch_size</span>
+<span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>data</th>
+      <td><p>(<code>data.frame</code>) An input data.frame object with.
+For now only <strong>single</strong> data frames are handled with no categorical features.</p></td>
+    </tr>
+    <tr>
+      <th>formula</th>
+      <td><p>(<code>formula</code>) A formula describing, how to use the data</p></td>
+    </tr>
+    <tr>
+      <th>index</th>
+      <td><p>(<code>character</code>) The index column name.</p></td>
+    </tr>
+    <tr>
+      <th>timesteps</th>
+      <td><p>(<code>integer</code>) The time series chunk length.</p></td>
+    </tr>
+    <tr>
+      <th>horizon</th>
+      <td><p>(<code>integer</code>) Forecast horizon.</p></td>
+    </tr>
+    <tr>
+      <th>validation</th>
+      <td><p>(<code>data.frame</code> or <code>numeric</code>) Validation dataset or percent of TODO.</p></td>
+    </tr>
+    <tr>
+      <th>scale</th>
+      <td><p>(<code>logical</code> or <code>list</code>) Scale feature columns. Logical value or two-element list.
+with values (mean, std)</p></td>
+    </tr>
+    <tr>
+      <th>batch_size</th>
+      <td><p>(<code>integer</code>) Batch size.</p></td>
+    </tr>
+    </table>
 
 
   </div>

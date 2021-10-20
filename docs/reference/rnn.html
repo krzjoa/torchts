@@ -152,47 +152,47 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>mode</th>
-      <td><p>(character) Model mode, default: 'regression'</p></td>
+      <td><p>(<code>character</code>) Model mode, default: 'regression'.</p></td>
     </tr>
     <tr>
       <th>timesteps</th>
-      <td><p>(integer or torchts::timesteps) Number of timesteps to look back</p></td>
+      <td><p>(<code>integer</code>) Number of timesteps to look back.</p></td>
     </tr>
     <tr>
       <th>horizon</th>
-      <td><p>(integer) Forecast horizon</p></td>
+      <td><p>(<code>integer</code>) Forecast horizon.</p></td>
     </tr>
     <tr>
       <th>learn_rate</th>
-      <td><p>(numeric or dials::learn_rate) Learning rate</p></td>
+      <td><p>(<code>numeric</code> or <code>[dials::learn_rate]</code>) Learning rate.</p></td>
     </tr>
     <tr>
       <th>epochs</th>
-      <td><p>(integer or dials::epochs) Number of epochs</p></td>
+      <td><p>(<code>integer</code> or <code>[dials::epochs]</code>) Number of epochs.</p></td>
     </tr>
     <tr>
       <th>hidden_units</th>
-      <td><p>Number of hidden units</p></td>
+      <td><p>(<code>integer</code>) Number of hidden units.</p></td>
     </tr>
     <tr>
       <th>dropout</th>
-      <td><p>(logical or dials::dropout) Flag to use dropout</p></td>
+      <td><p>(<code>logical</code> or <code>[dials::dropout]</code>) Flag to use dropout.</p></td>
     </tr>
     <tr>
       <th>batch_size</th>
-      <td><p>(integer) Batch size</p></td>
+      <td><p>(<code>integer</code>) Batch size.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>(logical) Scale input features</p></td>
+      <td><p>(<code>logical</code>) Scale input features.</p></td>
     </tr>
     <tr>
       <th>stop_iter</th>
-      <td><p>Number of epochs without desired improvement to stop</p></td>
+      <td><p>(<code>integer</code>) Number of epochs without desired improvement to stop.</p></td>
     </tr>
     <tr>
       <th>loss_reduction</th>
-      <td><p>Minimal loss reduction</p></td>
+      <td><p>(<code>numeric</code>) Minimal loss reduction.</p></td>
     </tr>
     </table>
 
@@ -200,7 +200,7 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://parsnip.tidymodels.org'>parsnip</a></span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/base/message.html'>suppressMessages</a></span><span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>, warn.conflicts <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>
 
 <span class='co'># Univariate time series</span>

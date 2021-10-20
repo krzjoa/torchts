@@ -5,7 +5,7 @@
 \title{A configurable recurrent neural network model}
 \usage{
 model_rnn(
-  layer = nn_gru,
+  rnn_layer = nn_gru,
   input_size,
   output_size,
   hidden_size,
@@ -16,7 +16,7 @@ model_rnn(
 )
 }
 \arguments{
-\item{layer}{(\code{nn_module}) A recurrent \code{torch} layer.}
+\item{rnn_layer}{(\code{nn_rnn_base}) A recurrent \code{torch} layer.}
 
 \item{input_size}{(\code{integer}) Input size.}
 
@@ -33,7 +33,7 @@ model_rnn(
 \item{batch_first}{(\code{logical}) Channel order.}
 }
 \description{
-New features will be added in near featre, e.g. categorical feature handling and so on.
+New features will be added in near future, e.g. categorical feature handling and so on.
 }
 \examples{
 library(dplyr, warn.conflicts = FALSE)

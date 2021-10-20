@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A recurrent neural network model — model_rnn • torchts</title>
+<title>A configurable recurrent neural network model — model_rnn • torchts</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="A recurrent neural network model — model_rnn" />
-<meta property="og:description" content="A recurrent neural network model" />
+<meta property="og:title" content="A configurable recurrent neural network model — model_rnn" />
+<meta property="og:description" content="New features will be added in near future, e.g. categorical feature handling and so on." />
 
 
 
@@ -126,21 +126,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A recurrent neural network model</h1>
+    <h1>A configurable recurrent neural network model</h1>
     <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/rnn-module.R'><code>R/rnn-module.R</code></a></small>
     <div class="hidden name"><code>model_rnn.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A recurrent neural network model</p>
+    <p>New features will be added in near future, e.g. categorical feature handling and so on.</p>
     </div>
 
     <pre class="usage"><span class='fu'>model_rnn</span><span class='op'>(</span>
-  layer <span class='op'>=</span> <span class='va'>nn_gru</span>,
+  rnn_layer <span class='op'>=</span> <span class='va'>nn_gru</span>,
   <span class='va'>input_size</span>,
   <span class='va'>output_size</span>,
   <span class='va'>hidden_size</span>,
-  <span class='va'>h</span>,
+  horizon <span class='op'>=</span> <span class='fl'>1</span>,
+  final_module <span class='op'>=</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/nn_linear.html'>nn_linear</a></span><span class='op'>(</span><span class='va'>hidden_size</span>, <span class='va'>output_size</span> <span class='op'>*</span> <span class='va'>horizon</span><span class='op'>)</span>,
   dropout <span class='op'>=</span> <span class='fl'>0</span>,
   batch_first <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></pre>
@@ -149,36 +150,109 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>layer</th>
-      <td><p>A recurrent <code>torch</code> layer</p></td>
+      <th>rnn_layer</th>
+      <td><p>(<code>nn_rnn_base</code>) A recurrent <code>torch</code> layer.</p></td>
     </tr>
     <tr>
       <th>input_size</th>
-      <td><p>(integer) Input size</p></td>
+      <td><p>(<code>integer</code>) Input size.</p></td>
     </tr>
     <tr>
       <th>output_size</th>
-      <td><p>(integer) Output size (number of target variables)</p></td>
+      <td><p>(<code>integer</code>) Output size (number of target variables).</p></td>
     </tr>
     <tr>
       <th>hidden_size</th>
-      <td><p>(integer) Hidden layer size</p></td>
+      <td><p>(<code>integer</code>) A size of recurrent hidden layer.</p></td>
     </tr>
     <tr>
-      <th>h</th>
-      <td><p>(integer) Horizon size</p></td>
+      <th>horizon</th>
+      <td><p>(<code>integer</code>) Horizon size. How many steps ahead produce from the last n steps?</p></td>
+    </tr>
+    <tr>
+      <th>final_module</th>
+      <td><p>(<code>nn_module</code>) If not null, applied instead of default linear layer.</p></td>
     </tr>
     <tr>
       <th>dropout</th>
-      <td><p>(logical) Use dropout</p></td>
+      <td><p>(<code>logical</code>) Use dropout.</p></td>
     </tr>
     <tr>
       <th>batch_first</th>
-      <td><p>(logical) Channel order</p></td>
+      <td><p>(<code>logical</code>) Channel order.</p></td>
     </tr>
     </table>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>, warn.conflicts <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://torch.mlverse.org/docs'>torch</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
+
+<span class='co'># Preparing data</span>
+<span class='va'>weather_dl</span> <span class='op'>&lt;-</span>
+  <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"TRN"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>tmax_daily</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='as_ts_dataloader.html'>as_ts_dataloader</a></span><span class='op'>(</span>
+    <span class='va'>tmax_daily</span> <span class='op'>~</span> <span class='va'>date</span>,
+    timesteps <span class='op'>=</span> <span class='fl'>30</span>,
+    batch_size <span class='op'>=</span> <span class='fl'>32</span>
+  <span class='op'>)</span>
+
+<span class='co'># Creating a model</span>
+<span class='va'>rnn_net</span> <span class='op'>&lt;-</span>
+  <span class='fu'>model_rnn</span><span class='op'>(</span>
+    input_size  <span class='op'>=</span> <span class='fl'>1</span>,
+    output_size <span class='op'>=</span> <span class='fl'>1</span>,
+    hidden_size <span class='op'>=</span> <span class='fl'>10</span>
+  <span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>rnn_net</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; An `nn_module` containing 401 parameters.
+#&gt; 
+#&gt; ── Modules ─────────────────────────────────────────────────────────────────────
+#&gt; • rnn: &lt;nn_gru&gt; #390 parameters
+#&gt; • final_module: &lt;nn_linear&gt; #11 parameters</div><div class='input'>
+<span class='co'># Prediction example on non-trained neural network</span>
+<span class='va'>batch</span> <span class='op'>&lt;-</span>
+  <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>weather_dl</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='fu'>rnn_net</span><span class='op'>(</span><span class='va'>batch</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; torch_tensor
+#&gt; (1,.,.) = 
+#&gt;  0.01 *
+#&gt;  -4.7440
+#&gt; 
+#&gt; (2,.,.) = 
+#&gt;  0.01 *
+#&gt;  -4.0092
+#&gt; 
+#&gt; (3,.,.) = 
+#&gt;  0.01 *
+#&gt;  -3.7970
+#&gt; 
+#&gt; (4,.,.) = 
+#&gt;  0.01 *
+#&gt;  -3.9700
+#&gt; 
+#&gt; (5,.,.) = 
+#&gt;  0.01 *
+#&gt;  -3.2519
+#&gt; 
+#&gt; (6,.,.) = 
+#&gt;  0.01 *
+#&gt;  -2.9918
+#&gt; 
+#&gt; (7,.,.) = 
+#&gt;  0.01 *
+#&gt;  -5.9325
+#&gt; 
+#&gt; (8,.,.) = 
+#&gt;  0.01 *
+#&gt; ... [the output was truncated (use n=-1 to disable)]
+#&gt; [ CPUFloatType{32,1,1} ][ grad_fn = &lt;SliceBackward&gt; ]</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
