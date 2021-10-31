@@ -129,7 +129,8 @@ rnn_fit <- function(formula,
         output_size = output_size,
         hidden_size = hidden_units,
         horizon     = horizon,
-        dropout     = dropout
+        dropout     = dropout,
+        batch_first = TRUE
     )
 
   # Preparing optimizer

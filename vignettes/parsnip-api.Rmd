@@ -1,5 +1,5 @@
 ---
-title: "Multivariate Time Series"
+title: "parsnip API"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{univariate-time-series}
@@ -86,7 +86,7 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 # Clear outcome variable
 cleared_new_data <- 
   testing(data_split) %>% 
-  clear_outcome(date, temp, 20)
+  clear_outcome(date, tmax_daily, 20)
 
 # Forecast
 fcast <-
@@ -94,7 +94,7 @@ fcast <-
   predict(new_data = testing(data_split))
 
 fcast_vs_true <- 
-  bind_cols(testing(data_split), fcast$.pred)
+  bind_cols(testing(data_split), c(rep(NA, 20), fcast$.pred_V1))
 ```
 
 ## Multivariate time series

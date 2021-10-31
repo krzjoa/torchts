@@ -90,7 +90,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     # TODO: possible multiple elements in the list
 
-    .predictors_columns  <- list(x = predictor)
+    .predictors_columns  <- list(x = predictors)
     .outcomes_columns    <- list(y = outcomes)
     .index_columns       <- index
 
