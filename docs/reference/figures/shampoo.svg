@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 576 288" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<style type='text/css'>
+<![CDATA[
+
+        line, polyline, polygon, path, rect, circle {
+          fill: none;
+          stroke: #000000;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          stroke-miterlimit: 10.00;
+        }
+]]>
+</style>
+  <rect style="stroke: none; fill: #ffffff" width="100%" height="100%" />
+  <defs>
+    <clipPath id="clip_0_288_576_0">
+      <rect x="0" y="0" width="576" height="288" />
+    </clipPath>
+  </defs>
+  <polyline points="26.18,206.65 41.14,262.53 56.1,245.22 71.06,274.91 86.03,246.53 100.99,252.02 115.95,222.56 130.91,225.96 145.87,240.71 160.83,273.23 175.79,173.85 190.75,243.92 205.71,240.01 220.68,260.86 235.64,232.66 250.6,203.25 265.56,241.36 280.52,196.88 295.48,225.26 310.44,189.16 325.4,195.53 340.36,134.25 355.32,207.35 370.29,171.15 385.25,172.36 400.21,125.5 415.17,183.43 430.13,126.02 445.09,143.7 460.05,126.9 475.01,62.64 489.97,140.77 504.94,13.09 519.9,109.27 534.86,59.95 549.82,29.42" id="polyline-0001" style="stroke-width: 9.68" clip-path="url(#clip_0_288_576_0)" />
+</svg>

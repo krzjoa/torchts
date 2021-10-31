@@ -79,7 +79,7 @@ rnn_fit <- function(formula,
   # Może nie musiałaby się tego uczyć?
 
   # Sieci można używać bez treningu, ale nie modele w parsnipie
-  # Trick: zero epok
+  # Trik: zero epok
 
   # Parse formula
   parsed_formula <- torchts_parse_formula(formula, data)

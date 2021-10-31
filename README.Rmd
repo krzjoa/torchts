@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# torchts
+# torchts <img src='man/figures/logo-small.png' align="right" height="139" />
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/torchts)](https://CRAN.R-project.org/package=torchts)
