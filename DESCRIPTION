@@ -1,13 +1,15 @@
 Package: torchts
-Title: Time Series Models with torch
-Version: 0.0.1
+Title: Time series Models with torch
+Version: 0.1.0
 Authors@R: 
     person(given   = "Krzysztof",
            family  = "Joachimiak",
            role    = c("aut", "cre"),
            email   = "joachimiak.krzysztof@gmail.com",
            comment = c(ORCID = "0000-0003-4780-7947"))
-Description: What the package does (one paragraph).
+Description: Deep Learning torch models for time series forecasting.
+             It includes easy-to-use torch models and data transformation utilities 
+             and provides parsnip API to these models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,7 +21,8 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    timetk
 VignetteBuilder: knitr
 Imports: 
     rsample,
