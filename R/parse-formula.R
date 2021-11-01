@@ -32,12 +32,16 @@ torchts_parse_formula <- function(formula, data){
   date_types <- c("Date", "POSIXt", "POSIXlt", "POSIXct")
   available_cols <- colnames(data)
 
+  raw_rhs <- rlang::f_rhs(formula)
+
+  if (!is.call(raw_rhs))
+    raw_rhs <- list(raw_rhs)
+
+  parsed_rhs <-
+    purrr::map_dfr(raw_rhs, .recursive_parse)
+
   formula_terms <- terms(formula, data = data)
   lhs <- as.character(rlang::f_lhs(formula))
-
-  rhs_vars <-
-    as.character(rlang::f_rhs(formula)) %>%
-    .[. != "+"]
 
   variable_classes <-
     tibble(.var = colnames(data),
@@ -51,11 +55,6 @@ torchts_parse_formula <- function(formula, data){
   filtered_variables <-
     Filter(function(x)!is.null(x), as.list(all_variables))
 
-  selected_rhs <- match(rhs_vars, as.character(filtered_variables))
-  selected_rhs <- selected_rhs[!is.na(selected_rhs)]
-
-  rhs <- filtered_variables[selected_rhs]
-
   # Removing "list" from call
   if (length(lhs) > 1) {
     lhs <- filtered_variables[2][[1]]
@@ -67,9 +66,6 @@ torchts_parse_formula <- function(formula, data){
       .role = list("outcome")
     )
   }
-
-  parsed_rhs <-
-    purrr::map_dfr(rhs, .recursive_parse)
 
   output <-
     bind_rows(
@@ -121,6 +117,8 @@ torchts_parse_formula <- function(formula, data){
 
 .recursive_parse <- function(object, .role = NULL){
 
+  out <- NULL
+
   if (typeof(object) == "symbol") {
 
     if (is.null(.role))
@@ -140,6 +138,11 @@ torchts_parse_formula <- function(formula, data){
       .role  <- c(.role, .candidate_role)
     object <- rlang::call_args(object)
     out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .role))
+  } else if (typeof(object) == "name") {
+    out <- tibble(
+      .var  = as.character(object),
+      .role = list(.role)
+    )
   }
 
   out

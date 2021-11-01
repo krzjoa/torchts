@@ -3,12 +3,27 @@
 #' @param mode (`character`) Model mode, default: 'regression'.
 #' @param timesteps (`integer`) Number of timesteps to look back.
 #' @param horizon (`integer`) Forecast horizon.
-#' @param learn_rate (`numeric` or `[dials::learn_rate]`) Learning rate.
-#' @param epochs (`integer` or `[dials::epochs]`) Number of epochs.
+#' @param learn_rate (`numeric` or [`dials::learn_rate`]) Learning rate.
+#' @param epochs (`integer` or [`dials::epochs`]) Number of epochs.
 #' @param hidden_units (`integer`) Number of hidden units.
-#' @param dropout (`logical` or `[dials::dropout]`) Flag to use dropout.
+#' @param dropout (`logical` or [`dials::dropout`]) Flag to use dropout.
 #' @param batch_size (`integer`) Batch size.
 #' @param scale (`logical`) Scale input features.
+#'
+#' @details
+#' This is a `parsnip` API to the recurent network models. For now the only
+#' available engine is `torchts_rnn`. This is the first release - in the next version
+#' additional features will be added such as handling *categorical* or *static* variables.
+#'
+#' @section Empty model
+#' Neural networks, unlike many other models (e.g. linear models) can return values
+#' before any training epoch ended. It's because every neural networks model starts with
+#' "random" parameters, which are gradually tuned in the following iterations according to the
+#' Gradient Descent algorithm.
+#'
+#' If you'd like to get a non-trained model, simply set `epochs = 0`.
+#' You still have to "fit" the model to stick the standard `parsnip`'s API procedure.
+#'
 #'
 #' @examples
 #' library(torchts)

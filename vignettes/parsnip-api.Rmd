@@ -94,15 +94,28 @@ fcast <-
   predict(new_data = testing(data_split))
 
 fcast_vs_true <- 
-  bind_cols(testing(data_split), c(rep(NA, 20), fcast$.pred_V1))
+  bind_cols(
+    n = 1:nrow(testing(data_split)),
+    actual = testing(data_split)$tmax_daily, 
+    forecast = c(rep(NA, 20), fcast$.pred_V1)
+  ) %>% 
+  tidyr::pivot_longer(c(actual, forecast))
+  
+
+ggplot(fcast_vs_true) + 
+  geom_line(aes(n, value, col = name)) +
+  theme_minimal() + 
+  ggtitle("Forecast vs actual values")
 ```
 
+
 ## Multivariate time series
+
+In the next next, we're adding new predictor: `press_mean_daily`. It means that we extend the autoregressive model we obtained in the previous exercise by providing a variable that could be recognised as **external regressor** (what is a term commonly used in the context of methods like ARIMA etc.).
 
 ```{r multivariate.ts}
 TIMESTEPS <- 20
 HORIZON   <- 1
-dev <- FALSE
 
 # Training 
 rnn_model <- 
@@ -117,23 +130,49 @@ rnn_model <-
   fit(tmax_daily ~ press_mean_daily + tmax_daily + index(date), 
       data = training(data_split))
 ```
+```{r model.forecast.2}
+# Clear outcome variable
+cleared_new_data <- 
+  testing(data_split) %>% 
+  clear_outcome(date, tmax_daily, 20)
 
+# Forecast
+fcast <-
+  rnn_model %>%
+  predict(new_data = testing(data_split))
+
+fcast_vs_true <- 
+  bind_cols(
+    n = 1:nrow(testing(data_split)),
+    actual = testing(data_split)$tmax_daily, 
+    forecast = c(rep(NA, 20), fcast$.pred_V1)
+  ) %>% 
+  tidyr::pivot_longer(c(actual, forecast))
+  
+
+ggplot(fcast_vs_true) + 
+  geom_line(aes(n, value, col = name)) +
+  theme_minimal() + 
+  ggtitle("Forecast vs actual values")
+```
 
 
 ## Multivariate time series with multiple outcomes
 
+Finally, the most complex example. Here we'd like to forecast future values of 
+two mutually related variables, i.e.: `tmin_daily` and `tmax_daily`. 
+In this model we're dealing with a "double" autoregressive model, similar in some respects to the [vector auregession model (VAR)](https://fable.tidyverts.org/reference/VAR.html).
 
 ```{r multivariate.ts.with.multioutput}
 TIMESTEPS <- 20
 HORIZON   <- 1
-dev <- FALSE
 
 # Training 
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
-    epochs       = 2,
+    epochs       = 25,
     hidden_units = 5,
     batch_size   = 32,
     scale        = TRUE 
@@ -149,16 +188,38 @@ cleared_new_data <-
   testing(data_split) %>% 
   clear_outcome(date, c(tmax_daily, tmin_daily), 20)
 
-# debugonce(torchts:::predict.torchts_rnn)
-
-dev <- TRUE
-
-rnn_model$preproc$y_var
-
 # Forecast
 fcast <-
   rnn_model %>%
   predict(new_data = cleared_new_data)
+
+tmax_daily <- 
+  bind_cols(
+    n        = 1:nrow(testing(data_split)),
+    actual   = testing(data_split)$tmax_daily, 
+    forecast = c(rep(NA, 20), fcast$.pred_tmax_daily),
+    variable = "tmax_daily"
+  ) %>% 
+  tidyr::pivot_longer(c(actual, forecast))
+
+tmin_daily <- 
+  bind_cols(
+    n        = 1:nrow(testing(data_split)),
+    actual   = testing(data_split)$tmin_daily, 
+    forecast = c(rep(NA, 20), fcast$.pred_tmin_daily),
+    variable = "tmin_daily"
+  ) %>% 
+  tidyr::pivot_longer(c(actual, forecast))
+
+fcast_vs_true <- 
+  bind_rows(tmax_daily, tmin_daily)
+  
+ggplot(fcast_vs_true) + 
+  geom_line(aes(n, value, col = name)) +
+  theme_minimal() + 
+  ggtitle("Forecast vs actual values") + 
+  facet_wrap(~variable)
+
 ```
 
 

@@ -40,6 +40,9 @@
 #'       lag     = 20
 #'    )
 #'
+#' # Empty_mde
+#'
+#'
 #' # Training a model
 #' rnn_model <-
 #'    rnn_fit(
@@ -149,7 +152,7 @@ rnn_fit <- function(formula,
 
   # Return neural network structure
   structure(
-    class = "torchts_rnn",
+    class = c("torchts_rnn", "torchts_model"),
     list(
       net        = net,
       index      = index,
@@ -220,5 +223,8 @@ predict.torchts_rnn <- function(object, new_data){
 
   preds
 }
+
+
+
 
 #

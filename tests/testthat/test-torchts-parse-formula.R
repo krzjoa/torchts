@@ -125,31 +125,27 @@ test_that("Variables that not appear in the data.frame", {
 })
 
 
-# test_that("Test formula with multiple predictors and outcomes where index is first", {
-#
-#   output <-
-#     torchts_parse_formula(
-#       min_temp + max_temp ~ index(date) + min_temp + max_temp, tarnow_temp
-#     )
-#
-#
-#   torchts_parse_formula(
-#     min_temp + max_temp ~ min_temp + max_temp + , tarnow_temp
-#   )
-#
-#   expected <- tribble(
-#     ~ .var, ~ .role, ~ .type,
-#     "max_temp", "outcome", "numeric",
-#     "min_temp", "outcome", "numeric",
-#     "date", "index", "Date",
-#     "max_temp", "predictor", "numeric",
-#     "min_temp", "predictor", "numeric"
-#   )
-#
-#   class(expected$.role) <- "list"
-#
-#   expect_equal(expected, output)
-# })
+test_that("Test formula with multiple predictors and outcomes where index is first", {
+
+  output <-
+    torchts_parse_formula(
+      min_temp + max_temp ~ index(date) + min_temp + max_temp,
+      tarnow_temp
+    )
+
+  expected <- tribble(
+    ~ .var, ~ .role, ~ .type,
+    "min_temp", "outcome", "numeric",
+    "max_temp", "outcome", "numeric",
+    "date", "index", "Date",
+    "min_temp", "predictor", "numeric",
+    "max_temp", "predictor", "numeric"
+  )
+
+  class(expected$.role) <- "list"
+
+  expect_equal(expected, output)
+})
 
 
 
