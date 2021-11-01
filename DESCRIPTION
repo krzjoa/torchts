@@ -25,4 +25,5 @@ Imports:
     rsample,
     glue,
     torch,
-    dplyr
+    dplyr,
+    parsnip
