@@ -21,3 +21,8 @@ Suggests:
     rmarkdown,
     testthat
 VignetteBuilder: knitr
+Imports: 
+    rsample,
+    glue,
+    torch,
+    dplyr
