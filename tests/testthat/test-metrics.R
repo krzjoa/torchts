@@ -24,9 +24,9 @@ test_that("MAE", {
   input <- as_tensor(input)
 
   expect_equal(
-    as.vector(nnf_mae(input, target)),
-    2.762,
-    tolerance = 1e-7
+    nnf_mae(input, target),
+    as_tensor(2.762),
+    tolerance = 1e-10
   )
 
 })

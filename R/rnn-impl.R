@@ -40,9 +40,6 @@
 #'       lag     = 20
 #'    )
 #'
-#' # Empty_mde
-#'
-#'
 #' # Training a model
 #' rnn_model <-
 #'    rnn_fit(
@@ -150,20 +147,18 @@ rnn_fit <- function(formula,
       loss_fn   = loss_fn
     )
 
-  # Return neural network structure
-  structure(
-    class = c("torchts_rnn", "torchts_model"),
-    list(
-      net        = net,
-      index      = index,
-      key        = key,
-      outcomes   = outcomes,
-      predictors = predictors,
-      optim      = optimizer,
-      timesteps  = timesteps,
-      horizon    = horizon,
-      scale      = scale_params(train_dl)
-    )
+  # Return torchts model
+  torchts_model(
+    class      = "torchts_rnn",
+    net        = net,
+    index      = index,
+    key        = key,
+    outcomes   = outcomes,
+    predictors = predictors,
+    optim      = optimizer,
+    timesteps  = timesteps,
+    horizon    = horizon,
+    scale      = scale_params(train_dl)
   )
 
 }
@@ -220,6 +215,8 @@ predict.torchts_rnn <- function(object, new_data){
   # Adding colnames if more than one outcome
   if (ncol(preds) > 1)
     colnames(preds) <- object$outcomes
+  else
+    preds <- as.vector(preds)
 
   preds
 }

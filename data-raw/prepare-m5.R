@@ -55,10 +55,11 @@ cv2(x)
 #' Helper functions
 #'
 adi <- function(x, ...){
-  sequences <- rle(x > 0)
-  n_seq <- length(sequences$values)
-  non_zero_seq  <- sum(sequences$values)
-  n_seq / non_zero_seq
+  #sequences <- rle(x > 0)
+  #n_seq <- length(sequences$values)
+  #non_zero_seq  <- sum(sequences$values)
+  #n_seq / non_zero_seq
+  length(x) / sum(x > 0)
 }
 
 #' CV²
@@ -74,6 +75,8 @@ cv2 <- function(x, ...){
 #   sales_long %>%
 #   arrange()
 
+# ADI < 1.32 and CV² < 0.49
+
 demand_types <-
   sales_long[, .(
     adi = adi(value),
@@ -82,13 +85,15 @@ demand_types <-
     trimmed_cv2 = cv2(leadtrail(value, lead = TRUE, trail = FALSE))
   ), by = .(item_id, store_id)]
 
-dplot <-
+dplot2 <-
   ggplot(demand_types) +
-  geom_point(aes(trimmed_cv2, trimmed_adi,
+  geom_point(aes(log(cv2), log(adi),
                  item_id = item_id, store_id = store_id)) +
+  geom_hline(yintercept = log(1.32)) +
+  geom_vline(xintercept = log(0.49)) +
   theme_minimal()
 
-plotly::ggplotly(dplot)
+plotly::ggplotly(dplot2)
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -117,25 +122,43 @@ View(arrange(demand_types, desc(trimmed_adi), desc(trimmed_cv2)), "Lumpy")
 smooth_sales <-
   sales_long[item_id %in% c(
     "FOODS_3_586",
-    "HOUSEHOLD_1_441",
-    "HOBBIES_1_158"
+    "FOODS_2_181",
+    "HOUSEHOLD_1_272",
+    "HOBBIES_1_330"
+  )]
+
+# Intermittent
+intermittent_sales <-
+  sales_long[item_id %in% c(
+    "HOUSEHOLD_2_448",
+    "HOBBIES_2_113",
+
   )]
 
 # Lumpy
 lumpy_sales <-
   sales_long[item_id %in% c(
+    "HOBBIES_2_015",
     "HOUSEHOLD_2_062",
-    "FOODS_1_206",
-    "FOODS_2_105"
+
   )]
+
+
+# Erratic
+erratic_sales <-
+  sales_long[item_id %in% c(
+    "HOBBIES_1_254",
+    "HOUSEHOLD_1_474"
+  )]
+
 
 # "Smooth"
 # FOODS_3_135 CA_3
-plot(ts(sales_long[item_id == "HOUSEHOLD_1_141" & store_id == "CA_3"]$value))
+# plot(ts(sales_long[item_id == "FOODS_3_586" & store_id == "CA_3"]$value))
 
 # HOUSEHOLD_2_062 TX_1
-plot(ts(sales_long[item_id == "HOUSEHOLD_2_062" & store_id == "TX_1"]$value))
-plot(ts(sales_long[item_id == "HOUSEHOLD_2_062" & store_id == "CA_3"]$value))
+# plot(ts(sales_long[item_id == "HOUSEHOLD_2_062" & store_id == "TX_1"]$value))
+# plot(ts(sales_long[item_id == "HOUSEHOLD_2_062" & store_id == "CA_3"]$value))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 #                              PREPARE CALENDAR                                #
@@ -156,7 +179,9 @@ calendar <-
 selected_sales <-
   bind_rows(
     smooth_sales,
-    lumpy_sales
+    intermittent_sales,
+    lumpy_sales,
+    erratic_sales
   ) %>%
   select(-id) %>%
   mutate(across(where(is.factor), as.character))
@@ -165,7 +190,8 @@ tiny_m5 <-
   selected_sales  %>%
   left_join(calendar, by = c("d", "state_id")) %>%
   left_join(prices, by = c("store_id", "item_id", "wm_yr_wk")) %>%
-  select(-d)
+  select(-d) %>%
+  rename(sales = value)
 
 # format(object.size(tiny_m5), units = "MB")
 

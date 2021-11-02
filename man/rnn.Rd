@@ -23,13 +23,13 @@ rnn(
 
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
-\item{learn_rate}{(\code{numeric} or \verb{[dials::learn_rate]}) Learning rate.}
+\item{learn_rate}{(\code{numeric} or \code{\link[dials:learn_rate]{dials::learn_rate}}) Learning rate.}
 
-\item{epochs}{(\code{integer} or \verb{[dials::epochs]}) Number of epochs.}
+\item{epochs}{(\code{integer} or \code{\link[dials:dropout]{dials::epochs}}) Number of epochs.}
 
 \item{hidden_units}{(\code{integer}) Number of hidden units.}
 
-\item{dropout}{(\code{logical} or \verb{[dials::dropout]}) Flag to use dropout.}
+\item{dropout}{(\code{logical} or \code{\link[dials:dropout]{dials::dropout}}) Flag to use dropout.}
 
 \item{batch_size}{(\code{integer}) Batch size.}
 
@@ -37,6 +37,11 @@ rnn(
 }
 \description{
 General interface to recurrent neural network models
+}
+\details{
+This is a \code{parsnip} API to the recurent network models. For now the only
+available engine is \code{torchts_rnn}. This is the first release - in the next version
+additional features will be added such as handling \emph{categorical} or \emph{static} variables.
 }
 \examples{
 library(torchts)

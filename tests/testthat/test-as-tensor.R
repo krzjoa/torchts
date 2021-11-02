@@ -1,3 +1,6 @@
+library(torch)
+library(dplyr)
+
 test_that("torch_tensor passed to as_tensor with no arguments", {
   x <- torch_tensor(rep(3, 10))
   y <- as_tensor(x)

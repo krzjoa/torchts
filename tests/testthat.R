@@ -1,5 +1,6 @@
 library(testthat)
-library(torchts)
+# library(torchts)
+library(torch)
 library(dplyr)
 library(timetk)
 library(rsample)

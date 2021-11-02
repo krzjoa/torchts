@@ -74,6 +74,9 @@ data_split <-
       lag     = 20
    )
 
+# Empty_mde
+
+
 # Training a model
 rnn_model <-
    rnn_fit(
