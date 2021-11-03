@@ -20,6 +20,7 @@
 * [AR-Net](https://arxiv.org/pdf/1911.12436.pdf)
 * https://frepple.com/blog/demand-classification/
 
-
+## Metrics
+* https://datascience.stackexchange.com/questions/55388/tweedie-loss-for-keras
 
 
