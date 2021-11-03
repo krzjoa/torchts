@@ -118,13 +118,26 @@ View(arrange(demand_types, desc(trimmed_adi), trimmed_cv2), "Intermittent")
 View(arrange(demand_types, desc(trimmed_cv2), trimmed_adi), "Erratic")
 View(arrange(demand_types, desc(trimmed_adi), desc(trimmed_cv2)), "Lumpy")
 
+#' FOODS_1 FOODS_1_057 FOODS_1_033 FOODS_1_046 FOODS_1_186
+#' FOODS_2 FOODS_2_181 FOODS_2_360 FOODS_2_096 FOODS_2_352
+#' FOODS_3 FOODS_3_586 FOODS_3_702 FOODS_3_377 FOODS_3_080 | FOODS_3_822
+#'
+#' HOUSEHOLD_1 HOUSEHOLD_1_272 HOUSEHOLD_1_133 HOUSEHOLD_1_474 HOUSEHOLD_1_179 | HOUSEHOLD_1_521
+#' HOUSEHOLD_2 HOUSEHOLD_2_448 HOUSEHOLD_2_062 HOUSEHOLD_2_239 HOUSEHOLD_2_067
+#'
+#' HOBBIES_1 HOBBIES_1_330 HOBBIES_1_115 HOBBIES_1_254 HOBBIES_1_157
+#' HOBBIES_2 HOBBIES_2_113 HOBBIES_2_015 HOBBIES_2_073
+
 # Smooth items
 smooth_sales <-
   sales_long[item_id %in% c(
     "FOODS_3_586",
     "FOODS_2_181",
     "HOUSEHOLD_1_272",
-    "HOBBIES_1_330"
+    "HOBBIES_1_330",
+    "FOODS_3_377",
+    "FOODS_2_360",
+    "FOODS_3_080"
   )]
 
 # Intermittent
@@ -132,7 +145,13 @@ intermittent_sales <-
   sales_long[item_id %in% c(
     "HOUSEHOLD_2_448",
     "HOBBIES_2_113",
+    "FOODS_1_057",
+    "FOODS_1_033",
+    "FOODS_2_096",
+    "FOODS_1_186",
+    "HOBBIES_1_157",
 
+    "HOBBIES_2_073"
   )]
 
 # Lumpy
@@ -140,15 +159,23 @@ lumpy_sales <-
   sales_long[item_id %in% c(
     "HOBBIES_2_015",
     "HOUSEHOLD_2_062",
-
+    "HOBBIES_1_115",
+    "HOUSEHOLD_1_133",
+    "FOODS_2_352",
+    "HOUSEHOLD_2_239",
+    "HOBBIES_2_057"
   )]
-
 
 # Erratic
 erratic_sales <-
   sales_long[item_id %in% c(
     "HOBBIES_1_254",
-    "HOUSEHOLD_1_474"
+    "HOUSEHOLD_1_474",
+    "FOODS_3_702",
+    "FOODS_1_046",
+    "HOUSEHOLD_1_179",
+    "FOODS_3_822",
+    "HOUSEHOLD_1_521"
   )]
 
 
@@ -190,8 +217,7 @@ tiny_m5 <-
   selected_sales  %>%
   left_join(calendar, by = c("d", "state_id")) %>%
   left_join(prices, by = c("store_id", "item_id", "wm_yr_wk")) %>%
-  select(-d) %>%
-  rename(sales = value)
+  select(-d)
 
 # format(object.size(tiny_m5), units = "MB")
 
