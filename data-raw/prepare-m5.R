@@ -86,7 +86,7 @@ demand_types <-
   ), by = .(item_id, store_id)]
 
 dplot2 <-
-  ggplot(demand_types) +
+  ggplot(demand_types[startsWith(as.character(demand_types$item_id), "FOODS_1")]) +
   geom_point(aes(log(cv2), log(adi),
                  item_id = item_id, store_id = store_id)) +
   geom_hline(yintercept = log(1.32)) +
@@ -118,15 +118,15 @@ View(arrange(demand_types, desc(trimmed_adi), trimmed_cv2), "Intermittent")
 View(arrange(demand_types, desc(trimmed_cv2), trimmed_adi), "Erratic")
 View(arrange(demand_types, desc(trimmed_adi), desc(trimmed_cv2)), "Lumpy")
 
-#' FOODS_1 FOODS_1_057 FOODS_1_033 FOODS_1_046 FOODS_1_186
+#' FOODS_1 FOODS_1_057 FOODS_1_033 FOODS_1_046 FOODS_1_218
 #' FOODS_2 FOODS_2_181 FOODS_2_360 FOODS_2_096 FOODS_2_352
-#' FOODS_3 FOODS_3_586 FOODS_3_702 FOODS_3_377 FOODS_3_080 | FOODS_3_822
+#' FOODS_3 FOODS_3_586 FOODS_3_702 FOODS_3_377 FOODS_3_080
 #'
-#' HOUSEHOLD_1 HOUSEHOLD_1_272 HOUSEHOLD_1_133 HOUSEHOLD_1_474 HOUSEHOLD_1_179 | HOUSEHOLD_1_521
+#' HOUSEHOLD_1 HOUSEHOLD_1_272 HOUSEHOLD_1_474 HOUSEHOLD_1_179 HOUSEHOLD_1_521
 #' HOUSEHOLD_2 HOUSEHOLD_2_448 HOUSEHOLD_2_062 HOUSEHOLD_2_239 HOUSEHOLD_2_067
 #'
 #' HOBBIES_1 HOBBIES_1_330 HOBBIES_1_115 HOBBIES_1_254 HOBBIES_1_157
-#' HOBBIES_2 HOBBIES_2_113 HOBBIES_2_015 HOBBIES_2_073
+#' HOBBIES_2 HOBBIES_2_113 HOBBIES_2_015 HOBBIES_2_126 HOBBIES_2_025
 
 # Smooth items
 smooth_sales <-
@@ -148,10 +148,8 @@ intermittent_sales <-
     "FOODS_1_057",
     "FOODS_1_033",
     "FOODS_2_096",
-    "FOODS_1_186",
     "HOBBIES_1_157",
-
-    "HOBBIES_2_073"
+    "HOBBIES_2_025"
   )]
 
 # Lumpy
@@ -160,10 +158,10 @@ lumpy_sales <-
     "HOBBIES_2_015",
     "HOUSEHOLD_2_062",
     "HOBBIES_1_115",
-    "HOUSEHOLD_1_133",
     "FOODS_2_352",
     "HOUSEHOLD_2_239",
-    "HOBBIES_2_057"
+    "HOBBIES_2_057",
+    "HOBBIES_2_126"
   )]
 
 # Erratic
@@ -174,10 +172,9 @@ erratic_sales <-
     "FOODS_3_702",
     "FOODS_1_046",
     "HOUSEHOLD_1_179",
-    "FOODS_3_822",
-    "HOUSEHOLD_1_521"
+    "HOUSEHOLD_1_521",
+    "FOODS_1_218"
   )]
-
 
 # "Smooth"
 # FOODS_3_135 CA_3
@@ -219,7 +216,13 @@ tiny_m5 <-
   left_join(prices, by = c("store_id", "item_id", "wm_yr_wk")) %>%
   select(-d)
 
-# format(object.size(tiny_m5), units = "MB")
+tiny_m5 <-
+  tiny_m5 %>%
+  select(item_id, dept_id, cat_id, store_id, state_id, date, value, everything())
+
+# head(tiny_m5)
+# setDT(tiny_m5)
+# tiny_m5[, .(n_items = n_distinct(item_id)), by = store_id]
 
 save(tiny_m5, file = here::here("data/tiny_m5.rda"))
 

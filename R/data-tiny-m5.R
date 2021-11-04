@@ -1,7 +1,8 @@
-#' A prepared subset from M5 Walmart Challenge Dataset in one data frame
+#' A subset from M5 Walmart Challenge Dataset in one data frame
 #'
-#' A pieced of data cut from the training dataset used in the M5 challenges on Kaggle.
+#' A piece of data cut from the training dataset used in the M5 challenges on Kaggle.
 #' M5 is a challenge from a series organized by Spyros Makridakis.
+#'
 #'
 #' @format
 #' \describe{

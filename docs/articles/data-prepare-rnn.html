@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">torchts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -67,7 +67,7 @@
       <a href="../articles/naming-convention.html">Naming convention</a>
     </li>
     <li>
-      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
+      <a href="../articles/parsnip-api.html">parsnip API</a>
     </li>
   </ul>
 </li>
@@ -110,7 +110,7 @@
 <h2 class="hasAnchor">
 <a href="#look-at-the-tiny_m5" class="anchor"></a>Look at the <code>tiny_m5</code>
 </h2>
-<p>If you practice time series modeling, you probably may hear about the M5 challenge by <a href="https://en.wikipedia.org/wiki/Spyros_Makridakis">Spyros Makridakis</a>, hosted on Kaggle. It’s an excellent data set, I we want to play with demand time series. The whole dataset is really large, so we rather can use a subset to demonstrate, how to work with such data.</p>
+<p>If you practice time series modeling, you probably may hear about the M5 challenge by <a href="https://en.wikipedia.org/wiki/Spyros_Makridakis">Spyros Makridakis</a>, hosted on Kaggle. It’s an excellent data set, if we want to play with demand time series. The whole dataset is really large, so we rather can use a subset to demonstrate, how to work with such data.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">tiny_m5</span><span class="op">$</span><span class="va">store_id</span><span class="op">)</span>
 <span class="co">#&gt;  [1] "CA_1" "CA_2" "CA_3" "CA_4" "TX_1" "TX_2" "TX_3" "WI_1" "WI_2" "WI_3"</span>
@@ -125,15 +125,20 @@
 <span class="va">ca_1_data</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">item_id</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> 
-<span class="co">#&gt; # A tibble: 6 × 2</span>
-<span class="co">#&gt;   item_id             n</span>
-<span class="co">#&gt;   &lt;chr&gt;           &lt;int&gt;</span>
-<span class="co">#&gt; 1 FOODS_1_206      1913</span>
-<span class="co">#&gt; 2 FOODS_2_105      1913</span>
-<span class="co">#&gt; 3 FOODS_3_586      1913</span>
-<span class="co">#&gt; 4 HOBBIES_1_158    1913</span>
-<span class="co">#&gt; 5 HOUSEHOLD_1_441  1913</span>
-<span class="co">#&gt; 6 HOUSEHOLD_2_062  1913</span>
+<span class="co">#&gt; # A tibble: 28 × 2</span>
+<span class="co">#&gt;    item_id         n</span>
+<span class="co">#&gt;    &lt;chr&gt;       &lt;int&gt;</span>
+<span class="co">#&gt;  1 FOODS_1_033  1913</span>
+<span class="co">#&gt;  2 FOODS_1_046  1913</span>
+<span class="co">#&gt;  3 FOODS_1_057  1913</span>
+<span class="co">#&gt;  4 FOODS_1_218  1913</span>
+<span class="co">#&gt;  5 FOODS_2_096  1913</span>
+<span class="co">#&gt;  6 FOODS_2_181  1913</span>
+<span class="co">#&gt;  7 FOODS_2_352  1913</span>
+<span class="co">#&gt;  8 FOODS_2_360  1913</span>
+<span class="co">#&gt;  9 FOODS_3_080  1913</span>
+<span class="co">#&gt; 10 FOODS_3_377  1913</span>
+<span class="co">#&gt; # … with 18 more rows</span>
 
 <span class="fu">skimr</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/skimr/reference/skim.html">skim</a></span><span class="op">(</span><span class="va">ca_1_data</span><span class="op">)</span></pre></div>
 <table class="table">
@@ -145,7 +150,7 @@
 </tr>
 <tr class="even">
 <td align="left">Number of rows</td>
-<td align="left">11478</td>
+<td align="left">53564</td>
 </tr>
 <tr class="odd">
 <td align="left">Number of columns</td>
@@ -205,7 +210,7 @@
 <td align="right">11</td>
 <td align="right">15</td>
 <td align="right">0</td>
-<td align="right">6</td>
+<td align="right">28</td>
 <td align="right">0</td>
 </tr>
 <tr class="even">
@@ -260,23 +265,23 @@
 <tr class="odd">
 <td align="left">value</td>
 <td align="right">0</td>
-<td align="right">1.0</td>
-<td align="right">8.55</td>
-<td align="right">18.10</td>
+<td align="right">1.00</td>
+<td align="right">5.52</td>
+<td align="right">10.90</td>
+<td align="right">0.0</td>
 <td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">0.00</td>
-<td align="right">4.00</td>
+<td align="right">1.00</td>
+<td align="right">6.00</td>
 <td align="right">133.00</td>
 <td align="left">▇▁▁▁▁</td>
 </tr>
 <tr class="even">
 <td align="left">wday</td>
 <td align="right">0</td>
-<td align="right">1.0</td>
+<td align="right">1.00</td>
 <td align="right">4.00</td>
 <td align="right">2.00</td>
-<td align="right">1.00</td>
+<td align="right">1.0</td>
 <td align="right">2.00</td>
 <td align="right">4.00</td>
 <td align="right">6.00</td>
@@ -286,10 +291,10 @@
 <tr class="odd">
 <td align="left">month</td>
 <td align="right">0</td>
-<td align="right">1.0</td>
+<td align="right">1.00</td>
 <td align="right">6.36</td>
 <td align="right">3.46</td>
-<td align="right">1.00</td>
+<td align="right">1.0</td>
 <td align="right">3.00</td>
 <td align="right">6.00</td>
 <td align="right">9.00</td>
@@ -299,10 +304,10 @@
 <tr class="even">
 <td align="left">year</td>
 <td align="right">0</td>
-<td align="right">1.0</td>
+<td align="right">1.00</td>
 <td align="right">2013.21</td>
 <td align="right">1.53</td>
-<td align="right">2011.00</td>
+<td align="right">2011.0</td>
 <td align="right">2012.00</td>
 <td align="right">2013.00</td>
 <td align="right">2015.00</td>
@@ -312,10 +317,10 @@
 <tr class="odd">
 <td align="left">snap</td>
 <td align="right">0</td>
-<td align="right">1.0</td>
+<td align="right">1.00</td>
 <td align="right">0.33</td>
 <td align="right">0.47</td>
-<td align="right">0.00</td>
+<td align="right">0.0</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
 <td align="right">1.00</td>
@@ -324,41 +329,41 @@
 </tr>
 <tr class="even">
 <td align="left">sell_price</td>
-<td align="right">3493</td>
-<td align="right">0.7</td>
-<td align="right">4.57</td>
-<td align="right">6.19</td>
-<td align="right">1.48</td>
+<td align="right">7693</td>
+<td align="right">0.86</td>
+<td align="right">3.33</td>
+<td align="right">3.34</td>
+<td align="right">0.5</td>
+<td align="right">0.97</td>
 <td align="right">1.68</td>
-<td align="right">2.77</td>
-<td align="right">2.96</td>
-<td align="right">22.98</td>
-<td align="left">▇▁▁▁▁</td>
+<td align="right">4.97</td>
+<td align="right">11.54</td>
+<td align="left">▇▁▁▁▂</td>
 </tr>
 </tbody>
 </table>
-<p>We want to create a <strong>three-dimensional tensor</strong>, the each dimension of presents:</p>
+<p>For deep learning models for time series, we’d typically like to create a <strong>three-dimensional tensor</strong>. In the analyzed case, the each dimension may represent:</p>
 <ul>
 <li><strong>item</strong></li>
 <li><strong>time steps</strong></li>
 <li><strong>features</strong></li>
 </ul>
-<p>This assumption makes us to keep the data “complete”, i.e. every single item time series has to have the same <strong>length</strong>. The first dimension is “free”, and the completeness of the last dimension is guaranteed by the data.frame structure itself (each row has the same number of columns).</p>
+<p>The first dimension is “free” - we can add an arbitrary number of items. When it comes to the second one, they length may vary as well. However, for convenience, we’ll keep same-length time series. Otherwise, we’d have to use masking or split the dataset into multiple tensors. The last dimension size is guaranteed by the data.frame structure itself (each row has the same number of columns).</p>
 <p>As we can observed in the output of <code>skim</code> function, there are time series with missing data.</p>
-<p>For simplicity’s sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we’ll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we’ll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.</p>
+<p>As mentioned before, for simplicity’s sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we’ll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we’ll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.</p>
 </div>
-<div id="transorming-to-tensor" class="section level2">
+<div id="as_tensor" class="section level2">
 <h2 class="hasAnchor">
-<a href="#transorming-to-tensor" class="anchor"></a>Transorming to tensor</h2>
+<a href="#as_tensor" class="anchor"></a>as_tensor</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">ca_1_data</span><span class="op">)</span>
 <span class="co">#&gt;        item_id store_id       date value wday month year snap sell_price</span>
-<span class="co">#&gt; 1: FOODS_1_206     CA_1 2011-01-29     3    1     1 2011    0       1.58</span>
-<span class="co">#&gt; 2: FOODS_1_206     CA_1 2011-01-30     4    2     1 2011    0       1.58</span>
-<span class="co">#&gt; 3: FOODS_1_206     CA_1 2011-01-31     4    3     1 2011    0       1.58</span>
-<span class="co">#&gt; 4: FOODS_1_206     CA_1 2011-02-01     2    4     2 2011    1       1.58</span>
-<span class="co">#&gt; 5: FOODS_1_206     CA_1 2011-02-02     3    5     2 2011    1       1.58</span>
-<span class="co">#&gt; 6: FOODS_1_206     CA_1 2011-02-03     6    6     2 2011    1       1.58</span></pre></div>
+<span class="co">#&gt; 1: FOODS_1_033     CA_1 2011-01-29     0    1     1 2011    0         NA</span>
+<span class="co">#&gt; 2: FOODS_1_033     CA_1 2011-01-30     0    2     1 2011    0         NA</span>
+<span class="co">#&gt; 3: FOODS_1_033     CA_1 2011-01-31     0    3     1 2011    0         NA</span>
+<span class="co">#&gt; 4: FOODS_1_033     CA_1 2011-02-01     0    4     2 2011    1         NA</span>
+<span class="co">#&gt; 5: FOODS_1_033     CA_1 2011-02-02     0    5     2 2011    1         NA</span>
+<span class="co">#&gt; 6: FOODS_1_033     CA_1 2011-02-03     0    6     2 2011    1         NA</span></pre></div>
 <p>The first column, <code>item_id</code>, describes the item we already the item and the second one (<code>date</code>) - a current time step. These two columns will be used to create a data “fold”, i.e. form a 3D tensor. As we mentioned above, the completness of the time moments is crucial to obtain a proper result from this transformation.</p>
 <p>If it comes, to the rest of columns:</p>
 <ul>
@@ -378,14 +383,190 @@
 <p>Summarizing, we have three categorical variables, which should be represented in some way. The most efficient manner to represent categorical variables in neural network is <strong>embedding</strong> layer.<br>
 In fact, it works similar to a <strong>linear</strong> (<strong>dense</strong>) layer. The difference is that instead of performing resource-consuming dot product between weight matrix and the input one-hot encoded sparse matrix, we just use an index to select “right” row from the weight matrix.</p>
 <p>Let’s transform tabular data into tensor. A good way to do it is to use a convenient <code>as_tensor</code> function. The first argument of the function (described as <code>.data</code>) is a <code>data.frame</code> object, which we want to transform into a <code>torch_tensor</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">ca_1_data</span><span class="op">)</span>
+<span class="co">#&gt; [1] "item_id"    "store_id"   "date"       "value"      "wday"      </span>
+<span class="co">#&gt; [6] "month"      "year"       "snap"       "sell_price"</span></pre></div>
+<p>First, we’ll select only integer <code>item_id</code>, <code>date</code> and integer variables.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="va">ca_1</span> <span class="op">&lt;-</span> 
+  <span class="va">ca_1_data</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">item_id</span>, <span class="va">date</span>, <span class="va">wday</span>, <span class="va">month</span>, <span class="va">year</span>, <span class="va">snap</span><span class="op">)</span>
+
+<span class="va">ca_1_tensor</span> <span class="op">&lt;-</span> 
+  <span class="va">ca_1</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/as_tensor.html">as_tensor</a></span><span class="op">(</span><span class="va">item_id</span>, <span class="va">date</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">ca_1_tensor</span><span class="op">)</span>
+<span class="co">#&gt; [1]   28 1913    4</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ca_1_tensor</span><span class="op">)</span>
+<span class="co">#&gt; [1] "torch_tensor" "R7"</span>
+
+<span class="va">ca_1_tensor</span> <span class="op">&lt;-</span> 
+  <span class="va">ca_1_data</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">item_id</span>, <span class="va">date</span>, <span class="va">wday</span>, <span class="va">month</span>, <span class="va">year</span>, <span class="va">snap</span>, <span class="va">sell_price</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.integer</span><span class="op">)</span>, <span class="va">as.numeric</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="../reference/as_tensor.html">as_tensor</a></span><span class="op">(</span><span class="va">item_id</span>, <span class="va">date</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">ca_1_tensor</span><span class="op">)</span>
+<span class="co">#&gt; [1]   28 1913    5</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">ca_1_tensor</span><span class="op">)</span>
+<span class="co">#&gt; [1] "torch_tensor" "R7"</span></pre></div>
 </div>
 <div id="as_ts_dataset" class="section level2">
 <h2 class="hasAnchor">
 <a href="#as_ts_dataset" class="anchor"></a>as_ts_dataset</h2>
+<p>To speed up <code>torch</code> models developments, <code>torchts</code> package provides easy-to-use <code>as_ts_dataset</code> method, which is a shortcut to create a <code>torch</code> dataset from a <code>data.frame</code>. For now keys like <code>item_id</code> are not supported - this feature will be implemented in the near future. We’ll present this function using <code>weather_pl</code> dataset.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsample.tidymodels.org">rsample</a></span><span class="op">)</span>
+
+<span class="va">suwalki_temp</span> <span class="op">&lt;-</span>
+  <span class="va">weather_pl</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">station</span> <span class="op">==</span> <span class="st">"SWK"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">date</span>, temp <span class="op">=</span> <span class="va">tmax_daily</span><span class="op">)</span>
+
+<span class="co">#' # Splitting on training and test</span>
+<span class="va">data_split</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">initial_time_split</a></span><span class="op">(</span><span class="va">suwalki_temp</span><span class="op">)</span>
+
+<span class="va">train_ds</span> <span class="op">&lt;-</span>
+  <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">training</a></span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="../reference/as_ts_dataset.html">as_ts_dataset</a></span><span class="op">(</span><span class="va">temp</span> <span class="op">~</span> <span class="va">date</span>, timesteps <span class="op">=</span> <span class="fl">20</span>, horizon <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
+
+<span class="va">train_ds</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
+<span class="co">#&gt; $x</span>
+<span class="co">#&gt; torch_tensor</span>
+<span class="co">#&gt; -1.1453</span>
+<span class="co">#&gt; -1.2624</span>
+<span class="co">#&gt; -1.0867</span>
+<span class="co">#&gt; -1.0282</span>
+<span class="co">#&gt; -1.0672</span>
+<span class="co">#&gt; -0.8330</span>
+<span class="co">#&gt; -0.7354</span>
+<span class="co">#&gt; -1.0282</span>
+<span class="co">#&gt; -1.0087</span>
+<span class="co">#&gt; -0.9891</span>
+<span class="co">#&gt; -1.0477</span>
+<span class="co">#&gt; -1.1746</span>
+<span class="co">#&gt; -1.3893</span>
+<span class="co">#&gt; -0.9891</span>
+<span class="co">#&gt; -0.9794</span>
+<span class="co">#&gt; -1.0965</span>
+<span class="co">#&gt; -1.2527</span>
+<span class="co">#&gt; -1.4186</span>
+<span class="co">#&gt; -1.4869</span>
+<span class="co">#&gt; -1.4088</span>
+<span class="co">#&gt; [ CPUFloatType{20,1} ]</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $y</span>
+<span class="co">#&gt; torch_tensor</span>
+<span class="co">#&gt; -3.6000</span>
+<span class="co">#&gt; [ CPUFloatType{1} ]</span></pre></div>
 </div>
-<div id="as_ts_dataloaders" class="section level2">
+<div id="as_ts_dataloader" class="section level2">
 <h2 class="hasAnchor">
-<a href="#as_ts_dataloaders" class="anchor"></a>as_ts_dataloaders</h2>
+<a href="#as_ts_dataloader" class="anchor"></a>as_ts_dataloader</h2>
+<p>The quickest shortcut to get needed data-provding object is to call <code>as_ts_dataloader</code> function. It can be used as follows.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit">
+<span class="va">train_dl</span> <span class="op">&lt;-</span>
+   <span class="fu"><a href="https://rsample.tidymodels.org/reference/initial_split.html">training</a></span><span class="op">(</span><span class="va">data_split</span><span class="op">)</span> <span class="op">%&gt;%</span>
+   <span class="fu"><a href="../reference/as_ts_dataloader.html">as_ts_dataloader</a></span><span class="op">(</span><span class="va">temp</span> <span class="op">~</span> <span class="va">date</span>, timesteps <span class="op">=</span> <span class="fl">20</span>, horizon <span class="op">=</span> <span class="fl">1</span>, batch_size <span class="op">=</span> <span class="fl">32</span><span class="op">)</span>
+
+<span class="va">train_dl</span>
+<span class="co">#&gt; &lt;dataloader&gt;</span>
+<span class="co">#&gt;   Public:</span>
+<span class="co">#&gt;     .auto_collation: active binding</span>
+<span class="co">#&gt;     .dataset_kind: map</span>
+<span class="co">#&gt;     .has_getbatch: FALSE</span>
+<span class="co">#&gt;     .index_sampler: active binding</span>
+<span class="co">#&gt;     .iter: function () </span>
+<span class="co">#&gt;     .length: function () </span>
+<span class="co">#&gt;     batch_sampler: utils_sampler_batch, utils_sampler, R6</span>
+<span class="co">#&gt;     batch_size: 32</span>
+<span class="co">#&gt;     clone: function (deep = FALSE) </span>
+<span class="co">#&gt;     collate_fn: function (batch) </span>
+<span class="co">#&gt;     dataset: ts_dataset, dataset, R6</span>
+<span class="co">#&gt;     drop_last: FALSE</span>
+<span class="co">#&gt;     generator: NULL</span>
+<span class="co">#&gt;     initialize: function (dataset, batch_size = 1, shuffle = FALSE, sampler = NULL, </span>
+<span class="co">#&gt;     multiprocessing_context: NULL</span>
+<span class="co">#&gt;     num_workers: 0</span>
+<span class="co">#&gt;     pin_memory: FALSE</span>
+<span class="co">#&gt;     sampler: utils_sampler_sequential, utils_sampler, R6</span>
+<span class="co">#&gt;     timeout: -1</span>
+<span class="co">#&gt;     worker_globals: NULL</span>
+<span class="co">#&gt;     worker_init_fn: NULL</span>
+<span class="co">#&gt;     worker_packages: NULL</span>
+
+<span class="fu"><a href="https://torch.mlverse.org/docs/reference/dataloader_next.html">dataloader_next</a></span><span class="op">(</span><span class="fu"><a href="https://torch.mlverse.org/docs/reference/dataloader_make_iter.html">dataloader_make_iter</a></span><span class="op">(</span><span class="va">train_dl</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; $x</span>
+<span class="co">#&gt; torch_tensor</span>
+<span class="co">#&gt; (1,.,.) = </span>
+<span class="co">#&gt;  -1.1453</span>
+<span class="co">#&gt;  -1.2624</span>
+<span class="co">#&gt;  -1.0867</span>
+<span class="co">#&gt;  -1.0282</span>
+<span class="co">#&gt;  -1.0672</span>
+<span class="co">#&gt;  -0.8330</span>
+<span class="co">#&gt;  -0.7354</span>
+<span class="co">#&gt;  -1.0282</span>
+<span class="co">#&gt;  -1.0087</span>
+<span class="co">#&gt;  -0.9891</span>
+<span class="co">#&gt;  -1.0477</span>
+<span class="co">#&gt;  -1.1746</span>
+<span class="co">#&gt;  -1.3893</span>
+<span class="co">#&gt;  -0.9891</span>
+<span class="co">#&gt;  -0.9794</span>
+<span class="co">#&gt;  -1.0965</span>
+<span class="co">#&gt;  -1.2527</span>
+<span class="co">#&gt;  -1.4186</span>
+<span class="co">#&gt;  -1.4869</span>
+<span class="co">#&gt;  -1.4088</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; (2,.,.) = </span>
+<span class="co">#&gt;  -1.2624</span>
+<span class="co">#&gt;  -1.0867</span>
+<span class="co">#&gt;  -1.0282</span>
+<span class="co">#&gt;  -1.0672</span>
+<span class="co">#&gt;  -0.8330</span>
+<span class="co">#&gt;  -0.7354</span>
+<span class="co">#&gt;  -1.0282</span>
+<span class="co">#&gt; ... [the output was truncated (use n=-1 to disable)]</span>
+<span class="co">#&gt; [ CPUFloatType{32,20,1} ]</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $y</span>
+<span class="co">#&gt; torch_tensor</span>
+<span class="co">#&gt; -3.6000</span>
+<span class="co">#&gt; -5.0000</span>
+<span class="co">#&gt; -4.2000</span>
+<span class="co">#&gt; -2.5000</span>
+<span class="co">#&gt;  0.6000</span>
+<span class="co">#&gt;  1.5000</span>
+<span class="co">#&gt;  1.5000</span>
+<span class="co">#&gt;  1.0000</span>
+<span class="co">#&gt;  2.0000</span>
+<span class="co">#&gt;  1.2000</span>
+<span class="co">#&gt;  0.2000</span>
+<span class="co">#&gt; -2.2000</span>
+<span class="co">#&gt; -5.1000</span>
+<span class="co">#&gt; -6.7000</span>
+<span class="co">#&gt; -12.1000</span>
+<span class="co">#&gt; -6.7000</span>
+<span class="co">#&gt;  2.6000</span>
+<span class="co">#&gt;  4.9000</span>
+<span class="co">#&gt;  5.0000</span>
+<span class="co">#&gt;  8.8000</span>
+<span class="co">#&gt;  3.9000</span>
+<span class="co">#&gt;  2.1000</span>
+<span class="co">#&gt;  5.3000</span>
+<span class="co">#&gt;  5.5000</span>
+<span class="co">#&gt;  2.4000</span>
+<span class="co">#&gt;  2.1000</span>
+<span class="co">#&gt;  3.8000</span>
+<span class="co">#&gt;  2.0000</span>
+<span class="co">#&gt;  0.3000</span>
+<span class="co">#&gt;  0.1000</span>
+<span class="co">#&gt; ... [the output was truncated (use n=-1 to disable)]</span>
+<span class="co">#&gt; [ CPUFloatType{32,1} ]</span></pre></div>
 </div>
   </div>
 

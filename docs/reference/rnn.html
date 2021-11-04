@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">torchts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
       <a href="../articles/naming-convention.html">Naming convention</a>
     </li>
     <li>
-      <a href="../articles/parsnip-api.html">Multivariate Time Series</a>
+      <a href="../articles/parsnip-api.html">parsnip API</a>
     </li>
   </ul>
 </li>
@@ -172,11 +172,11 @@
     </tr>
     <tr>
       <th>learn_rate</th>
-      <td><p>(<code>numeric</code> or <code>[dials::learn_rate]</code>) Learning rate.</p></td>
+      <td><p>(<code>numeric</code> or <code><a href='https://dials.tidymodels.org/reference/learn_rate.html'>dials::learn_rate</a></code>) Learning rate.</p></td>
     </tr>
     <tr>
       <th>epochs</th>
-      <td><p>(<code>integer</code> or <code>[dials::epochs]</code>) Number of epochs.</p></td>
+      <td><p>(<code>integer</code> or <code><a href='https://dials.tidymodels.org/reference/dropout.html'>dials::epochs</a></code>) Number of epochs.</p></td>
     </tr>
     <tr>
       <th>hidden_units</th>
@@ -184,7 +184,7 @@
     </tr>
     <tr>
       <th>dropout</th>
-      <td><p>(<code>logical</code> or <code>[dials::dropout]</code>) Flag to use dropout.</p></td>
+      <td><p>(<code>logical</code> or <code><a href='https://dials.tidymodels.org/reference/dropout.html'>dials::dropout</a></code>) Flag to use dropout.</p></td>
     </tr>
     <tr>
       <th>batch_size</th>
@@ -194,16 +194,13 @@
       <th>scale</th>
       <td><p>(<code>logical</code>) Scale input features.</p></td>
     </tr>
-    <tr>
-      <th>stop_iter</th>
-      <td><p>(<code>integer</code>) Number of epochs without desired improvement to stop.</p></td>
-    </tr>
-    <tr>
-      <th>loss_reduction</th>
-      <td><p>(<code>numeric</code>) Minimal loss reduction.</p></td>
-    </tr>
     </table>
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This is a <code>parsnip</code> API to the recurent network models. For now the only
+available engine is <code>torchts_rnn</code>. This is the first release - in the next version
+additional features will be added such as handling <em>categorical</em> or <em>static</em> variables.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
@@ -226,11 +223,11 @@
      epochs <span class='op'>=</span> <span class='fl'>10</span>,
      hidden_units <span class='op'>=</span> <span class='fl'>32</span>
    <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='error'>Error in rlang::env_get(get_model_env(), cls): brakuje argumentu 'default', a nie ma określonej wartości domyślnej</span></div><div class='input'>
 <span class='va'>rnn_model</span> <span class='op'>&lt;-</span>
    <span class='va'>rnn_model</span> <span class='op'>%&gt;%</span>
    <span class='fu'><a href='https://generics.r-lib.org/reference/fit.html'>fit</a></span><span class='op'>(</span><span class='va'>temp</span> <span class='op'>~</span> <span class='va'>date</span>, data <span class='op'>=</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: Engine set to `torchts`.</span></div><div class='output co'>#&gt; <span class='error'>Error in analysis(x): nie znaleziono obiektu 'data_split'</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in fit(., temp ~ date, data = training(data_split)): nie znaleziono obiektu 'rnn_model'</span></div><div class='input'>
 
 </div></pre>
   </div>

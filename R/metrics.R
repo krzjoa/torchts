@@ -54,7 +54,7 @@ nnf_smape <- function(input, target){
     # Target = actual values
     numerator   <- abs(input - target)
     denominator <- ((abs(target) + abs(input)) / 2)
-    mean(numerator / denominator) 
+    mean(numerator / denominator)
 }
 
 
@@ -99,8 +99,8 @@ nnf_mae <- function(input, target){
 #' @seealso
 #' [yardstick::mase]
 #'
-#' @references  
-#' [Rob J. Hyndman (2006). ANOTHER LOOK AT FORECAST-ACCURACY METRICS 
+#' @references
+#' [Rob J. Hyndman (2006). ANOTHER LOOK AT FORECAST-ACCURACY METRICS
 #'  FOR INTERMITTENT DEMAND. _Foresight_, 4, 46.](https://robjhyndman.com/papers/foresight.pdf)
 #'
 #' @examples
@@ -112,14 +112,13 @@ nnf_mae <- function(input, target){
 #'
 #' nnf_mae(input, target)
 #'
-#' @export
-nnf_mase <- function(y_pred, target, in_sample_actual){
-  numerator   <- mean(abs(y_pred - target))
-  # In-sample naive forecast
-  diffs <- (in_sample_actual[:, :-1] - abs(in_sample_actual[:, 1:]))
-  denominator <- mean(diffs)
-  numerator / denominator 
-}
+# nnf_mase <- function(y_pred, target, in_sample_actual){
+#   numerator   <- mean(abs(y_pred - target))
+#   # In-sample naive forecast
+#
+#   denominator <- mean(diffs)
+#   numerator / denominator
+# }
 
 
 #' Weighted Absolute Percentage Error

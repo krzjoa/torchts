@@ -24,6 +24,10 @@ reference:
   - nnf_mae
   - nnf_mape
   - nnf_smape
+- title: Categorical features
+  contents:
+  - is_categorical
+  - dict_size
 - title: Data
   contents:
   - weather_pl

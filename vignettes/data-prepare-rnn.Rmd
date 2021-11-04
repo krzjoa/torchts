@@ -23,8 +23,7 @@ library(torchts)
 ## Look at the `tiny_m5`
 
 If you practice time series modeling, you probably may hear about the M5 challenge by [Spyros Makridakis](https://en.wikipedia.org/wiki/Spyros_Makridakis), hosted on Kaggle.
-It's an excellent data set, I we want to play with demand time series. The whole dataset is really large, so we rather can 
-use a subset to demonstrate, how to work with such data.
+It's an excellent data set, if we want to play with demand time series. The whole dataset is really large, so we rather can use a subset to demonstrate, how to work with such data.
 
 ```{r preparing.data}
 unique(tiny_m5$store_id)
@@ -42,23 +41,23 @@ ca_1_data %>%
 
 skimr::skim(ca_1_data)
 ```
-We want to create a **three-dimensional tensor**, the each dimension of 
-presents:
+For deep learning models for time series, we'd typically like to create a **three-dimensional tensor**.
+In the analyzed case, the each dimension may represent:
 
 * **item**
 * **time steps**
 * **features**
 
-This assumption makes us to keep the data "complete", i.e. every single item time series 
-has to have the same **length**. The first dimension is "free", and the completeness of 
-the last dimension is guaranteed by the data.frame structure itself (each row has the same number of columns).
+The first dimension is "free" - we can add an arbitrary number of items.
+When it comes to the second one, they length may vary as well. However, for convenience, we'll keep same-length time series. Otherwise, we'd have to use masking or split the dataset into multiple tensors.
+The last dimension size is guaranteed by the data.frame structure itself (each row has the same number of columns).
 
 As we can observed in the output of `skim` function, there are time series with missing data.
 
-For simplicity's sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we'll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we'll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.
+As mentioned before, for simplicity's sake, we can just select a subset of items with the same series length as well as the first and last date. In such case, we'll be sure that our data are properly aligned in the tensor. Later, in a separate vignette, we'll dive into a set of methods, how to handle missing/non-aligned multiple time series when training a deep learning model.
 
 
-## Transorming to tensor
+## as_tensor
 
 ```{r prepared.data}
 head(ca_1_data)
@@ -82,8 +81,67 @@ Let's transform tabular data into tensor. A good way to do it is to use
 a convenient `as_tensor` function. The first argument of the function (described as `.data`) 
 is a `data.frame` object, which we want to transform into a `torch_tensor`.
 
+```{r as_tensor_1}
+colnames(ca_1_data)
+```
+
+First, we'll select only integer `item_id`, `date` and integer variables.
+
+```{r as_tensor_2}
+ca_1 <- 
+  ca_1_data %>% 
+  select(item_id, date, wday, month, year, snap)
+
+ca_1_tensor <- 
+  ca_1 %>% 
+  as_tensor(item_id, date)
+
+dim(ca_1_tensor)
+class(ca_1_tensor)
+
+ca_1_tensor <- 
+  ca_1_data %>% 
+  select(item_id, date, wday, month, year, snap, sell_price) %>% 
+  mutate(across(where(is.integer), as.numeric)) %>% 
+  as_tensor(item_id, date)
+
+dim(ca_1_tensor)
+class(ca_1_tensor)
+```
 ## as_ts_dataset
 
+To speed up `torch` models developments, `torchts` package provides easy-to-use `as_ts_dataset` method, which is a shortcut to create a `torch` dataset from a `data.frame`. For now keys like `item_id` are not supported - this feature will be implemented in the near future. We'll present this function using `weather_pl` dataset.
 
-## as_ts_dataloaders
+```{r as_ts_dataset}
+library(rsample)
 
+suwalki_temp <-
+  weather_pl %>%
+  filter(station == "SWK") %>%
+  select(date, temp = tmax_daily)
+
+#' # Splitting on training and test
+data_split <- initial_time_split(suwalki_temp)
+
+train_ds <-
+  training(data_split) %>%
+  as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
+
+train_ds[1]
+```
+## as_ts_dataloader
+
+The quickest shortcut to get needed data-provding object is to call `as_ts_dataloader` function.
+It can be used as follows.
+
+```{r as_ts_dataloader}
+train_dl <-
+   training(data_split) %>%
+   as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 1, batch_size = 32)
+
+train_dl
+
+dataloader_next(dataloader_make_iter(train_dl))
+
+
+```

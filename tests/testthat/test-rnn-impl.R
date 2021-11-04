@@ -39,7 +39,7 @@ test_that("RNN autoregression output", {
     predict(cleared_new_data)
 
   expect_equal(
-    dim(output)[1], nrow(cleared_new_data) - TIMESTEPS
+    length(output), nrow(cleared_new_data)
   )
 
 })
@@ -80,8 +80,8 @@ test_that("RNN autoregression multioutput", {
 
   # Dimensions
   expect_equal(
-    dim(output)[1],
-    nrow(cleared_new_data) - TIMESTEPS
+    nrow(output),
+    nrow(cleared_new_data)
   )
 
   expect_equal(dim(output)[2], 2)
