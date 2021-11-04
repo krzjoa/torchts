@@ -12,6 +12,7 @@ reference:
 - title: Modules
   contents:
   - model_rnn
+  - nn_multi_embedding
 - title: Data transformations
   contents:
   - as_tensor
@@ -24,10 +25,11 @@ reference:
   - nnf_mae
   - nnf_mape
   - nnf_smape
-- title: Categorical features
+- title: Utils
   contents:
   - is_categorical
   - dict_size
+  - set_device
 - title: Data
   contents:
   - weather_pl

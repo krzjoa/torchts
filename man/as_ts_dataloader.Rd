@@ -58,11 +58,11 @@ suwalki_temp <-
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
-train_ds <-
+train_dl <-
  training(data_split) \%>\%
- as_ts_dataloader(temp ~ date, n_timesteps = 20, horizon = 1, batch_size = 32)
+ as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 1, batch_size = 32)
 
-train_ds
+train_dl
 
 dataloader_next(dataloader_make_iter(train_ds))
 

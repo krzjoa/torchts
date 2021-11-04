@@ -2,7 +2,7 @@
 % Please edit documentation in R/metrics.R
 \name{nnf_mape}
 \alias{nnf_mape}
-\title{Mean Absolute Percentage Error}
+\title{Mean absolute percentage error}
 \usage{
 nnf_mape(input, target)
 }
@@ -12,7 +12,7 @@ nnf_mape(input, target)
 \item{target}{(\code{torch_tensor}) A tensor with the same shape as the input}
 }
 \description{
-Mean Absolute Percentage Error
+Mean absolute percentage error
 }
 \details{
 Computed according to the formula:

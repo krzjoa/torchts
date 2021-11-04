@@ -2,7 +2,7 @@
 % Please edit documentation in R/metrics.R
 \name{nnf_smape}
 \alias{nnf_smape}
-\title{Symmetric Mean Absolute Percentage Error}
+\title{Symmetric mean absolute percentage error}
 \usage{
 nnf_smape(input, target)
 }
@@ -12,7 +12,7 @@ nnf_smape(input, target)
 \item{target}{(\code{torch_tensor}) A tensor with the same shape as the input}
 }
 \description{
-Symmetric Mean Absolute Percentage Error
+Symmetric mean absolute percentage error
 }
 \details{
 Computed according to the formula:

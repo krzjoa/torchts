@@ -2,7 +2,7 @@
 % Please edit documentation in R/metrics.R
 \name{nnf_mae}
 \alias{nnf_mae}
-\title{Mean Absolute Scaled Error}
+\title{Mean absolute error}
 \usage{
 nnf_mae(input, target)
 }
@@ -12,7 +12,7 @@ nnf_mae(input, target)
 \item{target}{(\code{torch_tensor}) A tensor with the same shape as the input}
 }
 \description{
-Mean Absolute Scaled Error
+Mean absolute error
 }
 \details{
 Computed according to the formula:

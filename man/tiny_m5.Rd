@@ -3,7 +3,7 @@
 \docType{data}
 \name{tiny_m5}
 \alias{tiny_m5}
-\title{A prepared subset from M5 Walmart Challenge Dataset in one data frame}
+\title{A subset from M5 Walmart Challenge Dataset in one data frame}
 \format{
 \describe{
 \item{item_id}{The id of the product}
@@ -32,7 +32,7 @@ Note that although prices are constant at weekly basis, they may change through 
 tiny_m5
 }
 \description{
-A pieced of data cut from the training dataset used in the M5 challenges on Kaggle.
+A piece of data cut from the training dataset used in the M5 challenges on Kaggle.
 M5 is a challenge from a series organized by Spyros Makridakis.
 }
 \examples{

@@ -6,8 +6,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dictionary size per column — dict_size • torchts</title>
+<title>Return size of categorical variables in the data.frame — dict_size • torchts</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -39,8 +46,9 @@
 
 
 
-<meta property="og:title" content="Dictionary size per column — dict_size" />
-<meta property="og:description" content="Dictionary size per column" />
+<meta property="og:title" content="Return size of categorical variables in the data.frame — dict_size" />
+<meta property="og:description" content="Return size of categorical variables in the data.frame" />
+<meta property="og:image" content="/logo.svg" />
 
 
 
@@ -72,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">torchts</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -80,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -95,25 +103,24 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/data-prepare-rnn.html">Preparing data for RNN models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
-      <a href="../articles/missing-data.html">Handling missing data</a>
+      <a href="../articles/naming-convention.html">Naming convention</a>
     </li>
     <li>
-      <a href="../articles/multivariate-time-series.html">Univariate Time Series</a>
-    </li>
-    <li>
-      <a href="../articles/prepare-tensor.html">Prepare tensor</a>
-    </li>
-    <li>
-      <a href="../articles/univariate-time-series.html">Univariate Time Series</a>
+      <a href="../articles/parsnip-api.html">parsnip API</a>
     </li>
   </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/krzjoa/torchts/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -127,27 +134,69 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Dictionary size per column</h1>
-    
+    <h1>Return size of categorical variables in the data.frame</h1>
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/categorical.R'><code>R/categorical.R</code></a></small>
     <div class="hidden name"><code>dict_size.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Dictionary size per column</p>
+    <p>Return size of categorical variables in the data.frame</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dict_size</span><span class='op'>(</span><span class='va'>.data</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dict_size</span><span class='op'>(</span><span class='va'>data</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>.data</th>
-      <td><p>A data.frame-like object</p></td>
+      <th>(`data.frame`)</th>
+      <td><p>A data.frame containing categorical variables.
+The function automatically finds categorical variables,
+calling internally <a href='is_categorical.html'>is_categorical</a> function.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Named logical vector</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>tiny_m5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Rows: 535,640
+#&gt; Columns: 18
+#&gt; $ item_id      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "HOBBIES_1_330", "HOBBIES_1_330", "HOBBIES_1_330", "HOBBI…
+#&gt; $ dept_id      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "HOBBIES_1", "HOBBIES_1", "HOBBIES_1", "HOBBIES_1", "HOBB…
+#&gt; $ cat_id       <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "HOBBIES", "HOBBIES", "HOBBIES", "HOBBIES", "HOBBIES", "H…
+#&gt; $ store_id     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "CA_1", "CA_1", "CA_1", "CA_1", "CA_1", "CA_1", "CA_1", "…
+#&gt; $ state_id     <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA…
+#&gt; $ value        <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 0, 0, 0, 0, 2, 4, 3, 5, 4, 2, 0, 0, 4, 2, 5, 6, 1, 0, 3, …
+#&gt; $ date         <span style='color: #949494; font-style: italic;'>&lt;date&gt;</span> 2011-01-29, 2011-01-30, 2011-01-31, 2011-02-01, 2011-02-…
+#&gt; $ wm_yr_wk     <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 11101, 11101, 11101, 11101, 11101, 11101, 11101, 11102, 1…
+#&gt; $ weekday      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "…
+#&gt; $ wday         <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, …
+#&gt; $ month        <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, …
+#&gt; $ year         <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 2011, 201…
+#&gt; $ event_name_1 <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "", "", "", "", "", "", "", "", "SuperBowl", "", "", "", …
+#&gt; $ event_type_1 <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "", "", "", "", "", "", "", "", "Sporting", "", "", "", "…
+#&gt; $ event_name_2 <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "", "", "", "", "", "", "", "", "", "", "", "", "", "", "…
+#&gt; $ event_type_2 <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> "", "", "", "", "", "", "", "", "", "", "", "", "", "", "…
+#&gt; $ snap         <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span> 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, …
+#&gt; $ sell_price   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> 7.44, 7.44, 7.44, 7.44, 7.44, 7.44, 7.44, 7.44, 7.44, 7.4…</div><div class='input'><span class='fu'>dict_size</span><span class='op'>(</span><span class='va'>tiny_m5</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;      item_id      dept_id       cat_id     store_id     state_id        value 
+#&gt;           28            7            3           10            3          223 
+#&gt;     wm_yr_wk      weekday         wday        month         year event_name_1 
+#&gt;          274            7            7           12            6           31 
+#&gt; event_type_1 event_name_2 event_type_2         snap 
+#&gt;            5            5            3            2 </div><div class='input'>
+<span class='co'># We can choose only the features we want - otherwise it automatically</span>
+<span class='co'># selects logical, factor, character or integer vectors</span>
+
+<span class='va'>tiny_m5</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>store_id</span>, <span class='va'>event_name_1</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>dict_size</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;     store_id event_name_1 
+#&gt;           10           31 </div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
