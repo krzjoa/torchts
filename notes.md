@@ -29,6 +29,7 @@
 
 ## Libraries
 * https://github.com/zalandoresearch/pytorch-ts
+* https://pytorch-widedeep.readthedocs.io/en/latest/index.html
 
 ## Other
 * [AR-Net](https://arxiv.org/pdf/1911.12436.pdf)
