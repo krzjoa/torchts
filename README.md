@@ -13,7 +13,7 @@ status](https://travis-ci.com/krzjoa/torchts.svg?branch=master)](https://travis-
 status](https://ci.appveyor.com/api/projects/status/github/krzjoa/torchts?branch=master&svg=true)](https://ci.appveyor.com/project/krzjoa/torchts)
 [![Codecov test coverage](https://codecov.io/gh/krzjoa/torchts/branch/master/graph/badge.svg)](https://codecov.io/gh/krzjoa/torchts?branch=master)
 [![Buy hex
-stciker](https://img.shields.io/badge/buy%20hex-torchts-green?style=plastic&logo=redbubble)](https://www.redbubble.com/i/sticker/torchts-R-package-hex-sticker-by-krzjoa/93537989.EJUG5)
+stciker](https://img.shields.io/badge/buy%20hex-torchts-green?style=flat&logo=redbubble)](https://www.redbubble.com/i/sticker/torchts-R-package-hex-sticker-by-krzjoa/93537989.EJUG5)
 
 [![“Buy Me A
 Coffee”](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/kjoachimiak)
