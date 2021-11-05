@@ -29,6 +29,7 @@ reference:
   contents:
   - is_categorical
   - dict_size
+  - embedding_size
   - set_device
 - title: Data
   contents:
