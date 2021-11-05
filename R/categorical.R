@@ -23,7 +23,7 @@ is_categorical <- function(x){
 
 #' Return size of categorical variables in the data.frame
 #'
-#' @param (`data.frame`) A data.frame containing categorical variables.
+#' @param data (`data.frame`) A data.frame containing categorical variables.
 #' The function automatically finds categorical variables,
 #' calling internally [is_categorical] function.
 #'
