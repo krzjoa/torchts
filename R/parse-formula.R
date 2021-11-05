@@ -47,6 +47,17 @@ torchts_parse_formula <- function(formula, data){
     tibble(.var = colnames(data),
            .type = sapply(data, class))
 
+  is_variable_categorical <-
+    tibble(.var = colnames(data),
+           .is_categorical = sapply(data, is_categorical))
+
+  if (sum(is_variable_categorical$.is_categorical) > 0)
+    message(sprintf(
+       "Categorical variables found (%d): %s",
+        sum(is_variable_categorical$.is_categorical),
+        listed(is_variable_categorical[is_variable_categorical$.is_categorical, ]$.var)
+    ))
+
   names(variable_classes$.type) <- NULL
 
   all_variables <-
@@ -74,7 +85,9 @@ torchts_parse_formula <- function(formula, data){
     )
 
   output <-
-    left_join(output, variable_classes, by = ".var")
+    output %>%
+    left_join(variable_classes, by = ".var") %>%
+    left_join(is_variable_categorical, by = ".var")
 
   if (!("index" %in% output$.role)) {
     output <-

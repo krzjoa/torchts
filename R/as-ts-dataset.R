@@ -7,6 +7,7 @@
 #' @param key (`character`) The key column name(s). Use only if formula was not specified.
 #' @param predictors (`character`) Input variable names. Use only if formula was not specified.
 #' @param outcomes (`character`) Target variable names. Use only if formula was not specified.
+#' @param categorical (`character`) Categorical features.
 #' @param timesteps (`integer`) The time series chunk length.
 #' @param horizon (`integer`) Forecast horizon.
 #' @param sample_frac (`numeric`) Sample a fraction of rows (default: 1, i.e.: all the rows).
@@ -24,7 +25,7 @@
 #' suwalki_temp <-
 #'    weather_pl %>%
 #'    filter(station == "SWK") %>%
-#'    select(date, temp = tmax_daily)
+#'    select(date, temp = tmax_daily, rr_type)
 #'
 #' # Splitting on training and test
 #' data_split <- initial_time_split(suwalki_temp)
@@ -37,7 +38,7 @@
 #'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
-                          predictors = NULL, outcomes = NULL,
+                          predictors = NULL, outcomes = NULL, categorical = NULL,
                           timesteps, horizon = 1, sample_frac = 1,
                           scale = TRUE){
   UseMethod("as_ts_dataset")
@@ -46,7 +47,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
 
 #'@export
 as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
-                                  predictors = NULL, outcomes = NULL,
+                                  predictors = NULL, outcomes = NULL, categorical = NULL,
                                   timesteps, horizon = 1, sample_frac = 1,
                                   scale = TRUE){
   stop(sprintf(
@@ -57,9 +58,11 @@ as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
-                                     outcomes = NULL, timesteps,
-                                     horizon = 1, sample_frac = 1,
+                                     outcomes = NULL, categorical = NULL,
+                                     timesteps, horizon = 1, sample_frac = 1,
                                      scale = TRUE){
+
+  categorical_transformer <- NULL
 
   if (nrow(data) == 0) {
     stop("The data object is empty!")
@@ -71,8 +74,15 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     parsed_formula <- torchts_parse_formula(formula, data = data)
 
-    .predictors_columns <- list(
-      x = parsed_formula[parsed_formula$.role == "predictor", ]$.var
+    .predictors_columns <- predictors_spec(
+
+      # Numeric time-varyig variables
+      x = parsed_formula[parsed_formula$.role == "predictor" &
+                         !parsed_formula$.is_categorical, ]$.var,
+
+      # Categorical time-varying variables
+      x_cat = parsed_formula[parsed_formula$.role == "predictor" &
+                             parsed_formula$.is_categorical, ]$.var
     )
 
     .outcomes_columns <- list(
@@ -89,16 +99,24 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     # )
 
     # TODO: possible multiple elements in the list
-
-    .predictors_columns  <- list(x = predictors)
+    .predictors_columns  <- predictors_spec(
+      x = setdiff(predictors, categorical),
+      x_cat = categorical[categorical %in% predictors]
+    )
     .outcomes_columns    <- list(y = outcomes)
     .index_columns       <- index
 
   }
 
-  if (any(!sapply(data %>% select(-all_of(.index_columns)), is.numeric)))
-    stop("Data contains non-numeric columns (other than index column), but they are not handled for now.
-          Specifying categorical variables will be available in near future.")
+
+  if (!is.null(.predictors_columns$x_cat)) {
+    # Create a recipe to transform the data
+    # TODO: categorical vs numeric
+    categorical_transformer <-
+      recipe(data)
+      step_integer(is_categorical)
+  }
+
 
 
   if (is.null(.index_columns) | length(.index_columns) == 0)
@@ -131,3 +149,20 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     scale           = scale
   )
 }
+
+#' Predictors specification
+#' It facilitates to keep the same variables in all the specification list
+#' and avoid typos
+predictors_spec <- function(x = NULL, x_cat = NULL){
+  list(x = x, x_cat = x_cat)
+}
+
+
+prepare_categorical <- function(x, ...){
+
+}
+
+
+
+
+

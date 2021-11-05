@@ -1,6 +1,6 @@
 #' Create multiple embeddings at once
 #'
-#' @description It is especially useful, for dealing with multiple categorical features.
+#' It is especially useful, for dealing with multiple categorical features.
 #'
 #' @param num_embeddings (`integer`): size of the dictionary of embeddings
 #' @param embedding_dim	(`integer`): the size of each embedding vector
@@ -39,7 +39,7 @@
 #' embedding_module(gss_cat_tensor)
 #'
 #' @export
-nn_multi_embedding <- nn_module(
+nn_multi_embedding <- torch::nn_module(
 
   #' See:
   #' "Optimal number of embeddings"

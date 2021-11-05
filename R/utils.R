@@ -104,4 +104,8 @@ vars_with_role <- function(parsed_formula, role){
 }
 
 
+listed <- function(x){
+  # Add truncate option
+  paste0(x, collapse = ", ")
+}
 

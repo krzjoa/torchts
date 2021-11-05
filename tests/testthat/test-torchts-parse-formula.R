@@ -10,6 +10,8 @@ test_that("Test simple formula with explicit index", {
   output <-
     torchts_parse_formula(max_temp ~ max_temp + index(date), tarnow_temp)
 
+  # TODO: .type .class
+
   expected <- tribble(
     ~ .var, ~ .role, ~ .type,
     "max_temp", "outcome", "numeric",

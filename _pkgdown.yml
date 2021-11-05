@@ -30,6 +30,7 @@ reference:
   - is_categorical
   - dict_size
   - embedding_size
+  - clear_outcome
   - set_device
 - title: Data
   contents:
