@@ -11,6 +11,7 @@ as_ts_dataset(
   key = NULL,
   predictors = NULL,
   outcomes = NULL,
+  categorical = NULL,
   timesteps,
   horizon = 1,
   sample_frac = 1,
@@ -30,6 +31,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{predictors}{(\code{character}) Input variable names. Use only if formula was not specified.}
 
 \item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
+
+\item{categorical}{(\code{character}) Categorical features.}
 
 \item{timesteps}{(\code{integer}) The time series chunk length.}
 
@@ -54,7 +57,7 @@ library(rsample)
 suwalki_temp <-
    weather_pl \%>\%
    filter(station == "SWK") \%>\%
-   select(date, temp = tmax_daily)
+   select(date, temp = tmax_daily, rr_type)
 
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)

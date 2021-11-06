@@ -7,7 +7,7 @@
 dict_size(data)
 }
 \arguments{
-\item{(`data.frame`)}{A data.frame containing categorical variables.
+\item{data}{(\code{data.frame}) A data.frame containing categorical variables.
 The function automatically finds categorical variables,
 calling internally \link{is_categorical} function.}
 }

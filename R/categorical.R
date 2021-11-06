@@ -15,11 +15,18 @@
 #' @export
 is_categorical <- function(x){
   # TODO: class(x) %in% getOption("torchts_categoricals")
-  # better than harcoded?
-  is.logical(x)   |
-  is.factor(x)    |
-  is.character(x) |
-  is.integer(x)
+  # is.logical(x)   |
+  # is.factor(x)    |
+  # is.character(x) |
+  # is.integer(x)
+  any(sapply(
+    getOption("torchts_categoricals"),
+    function(cls) inherits(x, cls)
+  ))
+}
+
+which_categorical <- function(data){
+  sapply(data, is_categorical)
 }
 
 

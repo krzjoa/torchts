@@ -6,15 +6,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>NA • torchts</title>
+<title>Predictors specification
+It facilitates to keep the same variables in all the specification list
+and avoid typos — predictors_spec • torchts</title>
 
 <!-- favicons -->
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png" />
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png" />
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png" />
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -25,8 +27,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
-<link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script>
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
@@ -40,13 +42,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script>
+<link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="NA" />
+<meta property="og:title" content="Predictors specification
+It facilitates to keep the same variables in all the specification list
+and avoid typos — predictors_spec" />
+<meta property="og:description" content="Predictors specification
+It facilitates to keep the same variables in all the specification list
+and avoid typos" />
 <meta property="og:image" content="/logo.svg" />
 
 
@@ -66,7 +73,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-title-body">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -78,7 +85,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">torchts</a>
+        <a class="navbar-link" href="../index.html">torchts</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
@@ -86,13 +93,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">
+  <a href="../index.html">
     <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -102,13 +109,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
+      <a href="../articles/data-prepare-rnn.html">Preparing data for recurrent models</a>
     </li>
     <li>
-      <a href="articles/naming-convention.html">Naming convention</a>
+      <a href="../articles/naming-convention.html">Naming convention</a>
     </li>
     <li>
-      <a href="articles/parsnip-api.html">parsnip API</a>
+      <a href="../articles/parsnip-api.html">parsnip API</a>
     </li>
   </ul>
 </li>
@@ -131,93 +138,32 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>NA</h1>
+    <h1>Predictors specification
+It facilitates to keep the same variables in all the specification list
+and avoid typos</h1>
+    <small class="dont-index">Source: <a href='https://github.com/krzjoa/torchts/blob/master/R/as-ts-dataset.R'><code>R/as-ts-dataset.R</code></a></small>
+    <div class="hidden name"><code>predictors_spec.Rd</code></div>
     </div>
 
+    <div class="ref-description">
+    <p>Predictors specification
+It facilitates to keep the same variables in all the specification list
+and avoid typos</p>
+    </div>
 
-<div id="todo" class="section level2">
-<h2 class="hasAnchor">
-<a href="#todo" class="anchor"></a>TODO</h2>
-<ul>
-<li>handling missing data as a separate vignette</li>
-<li>add a vignette with name explanation (index, key, outcome = target etc.)</li>
-</ul>
-</div>
-<div id="which-name" class="section level2">
-<h2 class="hasAnchor">
-<a href="#which-name" class="anchor"></a>Which name?</h2>
-<ul>
-<li>h, horizon, prediction_length (modeltime.gluonts)</li>
-<li>timesteps, steps, lookback_length (modeltime.gluonts)</li>
-<li>targets, outcomes &lt;= <a href="https://recipes.tidymodels.org/articles/Roles.html" class="uri">https://recipes.tidymodels.org/articles/Roles.html</a>
-</li>
-<li>predictor, inputs</li>
-<li>key (fable), id (modeltime)</li>
-<li>index (fable), date_var (timetk) &lt;= <a href="https://tsibble.tidyverts.org/reference/tsibble.html" class="uri">https://tsibble.tidyverts.org/reference/tsibble.html</a>
-</li>
-</ul>
-</div>
-<div id="conditional-rnn" class="section level2">
-<h2 class="hasAnchor">
-<a href="#conditional-rnn" class="anchor"></a>Conditional RNN</h2>
-<ul>
-<li><a href="https://github.com/philipperemy/cond_rnn">cond_rnn</a></li>
-<li><a href="https://datascience.stackexchange.com/questions/17099/adding-features-to-time-series-model-lstm/17139#17139">Adding Features To Time Series Model LSTM</a></li>
-</ul>
-</div>
-<div id="missing-values" class="section level2">
-<h2 class="hasAnchor">
-<a href="#missing-values" class="anchor"></a>Missing values</h2>
-<ul>
-<li>See: <a href="https://www.tensorflow.org/guide/keras/masking_and_padding" class="uri">https://www.tensorflow.org/guide/keras/masking_and_padding</a>
-</li>
-<li><a href="https://www.nature.com/articles/s41598-018-24271-9" class="uri">https://www.nature.com/articles/s41598-018-24271-9</a></li>
-</ul>
-</div>
-<div id="demand" class="section level2">
-<h2 class="hasAnchor">
-<a href="#demand" class="anchor"></a>Demand</h2>
-<ul>
-<li><a href="https://www.researchgate.net/publication/298725275_A_new_metric_of_absolute_percentage_error_for_intermittent_demand_forecasts" class="uri">https://www.researchgate.net/publication/298725275_A_new_metric_of_absolute_percentage_error_for_intermittent_demand_forecasts</a></li>
-<li><a href="https://frepple.com/blog/demand-classification/" class="uri">https://frepple.com/blog/demand-classification/</a></li>
-</ul>
-</div>
-<div id="metrics" class="section level2">
-<h2 class="hasAnchor">
-<a href="#metrics" class="anchor"></a>Metrics</h2>
-<ul>
-<li><a href="https://datascience.stackexchange.com/questions/55388/tweedie-loss-for-keras" class="uri">https://datascience.stackexchange.com/questions/55388/tweedie-loss-for-keras</a></li>
-</ul>
-</div>
-<div id="libraries" class="section level2">
-<h2 class="hasAnchor">
-<a href="#libraries" class="anchor"></a>Libraries</h2>
-<ul>
-<li><a href="https://github.com/zalandoresearch/pytorch-ts" class="uri">https://github.com/zalandoresearch/pytorch-ts</a></li>
-<li><a href="https://pytorch-widedeep.readthedocs.io/en/latest/index.html" class="uri">https://pytorch-widedeep.readthedocs.io/en/latest/index.html</a></li>
-</ul>
-</div>
-<div id="other" class="section level2">
-<h2 class="hasAnchor">
-<a href="#other" class="anchor"></a>Other</h2>
-<ul>
-<li><a href="https://arxiv.org/pdf/1911.12436.pdf">AR-Net</a></li>
-</ul>
-</div>
+    <pre class="usage"><span class='fu'>predictors_spec</span><span class='op'>(</span>x <span class='op'>=</span> <span class='cn'>NULL</span>, x_cat <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
+
 
 
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
-
 </div>
-
 
 
       <footer>

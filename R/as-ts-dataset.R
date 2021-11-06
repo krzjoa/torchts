@@ -15,7 +15,7 @@
 #' with values (mean, std)
 #'
 #' @note
-#' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
 #'
 #' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
@@ -62,7 +62,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
                                      scale = TRUE){
 
-  categorical_transformer <- NULL
+  cat_transformer <- NULL
 
   if (nrow(data) == 0) {
     stop("The data object is empty!")
@@ -76,7 +76,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     .predictors_columns <- predictors_spec(
 
-      # Numeric time-varyig variables
+      # Numeric time-varying variables
       x = parsed_formula[parsed_formula$.role == "predictor" &
                          !parsed_formula$.is_categorical, ]$.var,
 
@@ -108,16 +108,19 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   }
 
-
   if (!is.null(.predictors_columns$x_cat)) {
     # Create a recipe to transform the data
     # TODO: categorical vs numeric
-    categorical_transformer <-
-      recipe(data)
-      step_integer(is_categorical)
+    cat_transformer <-
+      recipe(data) %>%
+      step_integer(all_of(c(.predictors_columns$x_cat, "lol"))) %>%
+      prep()
+
+    data <-
+      cat_transformer %>%
+      juice()
+
   }
-
-
 
   if (is.null(.index_columns) | length(.index_columns) == 0)
     stop("No time index column defined! Add at least one time-based variable.")
@@ -139,14 +142,18 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
   data_tensor <-
     as_tensor(data, !!.index_columns)
 
+  # TODO: change ts_dataset
+
   ts_dataset(
     data            = data_tensor,
     timesteps       = timesteps,
     horizon         = horizon,
     predictors_spec = .predictors_spec,
     outcomes_spec   = .outcomes_spec,
+    categorical     = "x_cat",
     sample_frac     = sample_frac,
-    scale           = scale
+    scale           = scale,
+    extras          = list(cat_transformer = cat_transformer)
   )
 }
 

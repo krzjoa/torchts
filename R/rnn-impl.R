@@ -95,10 +95,12 @@ rnn_fit <- function(formula,
 
   optim <- rlang::enquo(optim)
 
-  # Selectin only those columns which are used
+  # Selecting only those columns which are used
   data <-
     data %>%
     select(all_of(all_used_vars))
+
+  # TODO: consider step_integer here, with optional handling in dataset
 
   # Prepare dataloaders
   dls <-

@@ -49,7 +49,7 @@ torchts_parse_formula <- function(formula, data){
 
   is_variable_categorical <-
     tibble(.var = colnames(data),
-           .is_categorical = sapply(data, is_categorical))
+           .is_categorical = which_categorical(data))
 
   if (sum(is_variable_categorical$.is_categorical) > 0)
     message(sprintf(

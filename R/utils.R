@@ -109,3 +109,8 @@ listed <- function(x){
   paste0(x, collapse = ", ")
 }
 
+all_the_same <- function(x){
+  all(x == x[1])
+}
+
+

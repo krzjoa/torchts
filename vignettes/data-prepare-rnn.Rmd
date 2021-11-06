@@ -118,14 +118,16 @@ library(rsample)
 suwalki_temp <-
   weather_pl %>%
   filter(station == "SWK") %>%
-  select(date, temp = tmax_daily)
+  select(date, tmax_daily, rr_type)
 
 #' # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
+debugonce(torchts:::as_ts_dataset.data.frame)
+
 train_ds <-
   training(data_split) %>%
-  as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
+  as_ts_dataset(tmax_daily ~ date + rr_type, timesteps = 20, horizon = 1)
 
 train_ds[1]
 ```

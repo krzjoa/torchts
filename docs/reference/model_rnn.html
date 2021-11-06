@@ -207,7 +207,7 @@
     timesteps <span class='op'>=</span> <span class='fl'>30</span>,
     batch_size <span class='op'>=</span> <span class='fl'>32</span>
   <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='error'>Error in prep(.): nie udało się znaleźć funkcji 'prep'</span></div><div class='input'>
 <span class='co'># Creating a model</span>
 <span class='va'>rnn_net</span> <span class='op'>&lt;-</span>
   <span class='fu'>model_rnn</span><span class='op'>(</span>
@@ -225,41 +225,9 @@
 <span class='co'># Prediction example on non-trained neural network</span>
 <span class='va'>batch</span> <span class='op'>&lt;-</span>
   <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>weather_dl</span><span class='op'>)</span><span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='error'>Error in dataloader_make_iter(weather_dl): nie znaleziono obiektu 'weather_dl'</span></div><div class='input'>
 <span class='fu'>rnn_net</span><span class='op'>(</span><span class='va'>batch</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; torch_tensor
-#&gt; (1,.,.) = 
-#&gt;   0.2784
-#&gt; 
-#&gt; (2,.,.) = 
-#&gt;   0.2851
-#&gt; 
-#&gt; (3,.,.) = 
-#&gt;   0.2846
-#&gt; 
-#&gt; (4,.,.) = 
-#&gt;   0.2798
-#&gt; 
-#&gt; (5,.,.) = 
-#&gt;   0.2837
-#&gt; 
-#&gt; (6,.,.) = 
-#&gt;   0.2830
-#&gt; 
-#&gt; (7,.,.) = 
-#&gt;   0.2551
-#&gt; 
-#&gt; (8,.,.) = 
-#&gt;   0.2373
-#&gt; 
-#&gt; (9,.,.) = 
-#&gt;   0.2371
-#&gt; 
-#&gt; (10,.,.) = 
-#&gt;   0.2410
-#&gt; 
-#&gt; ... [the output was truncated (use n=-1 to disable)]
-#&gt; [ CPUFloatType{32,1,1} ][ grad_fn = &lt;SliceBackward&gt; ]</div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in is_packed_sequence(input): nie znaleziono obiektu 'batch'</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
