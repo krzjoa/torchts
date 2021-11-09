@@ -11,8 +11,11 @@ ts_dataset(
   jump = horizon,
   predictors_spec = list(x = NULL),
   outcomes_spec = list(y = NULL),
+  categorical = NULL,
   sample_frac = 1,
-  scale = TRUE
+  scale = TRUE,
+  extras = NULL,
+  ...
 )
 }
 \arguments{
@@ -31,7 +34,12 @@ It should be a list with names representing names of tensors served by dataset, 
 \item{outcomes_spec}{(\code{list}) Target specification.
 It should be a list with names representing names of tensors served b}
 
+\item{categorical}{(\code{character}) Names of specified column subsets considered as categorical.
+They will be provided as integer tensors.}
+
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Boolean flag or list with \code{mean} and \code{sd} values.}
+
+\item{extras}{(\code{list}) List of extra onject to be stored inside the ts_dataset object.}
 
 \item{sample_fram}{(\code{numeric}) A numeric value > 0. and <= 1 to sample a subset of data.}
 }

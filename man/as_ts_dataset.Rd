@@ -47,12 +47,13 @@ with values (mean, std)}
 Create a torch dataset for time series data from a \code{data.frame}-like object
 }
 \note{
-If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+If \code{scale} is TRUE, only the input variables are scale and not the outcome ones.
 
 See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
 }
 \examples{
 library(rsample)
+library(dplyr, warn.conflicts = FALSE)
 
 suwalki_temp <-
    weather_pl \%>\%
@@ -64,7 +65,7 @@ data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
- as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
+ as_ts_dataset(temp ~ date + temp + rr_type, timesteps = 20, horizon = 1)
 
 train_ds[1]
 
