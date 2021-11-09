@@ -14,6 +14,8 @@
 #' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
 #'
+#' @importFrom recipes recipe step_integer juice prep
+#'
 #' @note
 #' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
 #'
@@ -21,6 +23,7 @@
 #'
 #' @examples
 #' library(rsample)
+#' library(dplyr, warn.conflicts = FALSE)
 #'
 #' suwalki_temp <-
 #'    weather_pl %>%
@@ -32,7 +35,7 @@
 #'
 #' train_ds <-
 #'  training(data_split) %>%
-#'  as_ts_dataset(temp ~ date, timesteps = 20, horizon = 1)
+#'  as_ts_dataset(temp ~ date + temp + rr_type, timesteps = 20, horizon = 1)
 #'
 #' train_ds[1]
 #'
@@ -113,7 +116,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     # TODO: categorical vs numeric
     cat_transformer <-
       recipe(data) %>%
-      step_integer(all_of(c(.predictors_columns$x_cat, "lol"))) %>%
+      step_integer(all_of(c(.predictors_columns$x_cat))) %>%
       prep()
 
     data <-
@@ -161,7 +164,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 #' It facilitates to keep the same variables in all the specification list
 #' and avoid typos
 predictors_spec <- function(x = NULL, x_cat = NULL){
-  list(x = x, x_cat = x_cat)
+  output <- list(x = x, x_cat = x_cat)
+  Filter(function(var) !is.null(var), output)
 }
 
 

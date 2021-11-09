@@ -9,8 +9,11 @@
 #' It should be a list with names representing names of tensors served by dataset, and values being feature indices.
 #' @param outcomes_spec (`list`) Target specification.
 #' It should be a list with names representing names of tensors served b
+#' @param categorical (`character`) Names of specified column subsets considered as categorical.
+#' They will be provided as integer tensors.
 #' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
 #' @param scale (`logical` or `list`) Scale feature columns. Boolean flag or list with `mean` and `sd` values.
+#' @param extras (`list`) List of extra onject to be stored inside the ts_dataset object.
 #'
 #' @note
 #' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
@@ -48,8 +51,8 @@ ts_dataset <- torch::dataset(
 
   initialize = function(data, timesteps, horizon, jump = horizon,
                         predictors_spec  = list(x = NULL),
-                        outcomes_spec = list(y = NULL),
-                        sample_frac = 1, scale = TRUE) {
+                        outcomes_spec = list(y = NULL), categorical = NULL,
+                        sample_frac = 1, scale = TRUE, extras = NULL, ...) {
 
     # Change unit test where non-tabular data handling is added
     if (length(dim(data)) > 2)
@@ -66,6 +69,7 @@ ts_dataset <- torch::dataset(
     self$jump            <- jump
     self$predictors_spec <- predictors_spec
     self$outcomes_spec   <- outcomes_spec
+    self$extras          <- extras
 
     n <- (nrow(self$data) - self$timesteps) / self$jump
     n <- floor(n)
