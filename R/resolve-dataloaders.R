@@ -5,6 +5,7 @@
 #'
 prepare_dl <- function(data, formula, index,
                        timesteps, horizon,
+                       categorical = NULL,
                        validation = NULL,
                        scale = TRUE, batch_size){
 
@@ -48,6 +49,7 @@ prepare_dl <- function(data, formula, index,
         formula     = formula,
         timesteps   = timesteps,
         horizon     = horizon,
+        categorical = categorical,
         scale       = scale,
         batch_size  = batch_size
       )
@@ -60,6 +62,7 @@ prepare_dl <- function(data, formula, index,
       formula     = formula,
       timesteps   = timesteps,
       horizon     = horizon,
+      categorical = categorical,
       scale       = scale,
       batch_size  = batch_size
     )

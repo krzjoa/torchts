@@ -1,7 +1,7 @@
 destination: docs
 template:
   params:
-    bootswatch: cosmo
+    bootswatch: united
 authors:
   Krzysztof Joachimiak:
     href: https://krzjoa.github.io

@@ -10,6 +10,7 @@ model_rnn(
   output_size,
   hidden_size,
   horizon = 1,
+  embedding = NULL,
   final_module = nn_linear(hidden_size, output_size * horizon),
   dropout = 0,
   batch_first = TRUE
@@ -26,6 +27,8 @@ model_rnn(
 
 \item{horizon}{(\code{integer}) Horizon size. How many steps ahead produce from the last n steps?}
 
+\item{embedding}{(\code{embedding_spec}) List with two values: num_embeddings and embedding_dim.}
+
 \item{final_module}{(\code{nn_module}) If not null, applied instead of default linear layer.}
 
 \item{dropout}{(\code{logical}) Use dropout.}
@@ -41,22 +44,39 @@ library(torch)
 library(torchts)
 
 # Preparing data
-weather_dl <-
+weather_data <-
   weather_pl \%>\%
   filter(station == "TRN") \%>\%
-  select(date, tmax_daily) \%>\%
+  select(date, tmax_daily, rr_type) \%>\%
+  mutate(rr_type = ifelse(is.na(rr_type), "NA", rr_type))
+
+weather_dl <-
+  weather_data \%>\%
   as_ts_dataloader(
-    tmax_daily ~ date,
+    tmax_daily ~ date + tmax_daily + rr_type,
     timesteps = 30,
+    categorical = "rr_type",
     batch_size = 32
   )
+
+unique(weather_data$rr_type)
+n_unique_values <- n_distinct(weather_data$rr_type)
+
+.embedding_spec <-
+   embedding_spec(
+     num_embeddings = n_unique_values,
+     embedding_dim  = embedding_size_google(n_unique_values)
+   )
+
+input_size <- 1 + embedding_size_google(n_unique_values) # tmax_daily + rr_type embedding
 
 # Creating a model
 rnn_net <-
   model_rnn(
-    input_size  = 1,
+    input_size  = input_size,
     output_size = 1,
-    hidden_size = 10
+    hidden_size = 10,
+    embedding   = .embedding_spec
   )
 
 print(rnn_net)
@@ -65,6 +85,7 @@ print(rnn_net)
 batch <-
   dataloader_next(dataloader_make_iter(weather_dl))
 
-rnn_net(batch$x)
+# debugonce(rnn_net$forward)
+rnn_net(batch$x_num, batch$x_cat)
 
 }

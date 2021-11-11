@@ -8,6 +8,7 @@
 #' @param output_size (`integer`) Output size (number of target variables).
 #' @param hidden_size (`integer`) A size of recurrent hidden layer.
 #' @param horizon (`integer`) Horizon size. How many steps ahead produce from the last n steps?
+#' @param embedding (`embedding_spec`) List with two values: num_embeddings and embedding_dim.
 #' @param final_module (`nn_module`) If not null, applied instead of default linear layer.
 #' @param dropout (`logical`) Use dropout.
 #' @param batch_first (`logical`) Channel order.
@@ -20,22 +21,39 @@
 #' library(torchts)
 #'
 #' # Preparing data
-#' weather_dl <-
+#' weather_data <-
 #'   weather_pl %>%
 #'   filter(station == "TRN") %>%
-#'   select(date, tmax_daily) %>%
+#'   select(date, tmax_daily, rr_type) %>%
+#'   mutate(rr_type = ifelse(is.na(rr_type), "NA", rr_type))
+#'
+#' weather_dl <-
+#'   weather_data %>%
 #'   as_ts_dataloader(
-#'     tmax_daily ~ date,
+#'     tmax_daily ~ date + tmax_daily + rr_type,
 #'     timesteps = 30,
+#'     categorical = "rr_type",
 #'     batch_size = 32
 #'   )
+#'
+#' unique(weather_data$rr_type)
+#' n_unique_values <- n_distinct(weather_data$rr_type)
+#'
+#' .embedding_spec <-
+#'    embedding_spec(
+#'      num_embeddings = n_unique_values,
+#'      embedding_dim  = embedding_size_google(n_unique_values)
+#'    )
+#'
+#' input_size <- 1 + embedding_size_google(n_unique_values) # tmax_daily + rr_type embedding
 #'
 #' # Creating a model
 #' rnn_net <-
 #'   model_rnn(
-#'     input_size  = 1,
+#'     input_size  = input_size,
 #'     output_size = 1,
-#'     hidden_size = 10
+#'     hidden_size = 10,
+#'     embedding   = .embedding_spec
 #'   )
 #'
 #' print(rnn_net)
@@ -44,7 +62,8 @@
 #' batch <-
 #'   dataloader_next(dataloader_make_iter(weather_dl))
 #'
-#' rnn_net(batch$x)
+#' # debugonce(rnn_net$forward)
+#' rnn_net(batch$x_num, batch$x_cat)
 #'
 #' @export
 model_rnn <- torch::nn_module(
@@ -54,13 +73,20 @@ model_rnn <- torch::nn_module(
   initialize = function(rnn_layer = nn_gru,
                         input_size, output_size,
                         hidden_size, horizon = 1,
+                        embedding = NULL,
                         final_module = nn_linear(hidden_size, output_size * horizon),
                         dropout = 0, batch_first = TRUE){
 
     self$horizon <- horizon
 
-    self$multiembedding <-
-      nn_multi_embedding()
+    if (!is.null(embedding))
+      self$multiembedding <-
+        nn_multi_embedding(
+          num_embeddings = embedding$num_embeddings,
+          embedding_dim  = embedding$embedding_dim
+        )
+    else
+      self$multiembedding <- NULL
 
     self$rnn <-
       rnn_layer(
@@ -79,14 +105,21 @@ model_rnn <- torch::nn_module(
   forward = function(x_num, x_cat) {
 
     # Transforming categorical features using multiembedding
-    if (!is.null(x_cat))
-      x_cat_transformed <- self$multiembedding(x_cat)
-    else
+    if (!is.null(x_cat)) {
+
+      if (is.null(self$multiembedding)) {
+        message("x_cat argument was passed, but embedding was not defined")
+        x_cat_transformed <- NULL
+      } else {
+        x_cat_transformed <- self$multiembedding(x_cat)
+      }
+
+    } else {
       x_cat_transformed <- NULL
+    }
 
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
-
     x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
 
     x1 <- self$rnn(x)
@@ -101,3 +134,26 @@ model_rnn <- torch::nn_module(
     self$final_module(x)[,newaxis,]
   }
 )
+
+
+embedding_spec <- function(num_embeddings, embedding_dim){
+  structure(
+    class = "embedding_spec",
+    list(
+      num_embeddings = num_embeddings,
+      embedding_dim  = embedding_dim
+  ))
+}
+
+# make_embedding_spec <- function(data, embeddig_size_fun = embedding_size_google){
+#
+#   .dict_size <- dict_size(data)
+#   .embedding_size <- embeddig_size_fun(.dict_size)
+#
+#   embedding_spec(
+#     num_embeddings = .dict_size,
+#     embedding_dim  = .embedding_size
+#   )
+# }
+
+

@@ -44,8 +44,8 @@ library(recipes)
 data("gss_cat", package = "forcats")
 
 gss_cat_transformed <-
-  recipe() \%>\%
-  step_integer(all_nominal()) \%>\%
+  recipe(gss_cat) \%>\%
+  step_integer(everything()) \%>\%
   prep() \%>\%
   juice()
 

@@ -10,6 +10,7 @@ prepare_dl(
   index,
   timesteps,
   horizon,
+  categorical = NULL,
   validation = NULL,
   scale = TRUE,
   batch_size
@@ -26,6 +27,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{timesteps}{(\code{integer}) The time series chunk length.}
 
 \item{horizon}{(\code{integer}) Forecast horizon.}
+
+\item{categorical}{(\code{character}) Categorical features.}
 
 \item{validation}{(\code{data.frame} or \code{numeric}) Validation dataset or percent of TODO.}
 

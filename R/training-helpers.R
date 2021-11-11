@@ -6,7 +6,7 @@ train_batch <- function(input, target,
   optimizer$zero_grad()
   output <- do.call(net, input)
 
-  loss <- loss_fun(output$reshape(dim(target)), target)
+  loss <- loss_fun(output$reshape(dim(target$y)), target$y)
   loss$backward()
   optimizer$step()
 
@@ -17,7 +17,7 @@ train_batch <- function(input, target,
 valid_batch <- function(net, input, target,
                         loss_fun = nnf_mse_loss) {
   output <- do.call(net, input)
-  loss <- loss_fun(output$reshape(dim(target)), target)
+  loss <- loss_fun(output$reshape(dim(target$y)), target$y)
   loss$item()
 
 }

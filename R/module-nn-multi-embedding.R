@@ -23,8 +23,8 @@
 #' data("gss_cat", package = "forcats")
 #'
 #' gss_cat_transformed <-
-#'   recipe() %>%
-#'   step_integer(all_nominal()) %>%
+#'   recipe(gss_cat) %>%
+#'   step_integer(everything()) %>%
 #'   prep() %>%
 #'   juice()
 #'
@@ -112,8 +112,6 @@ nn_multi_embedding <- torch::nn_module(
     for (idx in seq_along(self$num_embeddings)) {
       embedded_features[[glue("embedding_{idx}")]] <-
         self[[glue("embedding_{idx}")]](input[.., idx])
-
-     #  self[[glue("embedding_{idx}")]](input[.., idx][newaxis, ..])
     }
 
     torch_cat(embedded_features, dim = -1)

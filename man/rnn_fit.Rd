@@ -60,10 +60,14 @@ library(torchts)
 library(timetk)
 
 # Preparing a dataset
+# TODO: turn to tiny_m5
+
+
 tarnow_temp <-
    weather_pl \%>\%
    filter(station == "TRN") \%>\%
-   select(date, tmax_daily, tmin_daily, press_mean_daily)
+   select(date, tmax_daily, tmin_daily, press_mean_daily, rr_type) \%>\%
+   mutate(rr_type = ifelse(is.na(rr_type), "NA", rr_type))
 
 # Splitting dataset
 data_split <-
@@ -77,7 +81,7 @@ data_split <-
 # Training a model
 rnn_model <-
    rnn_fit(
-     tmax_daily ~ date,
+     tmax_daily ~ date + tmax_daily + rr_type,
      data = training(data_split),
      hidden_units = 10,
      timesteps = 20,
@@ -87,7 +91,11 @@ rnn_model <-
    )
 
 # Prediction
+cleared_new_data <-
+  testing(data_split) \%>\%
+  clear_outcome(date, tmax_daily, 20)
 
+forecast <- predict(rnn_model, cleared_new_data)
 
 
 

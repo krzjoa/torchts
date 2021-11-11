@@ -11,6 +11,7 @@ as_ts_dataloader(
   key = NULL,
   predictors = NULL,
   outcomes = NULL,
+  categorical = NULL,
   timesteps,
   batch_size,
   horizon = 1,
@@ -32,6 +33,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{predictors}{(\code{character}) Input variable names. Use only if formula was not specified.}
 
 \item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
+
+\item{categorical}{(\code{character}) Categorical features.}
 
 \item{timesteps}{(\code{integer}) The time series chunk length.}
 

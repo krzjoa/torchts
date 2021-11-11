@@ -26,10 +26,14 @@
 #' library(timetk)
 #'
 #' # Preparing a dataset
+#' # TODO: turn to tiny_m5
+#'
+#'
 #' tarnow_temp <-
 #'    weather_pl %>%
 #'    filter(station == "TRN") %>%
-#'    select(date, tmax_daily, tmin_daily, press_mean_daily)
+#'    select(date, tmax_daily, tmin_daily, press_mean_daily, rr_type) %>%
+#'    mutate(rr_type = ifelse(is.na(rr_type), "NA", rr_type))
 #'
 #' # Splitting dataset
 #' data_split <-
@@ -43,7 +47,7 @@
 #' # Training a model
 #' rnn_model <-
 #'    rnn_fit(
-#'      tmax_daily ~ date,
+#'      tmax_daily ~ date + tmax_daily + rr_type,
 #'      data = training(data_split),
 #'      hidden_units = 10,
 #'      timesteps = 20,
@@ -53,7 +57,11 @@
 #'    )
 #'
 #' # Prediction
+#' cleared_new_data <-
+#'   testing(data_split) %>%
+#'   clear_outcome(date, tmax_daily, 20)
 #'
+#' forecast <- predict(rnn_model, cleared_new_data)
 #'
 #'
 #'
@@ -74,6 +82,7 @@ rnn_fit <- function(formula,
                     loss_fn = nnf_mse_loss){
 
   # TODO: thumb rule for number of hidden units
+  # TODO: for now, you don't have to define categorical features
 
   # Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
   # Może nie musiałaby się tego uczyć?
@@ -86,10 +95,12 @@ rnn_fit <- function(formula,
 
   # Extract column roles from formula
   # Use torchts_constants
-  key        <- vars_with_role(parsed_formula, "key")
-  index      <- vars_with_role(parsed_formula, "index")
-  outcomes   <- vars_with_role(parsed_formula, "outcome")
-  predictors <- vars_with_role(parsed_formula, "predictor")
+  key         <- vars_with_role(parsed_formula, "key")
+  index       <- vars_with_role(parsed_formula, "index")
+  outcomes    <- vars_with_role(parsed_formula, "outcome")
+  predictors  <- vars_with_role(parsed_formula, "predictor")
+  categorical <- dplyr::filter(parsed_formula, .role == "predictor", .type == "categorical")
+  numeric     <- dplyr::filter(parsed_formula, .role == "predictor", .type == "numeric")
 
   all_used_vars <- unique(c(key, index, outcomes, predictors))
 
@@ -100,26 +111,43 @@ rnn_fit <- function(formula,
     data %>%
     select(all_of(all_used_vars))
 
+  # Categorical features
+  if (nrow(categorical) > 0) {
+
+    embedded_vars  <- dict_size(data[categorical$.var])
+    embedding_size <- embedding_size_google(embedded_vars)
+
+    embedding<-
+       embedding_spec(
+         num_embeddings = embedded_vars,
+         embedding_dim  = embedding_size
+       )
+
+  } else {
+    embedding_size <- NULL
+    embedding <- NULL
+  }
+
   # TODO: consider step_integer here, with optional handling in dataset
 
   # Prepare dataloaders
   dls <-
     prepare_dl(
-      data       = data,
-      formula    = formula,
-      index      = index,
-      timesteps  = timesteps,
-      horizon    = horizon,
-      validation = validation,
-      scale      = scale,
-      batch_size = batch_size
+      data        = data,
+      formula     = formula,
+      index       = index,
+      timesteps   = timesteps,
+      horizon     = horizon,
+      categorical = categorical,
+      validation  = validation,
+      scale       = scale,
+      batch_size  = batch_size
     )
 
   train_dl <- dls[[1]]
   valid_dl <- dls[[2]]
 
-  input_size <-
-    tail(dim(train_dl$dataset$data), 1)
+  input_size <- nrow(numeric) + sum(embedding_size)
 
   output_size <- length(outcomes)
 
@@ -131,6 +159,7 @@ rnn_fit <- function(formula,
         output_size = output_size,
         hidden_size = hidden_units,
         horizon     = horizon,
+        embedding   = embedding,
         dropout     = dropout,
         batch_first = TRUE
     )
@@ -173,8 +202,8 @@ predict.torchts_rnn <- function(object, new_data){
 
   # For now we suppose it's continuous
   # Check more conditions
-  n_outcomes     <- length(object$outcomes)
-  batch_size     <- 1
+  n_outcomes <- length(object$outcomes)
+  batch_size <- 1
 
   recursive_mode <- check_recursion(object, new_data)
 
@@ -202,7 +231,7 @@ predict.torchts_rnn <- function(object, new_data){
 
   coro::loop(for (b in new_data_dl) {
 
-    output <- net(b$x)
+    output <- do.call(net, get_x(b))
     output <- output$reshape(c(-1, n_outcomes))
     preds  <- rbind(preds, as_array(output))
 
@@ -225,8 +254,6 @@ predict.torchts_rnn <- function(object, new_data){
 
   preds
 }
-
-
 
 
 #

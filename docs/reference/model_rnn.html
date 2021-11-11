@@ -19,7 +19,7 @@
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/united/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
@@ -149,6 +149,7 @@
   <span class='va'>output_size</span>,
   <span class='va'>hidden_size</span>,
   horizon <span class='op'>=</span> <span class='fl'>1</span>,
+  embedding <span class='op'>=</span> <span class='cn'>NULL</span>,
   final_module <span class='op'>=</span> <span class='fu'><a href='https://torch.mlverse.org/docs/reference/nn_linear.html'>nn_linear</a></span><span class='op'>(</span><span class='va'>hidden_size</span>, <span class='va'>output_size</span> <span class='op'>*</span> <span class='va'>horizon</span><span class='op'>)</span>,
   dropout <span class='op'>=</span> <span class='fl'>0</span>,
   batch_first <span class='op'>=</span> <span class='cn'>TRUE</span>
@@ -178,6 +179,10 @@
       <td><p>(<code>integer</code>) Horizon size. How many steps ahead produce from the last n steps?</p></td>
     </tr>
     <tr>
+      <th>embedding</th>
+      <td><p>(<code>embedding_spec</code>) List with two values: num_embeddings and embedding_dim.</p></td>
+    </tr>
+    <tr>
       <th>final_module</th>
       <td><p>(<code>nn_module</code>) If not null, applied instead of default linear layer.</p></td>
     </tr>
@@ -198,32 +203,50 @@
 <span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/krzjoa/torchts'>torchts</a></span><span class='op'>)</span>
 
 <span class='co'># Preparing data</span>
-<span class='va'>weather_dl</span> <span class='op'>&lt;-</span>
+<span class='va'>weather_data</span> <span class='op'>&lt;-</span>
   <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"TRN"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>tmax_daily</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>tmax_daily</span>, <span class='va'>rr_type</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>rr_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='op'>(</span><span class='va'>rr_type</span><span class='op'>)</span>, <span class='st'>"NA"</span>, <span class='va'>rr_type</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>weather_dl</span> <span class='op'>&lt;-</span>
+  <span class='va'>weather_data</span> <span class='op'>%&gt;%</span>
   <span class='fu'><a href='as_ts_dataloader.html'>as_ts_dataloader</a></span><span class='op'>(</span>
-    <span class='va'>tmax_daily</span> <span class='op'>~</span> <span class='va'>date</span>,
+    <span class='va'>tmax_daily</span> <span class='op'>~</span> <span class='va'>date</span> <span class='op'>+</span> <span class='va'>tmax_daily</span> <span class='op'>+</span> <span class='va'>rr_type</span>,
     timesteps <span class='op'>=</span> <span class='fl'>30</span>,
+    categorical <span class='op'>=</span> <span class='st'>"rr_type"</span>,
     batch_size <span class='op'>=</span> <span class='fl'>32</span>
   <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Categorical variables found (1): rr_type</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>weather_data</span><span class='op'>$</span><span class='va'>rr_type</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; [1] ""   "W"  "S"  "NA"</div><div class='input'><span class='va'>n_unique_values</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/n_distinct.html'>n_distinct</a></span><span class='op'>(</span><span class='va'>weather_data</span><span class='op'>$</span><span class='va'>rr_type</span><span class='op'>)</span>
+
+<span class='va'>.embedding_spec</span> <span class='op'>&lt;-</span>
+   <span class='fu'>embedding_spec</span><span class='op'>(</span>
+     num_embeddings <span class='op'>=</span> <span class='va'>n_unique_values</span>,
+     embedding_dim  <span class='op'>=</span> <span class='fu'>embedding_size_google</span><span class='op'>(</span><span class='va'>n_unique_values</span><span class='op'>)</span>
+   <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in embedding_spec(num_embeddings = n_unique_values, embedding_dim = embedding_size_google(n_unique_values)): nie udało się znaleźć funkcji 'embedding_spec'</span></div><div class='input'>
+<span class='va'>input_size</span> <span class='op'>&lt;-</span> <span class='fl'>1</span> <span class='op'>+</span> <span class='fu'>embedding_size_google</span><span class='op'>(</span><span class='va'>n_unique_values</span><span class='op'>)</span> <span class='co'># tmax_daily + rr_type embedding</span>
 
 <span class='co'># Creating a model</span>
 <span class='va'>rnn_net</span> <span class='op'>&lt;-</span>
   <span class='fu'>model_rnn</span><span class='op'>(</span>
-    input_size  <span class='op'>=</span> <span class='fl'>1</span>,
+    input_size  <span class='op'>=</span> <span class='va'>input_size</span>,
     output_size <span class='op'>=</span> <span class='fl'>1</span>,
-    hidden_size <span class='op'>=</span> <span class='fl'>10</span>
+    hidden_size <span class='op'>=</span> <span class='fl'>10</span>,
+    embedding   <span class='op'>=</span> <span class='va'>.embedding_spec</span>
   <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in Module$new(num_embeddings = num_embeddings, embedding_dim = embedding_dim,     padding_idx = padding_idx, max_norm = max_norm, norm_type = norm_type,     scale_grad_by_freq = scale_grad_by_freq, sparse = sparse,     .weight = .weight): brakuje argumentu 'num_embeddings', a nie ma określonej wartości domyślnej</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in initialize(...): nie znaleziono obiektu '.embedding_spec'</span></div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>rnn_net</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in print(rnn_net): nie znaleziono obiektu 'rnn_net'</span></div><div class='input'>
 <span class='co'># Prediction example on non-trained neural network</span>
 <span class='va'>batch</span> <span class='op'>&lt;-</span>
   <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>weather_dl</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='fu'>rnn_net</span><span class='op'>(</span><span class='va'>batch</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in rnn_net(batch$x): nie udało się znaleźć funkcji 'rnn_net'</span></div><div class='input'>
+<span class='co'># debugonce(rnn_net$forward)</span>
+<span class='fu'>rnn_net</span><span class='op'>(</span><span class='va'>batch</span><span class='op'>$</span><span class='va'>x_num</span>, <span class='va'>batch</span><span class='op'>$</span><span class='va'>x_cat</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in rnn_net(batch$x_num, batch$x_cat): nie udało się znaleźć funkcji 'rnn_net'</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
