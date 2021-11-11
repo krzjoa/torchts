@@ -4,7 +4,7 @@ train_batch <- function(input, target,
                         loss_fun = nnf_mse_loss) {
 
   optimizer$zero_grad()
-  output <- net(input)
+  output <- do.call(net, input)
 
   loss <- loss_fun(output$reshape(dim(target)), target)
   loss$backward()
@@ -16,7 +16,7 @@ train_batch <- function(input, target,
 #' Validation helper function
 valid_batch <- function(net, input, target,
                         loss_fun = nnf_mse_loss) {
-  output <- net(input)
+  output <- do.call(net, input)
   loss <- loss_fun(output$reshape(dim(target)), target)
   loss$item()
 
@@ -40,8 +40,8 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
 
     coro::loop(for (b in train_dl) {
       loss <- train_batch(
-        input     = b$x,
-        target    = b$y,
+        input     = get_x(b),
+        target    = get_y(b),
         net       = net,
         optimizer = optimizer,
         loss_fun  = loss_fn
@@ -73,7 +73,15 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
   net
 }
 
+#' batch <- list(x_num = "aaa", x_cat = "bbb", y = "c")
+#' get_x(batch)
+get_x <- function(batch){
+  batch[startsWith(names(batch), "x")]
+}
 
+get_y <- function(batch){
+  batch[startsWith(names(batch), "y")]
+}
 
 
 

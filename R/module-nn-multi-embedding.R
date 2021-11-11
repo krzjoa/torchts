@@ -2,33 +2,45 @@
 #'
 #' It is especially useful, for dealing with multiple categorical features.
 #'
-#' @param num_embeddings (`integer`): size of the dictionary of embeddings
-#' @param embedding_dim	(`integer`): the size of each embedding vector
-#' @param padding_idx (`integer`, optional): If given, pads the output with
-#' the embedding vector at padding_idx (initialized to zeros) whenever it encounters the index.
-#' @param max_norm (`numeric`, optional): If given, each embedding vector with norm larger
+#' @param num_embeddings (`integer`) Size of the dictionary of embeddings.
+#' @param embedding_dim	(`integer`) The size of each embedding vector.
+#' @param padding_idx (`integer`, optional) If given, pads the output with
+#' the embedding vector at `padding_idx` (initialized to zeros) whenever it encounters the index.
+#' @param max_norm (`numeric`, optional) If given, each embedding vector with norm larger
 #' than max_norm is renormalized to have norm max_norm.
-#' @param norm_type (`numeric`, optional): The p of the p-norm to compute for the max_norm option. Default 2.
-#' @param scale_grad_by_freq (`logical`, optional): If given, this will scale gradients by
-#' the inverse of frequency of the words in the mini-batch. Default FALSE
-#' @param sparse (`logical`, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.
-#' @param .weight (`torch_tensor` or `list` of `torch_tensor`) embeddings weights (in case you want to set it manually)
+#' @param norm_type (`numeric`, optional) The p of the p-norm to compute for the max_norm option. Default 2.
+#' @param scale_grad_by_freq (`logical`, optional) If given, this will scale gradients by
+#' the inverse of frequency of the words in the mini-batch. Default FALSE.
+#' @param sparse (`logical`, optional) If TRUE, gradient w.r.t. weight matrix will be a sparse tensor.
+#' @param .weight (`torch_tensor` or `list` of `torch_tensor`) Embeddings weights (in case you want to set it manually).
 #'
-#' @importFrom torch nn_module
+#' @importFrom torch nn_module nn_embedding
 #' @importFrom glue glue
 #'
 #' @examples
+#' library(recipes)
+#'
 #' data("gss_cat", package = "forcats")
 #'
 #' gss_cat_transformed <-
-#'   gss_cat %>%
-#'   na.omit() %>%
-#'   sapply(function(x) cat2idx(x)[[1]]) %>%
-#'   as_tibble()
+#'   recipe() %>%
+#'   step_integer(all_nominal()) %>%
+#'   prep() %>%
+#'   juice()
+#'
+#' gss_cat_transformed <- na.omit(gss_cat_transformed)
+#'
+#' gss_cat_transformed <-
+#'    gss_cat_transformed %>%
+#'    mutate(across(where(is.numeric), as.integer))
+#'
+#' glimpse(gss_cat_transformed)
 #'
 #' gss_cat_tensor  <- as_tensor(gss_cat_transformed)
 #' .dict_size      <- dict_size(gss_cat_transformed)
-#' .embedding_size <- ceiling(.dict_size ** .25)
+#' .dict_size
+#'
+#' .embedding_size <- embedding_size_google(.dict_size)
 #'
 #' embedding_module <-
 #'   nn_multi_embedding(.dict_size, .embedding_size)
@@ -47,7 +59,7 @@ nn_multi_embedding <- torch::nn_module(
 
   "nn_multi_embedding",
 
-  initialize = function(num_embeddings = 'auto', embedding_dim = 'auto',
+  initialize = function(num_embeddings, embedding_dim,
                         padding_idx = NULL, max_norm = NULL, norm_type = 2,
                         scale_grad_by_freq = FALSE, sparse = FALSE,
                         .weight = NULL){
@@ -75,6 +87,8 @@ nn_multi_embedding <- torch::nn_module(
     if (length(.weight) == 1)
       .weight <- rep(list(.weight), required_len)
 
+    self$num_embeddings <- num_embeddings
+
     for (idx in seq_along(self$num_embeddings)){
 
       self[[glue("embedding_{idx}")]] <-
@@ -98,6 +112,8 @@ nn_multi_embedding <- torch::nn_module(
     for (idx in seq_along(self$num_embeddings)) {
       embedded_features[[glue("embedding_{idx}")]] <-
         self[[glue("embedding_{idx}")]](input[.., idx])
+
+     #  self[[glue("embedding_{idx}")]](input[.., idx][newaxis, ..])
     }
 
     torch_cat(embedded_features, dim = -1)

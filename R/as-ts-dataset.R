@@ -13,8 +13,9 @@
 #' @param sample_frac (`numeric`) Sample a fraction of rows (default: 1, i.e.: all the rows).
 #' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
+#' @param cat_recipe (`[recipes::recipe`]) A `recipe` with `step_integer` to transform categorical data.
 #'
-#' @importFrom recipes recipe step_integer juice prep
+#' @importFrom recipes recipe step_integer bake prep
 #'
 #' @note
 #' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
@@ -27,15 +28,15 @@
 #'
 #' suwalki_temp <-
 #'    weather_pl %>%
-#'    filter(station == "SWK") %>%
-#'    select(date, temp = tmax_daily, rr_type)
+#'    filter(station == "SWK")
 #'
 #' # Splitting on training and test
 #' data_split <- initial_time_split(suwalki_temp)
 #'
 #' train_ds <-
 #'  training(data_split) %>%
-#'  as_ts_dataset(temp ~ date + temp + rr_type, timesteps = 20, horizon = 1)
+#'  as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type,
+#'                timesteps = 20, horizon = 1)
 #'
 #' train_ds[1]
 #'
@@ -43,7 +44,7 @@
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
                           predictors = NULL, outcomes = NULL, categorical = NULL,
                           timesteps, horizon = 1, sample_frac = 1,
-                          scale = TRUE){
+                          scale = TRUE, cat_recipe = NULL, ...){
   UseMethod("as_ts_dataset")
 }
 
@@ -52,7 +53,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
 as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
                                   predictors = NULL, outcomes = NULL, categorical = NULL,
                                   timesteps, horizon = 1, sample_frac = 1,
-                                  scale = TRUE){
+                                  scale = TRUE, cat_recipe = NULL, ...){
   stop(sprintf(
     "Object of class %s in not handled for now.", class(data)
   ))
@@ -63,9 +64,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE){
-
-  cat_transformer <- NULL
+                                     scale = TRUE, cat_recipe = NULL, ...){
 
   if (nrow(data) == 0) {
     stop("The data object is empty!")
@@ -80,12 +79,12 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     .predictors_columns <- predictors_spec(
 
       # Numeric time-varying variables
-      x = parsed_formula[parsed_formula$.role == "predictor" &
-                         !parsed_formula$.is_categorical, ]$.var,
+      x_num = parsed_formula[parsed_formula$.role == "predictor" &
+                            parsed_formula$.type == "numeric", ]$.var,
 
       # Categorical time-varying variables
       x_cat = parsed_formula[parsed_formula$.role == "predictor" &
-                             parsed_formula$.is_categorical, ]$.var
+                             parsed_formula$.type == "categorical", ]$.var
     )
 
     .outcomes_columns <- list(
@@ -97,36 +96,44 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   } else {
 
-    # .input_columns <- list(
-    #   x = setdiff(colnames(data), c(key, index))
-    # )
-
-    # TODO: possible multiple elements in the list
     .predictors_columns  <- predictors_spec(
-      x = setdiff(predictors, categorical),
+      x_num = setdiff(predictors, categorical),
       x_cat = categorical[categorical %in% predictors]
     )
+
     .outcomes_columns    <- list(y = outcomes)
     .index_columns       <- index
 
   }
 
   if (!is.null(.predictors_columns$x_cat)) {
-    # Create a recipe to transform the data
-    # TODO: categorical vs numeric
-    cat_transformer <-
-      recipe(data) %>%
-      step_integer(all_of(c(.predictors_columns$x_cat))) %>%
-      prep()
+
+    # Prep recipe in none is passed
+    if (is.null(cat_recipe)) {
+      cat_recipe <-
+        recipe(data) %>%
+        step_integer(all_of(c(.predictors_columns$x_cat))) %>%
+        prep()
+    }
 
     data <-
-      cat_transformer %>%
-      juice()
+      cat_recipe %>%
+      bake(new_data = data)
 
   }
 
   if (is.null(.index_columns) | length(.index_columns) == 0)
     stop("No time index column defined! Add at least one time-based variable.")
+
+  all_variables <-
+    unique(c(
+      unlist(.predictors_columns),
+      unlist(.outcomes_columns),
+      unlist(.index_columns)
+    ))
+
+  # Filtering unused columns
+  data <- select(data, all_of(all_variables))
 
   # Transforming column names to column number
   column_order <-
@@ -146,7 +153,6 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     as_tensor(data, !!.index_columns)
 
   # TODO: change ts_dataset
-
   ts_dataset(
     data            = data_tensor,
     timesteps       = timesteps,
@@ -156,22 +162,23 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     categorical     = "x_cat",
     sample_frac     = sample_frac,
     scale           = scale,
-    extras          = list(cat_transformer = cat_transformer)
+    extras          = list(cat_recipe = cat_recipe)
   )
 }
+
 
 #' Predictors specification
 #' It facilitates to keep the same variables in all the specification list
 #' and avoid typos
-predictors_spec <- function(x = NULL, x_cat = NULL){
-  output <- list(x = x, x_cat = x_cat)
+predictors_spec <- function(x_num = NULL, x_cat = NULL){
+  output <- list(x_num = x_num, x_cat = x_cat)
   Filter(function(var) !is.null(var), output)
 }
 
 
-prepare_categorical <- function(x, ...){
-
-}
+# prepare_categorical <- function(x, ...){
+#
+# }
 
 
 

@@ -155,7 +155,7 @@ in new data by overriding with NA values</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>(data.frame) New data</p></td>
+      <td><p>(<code>data.frame</code>) New data</p></td>
     </tr>
     <tr>
       <th>index</th>
@@ -167,7 +167,7 @@ in new data by overriding with NA values</p>
     </tr>
     <tr>
       <th>timesteps</th>
-      <td><p>Number of timesteps used by RNN model</p></td>
+      <td><p>(<code>integer</code>) Number of timesteps used by RNN model</p></td>
     </tr>
     <tr>
       <th>key</th>
@@ -176,6 +176,30 @@ in new data by overriding with NA values</p>
     </table>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>tarnow_temp</span> <span class='op'>&lt;-</span>
+  <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"TRN"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>tmax_daily</span>, <span class='va'>tmin_daily</span>, <span class='va'>press_mean_daily</span><span class='op'>)</span>
+
+<span class='va'>TIMESTEPS</span> <span class='op'>&lt;-</span> <span class='fl'>20</span>
+<span class='va'>HORIZON</span>   <span class='op'>&lt;-</span> <span class='fl'>1</span>
+
+<span class='va'>data_split</span> <span class='op'>&lt;-</span>
+  <span class='fu'><a href='https://rdrr.io/pkg/timetk/man/time_series_split.html'>time_series_split</a></span><span class='op'>(</span>
+    <span class='va'>tarnow_temp</span>, <span class='va'>date</span>,
+    initial <span class='op'>=</span> <span class='st'>"18 years"</span>,
+    assess  <span class='op'>=</span> <span class='st'>"2 years"</span>,
+    lag     <span class='op'>=</span> <span class='va'>TIMESTEPS</span>
+  <span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in time_series_split(tarnow_temp, date, initial = "18 years", assess = "2 years",     lag = TIMESTEPS): nie udało się znaleźć funkcji 'time_series_split'</span></div><div class='input'>
+<span class='va'>cleared_new_data</span> <span class='op'>&lt;-</span>
+  <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>testing</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>clear_outcome</span><span class='op'>(</span><span class='va'>date</span>, <span class='va'>tmax_daily</span>, <span class='va'>TIMESTEPS</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in assessment(x): nie znaleziono obiektu 'data_split'</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>cleared_new_data</span>, <span class='va'>TIMESTEPS</span> <span class='op'>+</span> <span class='fl'>10</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in head(cleared_new_data, TIMESTEPS + 10): nie znaleziono obiektu 'cleared_new_data'</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

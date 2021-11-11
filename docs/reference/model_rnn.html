@@ -207,7 +207,7 @@
     timesteps <span class='op'>=</span> <span class='fl'>30</span>,
     batch_size <span class='op'>=</span> <span class='fl'>32</span>
   <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in prep(.): nie udało się znaleźć funkcji 'prep'</span></div><div class='input'>
+
 <span class='co'># Creating a model</span>
 <span class='va'>rnn_net</span> <span class='op'>&lt;-</span>
   <span class='fu'>model_rnn</span><span class='op'>(</span>
@@ -215,19 +215,15 @@
     output_size <span class='op'>=</span> <span class='fl'>1</span>,
     hidden_size <span class='op'>=</span> <span class='fl'>10</span>
   <span class='op'>)</span>
-
+</div><div class='output co'>#&gt; <span class='error'>Error in Module$new(num_embeddings = num_embeddings, embedding_dim = embedding_dim,     padding_idx = padding_idx, max_norm = max_norm, norm_type = norm_type,     scale_grad_by_freq = scale_grad_by_freq, sparse = sparse,     .weight = .weight): brakuje argumentu 'num_embeddings', a nie ma określonej wartości domyślnej</span></div><div class='input'>
 <span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>rnn_net</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; An `nn_module` containing 401 parameters.
-#&gt; 
-#&gt; ── Modules ─────────────────────────────────────────────────────────────────────
-#&gt; • rnn: &lt;nn_gru&gt; #390 parameters
-#&gt; • final_module: &lt;nn_linear&gt; #11 parameters</div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in print(rnn_net): nie znaleziono obiektu 'rnn_net'</span></div><div class='input'>
 <span class='co'># Prediction example on non-trained neural network</span>
 <span class='va'>batch</span> <span class='op'>&lt;-</span>
   <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>weather_dl</span><span class='op'>)</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in dataloader_make_iter(weather_dl): nie znaleziono obiektu 'weather_dl'</span></div><div class='input'>
+
 <span class='fu'>rnn_net</span><span class='op'>(</span><span class='va'>batch</span><span class='op'>$</span><span class='va'>x</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in is_packed_sequence(input): nie znaleziono obiektu 'batch'</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in rnn_net(batch$x): nie udało się znaleźć funkcji 'rnn_net'</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

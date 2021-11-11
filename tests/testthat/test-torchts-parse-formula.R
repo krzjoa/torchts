@@ -10,13 +10,11 @@ test_that("Test simple formula with explicit index", {
   output <-
     torchts_parse_formula(max_temp ~ max_temp + index(date), tarnow_temp)
 
-  # TODO: .type .class
-
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "max_temp", "outcome", "numeric",
-    "max_temp", "predictor", "numeric",
-    "date", "index", "Date"
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "max_temp", "outcome", "numeric", "numeric",
+    "max_temp", "predictor", "numeric", "numeric",
+    "date", "index", "Date", "date"
   )
 
   class(expected$.role) <- "list"
@@ -31,10 +29,10 @@ test_that("Test simple formula", {
     torchts_parse_formula(max_temp ~ date, tarnow_temp)
 
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "max_temp", "outcome", "numeric",
-    "date", "index", "Date",
-    "max_temp", "predictor", "numeric"
+   ~ .var, ~ .role, ~ .class, ~ .type, ~ .type,
+    "max_temp", "outcome", "numeric", "numeric", "numeric",
+    "date", "index", "Date", "date", "date",
+    "max_temp", "predictor", "numeric", "numeric", "numeric"
   )
 
   class(expected$.role) <- "list"
@@ -49,11 +47,11 @@ test_that("Test formula with two outcome variables", {
     torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date), tarnow_temp)
 
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "max_temp", "outcome", "numeric",
-    "min_temp", "outcome", "numeric",
-    "max_temp", "predictor", "numeric",
-    "date", "index", "Date"
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "max_temp", "outcome", "numeric", "numeric",
+    "min_temp", "outcome", "numeric", "numeric",
+    "max_temp", "predictor", "numeric", "numeric",
+    "date", "index", "Date", "date"
   )
 
   class(expected$.role) <- "list"
@@ -68,10 +66,10 @@ test_that("Test formula, where outcome is not an input variable as well", {
     torchts_parse_formula(min_temp ~ max_temp + index(date), tarnow_temp)
 
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "min_temp", "outcome", "numeric",
-    "max_temp", "predictor", "numeric",
-    "date", "index", "Date"
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "min_temp", "outcome", "numeric", "numeric",
+    "max_temp", "predictor", "numeric", "numeric",
+    "date", "index", "Date", "date"
   )
 
   class(expected$.role) <- "list"
@@ -86,11 +84,11 @@ test_that("Test formula without explit predictors", {
     torchts_parse_formula(max_temp + min_temp ~ date, tarnow_temp)
 
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "max_temp", "outcome", "numeric",
-    "min_temp", "outcome", "numeric",
-    "date", "index", "Date",
-    "max_temp", "predictor", "numeric",
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "max_temp", "outcome", "numeric", "numeric",
+    "min_temp", "outcome", "numeric", "numeric",
+    "date", "index", "Date", "date",
+    "max_temp", "predictor", "numeric", "numeric",
     "min_temp", "predictor", "numeric"
   )
 
@@ -136,12 +134,12 @@ test_that("Test formula with multiple predictors and outcomes where index is fir
     )
 
   expected <- tribble(
-    ~ .var, ~ .role, ~ .type,
-    "min_temp", "outcome", "numeric",
-    "max_temp", "outcome", "numeric",
-    "date", "index", "Date",
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "min_temp", "outcome", "numeric", "numeric",
+    "max_temp", "outcome", "numeric", "numeric",
+    "date", "index", "Date", "date",
     "min_temp", "predictor", "numeric",
-    "max_temp", "predictor", "numeric"
+    "max_temp", "predictor", "numeric", "numeric"
   )
 
   class(expected$.role) <- "list"

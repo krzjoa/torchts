@@ -6,7 +6,7 @@
 It facilitates to keep the same variables in all the specification list
 and avoid typos}
 \usage{
-predictors_spec(x = NULL, x_cat = NULL)
+predictors_spec(x_num = NULL, x_cat = NULL)
 }
 \description{
 Predictors specification

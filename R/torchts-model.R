@@ -2,7 +2,7 @@
 torchts_model <- function(class, net, index, key,
                           outcomes, predictors,
                           optim, timesteps,
-                          horizon, scale){
+                          horizon, scale, extras){
   structure(
     class = c(class, "torchts_model"),
     list(
@@ -14,7 +14,8 @@ torchts_model <- function(class, net, index, key,
       optim      = optim,
       timesteps  = timesteps,
       horizon    = horizon,
-      scale      = scale
+      scale      = scale,
+      extras     = extras
     )
   )
 }

@@ -5,8 +5,8 @@
 \title{Create multiple embeddings at once}
 \usage{
 nn_multi_embedding(
-  num_embeddings = "auto",
-  embedding_dim = "auto",
+  num_embeddings,
+  embedding_dim,
   padding_idx = NULL,
   max_norm = NULL,
   norm_type = 2,
@@ -16,40 +16,52 @@ nn_multi_embedding(
 )
 }
 \arguments{
-\item{num_embeddings}{(\code{integer}): size of the dictionary of embeddings}
+\item{num_embeddings}{(\code{integer}) Size of the dictionary of embeddings.}
 
-\item{embedding_dim}{(\code{integer}): the size of each embedding vector}
+\item{embedding_dim}{(\code{integer}) The size of each embedding vector.}
 
-\item{padding_idx}{(\code{integer}, optional): If given, pads the output with
-the embedding vector at padding_idx (initialized to zeros) whenever it encounters the index.}
+\item{padding_idx}{(\code{integer}, optional) If given, pads the output with
+the embedding vector at \code{padding_idx} (initialized to zeros) whenever it encounters the index.}
 
-\item{max_norm}{(\code{numeric}, optional): If given, each embedding vector with norm larger
+\item{max_norm}{(\code{numeric}, optional) If given, each embedding vector with norm larger
 than max_norm is renormalized to have norm max_norm.}
 
-\item{norm_type}{(\code{numeric}, optional): The p of the p-norm to compute for the max_norm option. Default 2.}
+\item{norm_type}{(\code{numeric}, optional) The p of the p-norm to compute for the max_norm option. Default 2.}
 
-\item{scale_grad_by_freq}{(\code{logical}, optional): If given, this will scale gradients by
-the inverse of frequency of the words in the mini-batch. Default FALSE}
+\item{scale_grad_by_freq}{(\code{logical}, optional) If given, this will scale gradients by
+the inverse of frequency of the words in the mini-batch. Default FALSE.}
 
-\item{sparse}{(\code{logical}, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.}
+\item{sparse}{(\code{logical}, optional) If TRUE, gradient w.r.t. weight matrix will be a sparse tensor.}
 
-\item{.weight}{(\code{torch_tensor} or \code{list} of \code{torch_tensor}) embeddings weights (in case you want to set it manually)}
+\item{.weight}{(\code{torch_tensor} or \code{list} of \code{torch_tensor}) Embeddings weights (in case you want to set it manually).}
 }
 \description{
 It is especially useful, for dealing with multiple categorical features.
 }
 \examples{
+library(recipes)
+
 data("gss_cat", package = "forcats")
 
 gss_cat_transformed <-
-  gss_cat \%>\%
-  na.omit() \%>\%
-  sapply(function(x) cat2idx(x)[[1]]) \%>\%
-  as_tibble()
+  recipe() \%>\%
+  step_integer(all_nominal()) \%>\%
+  prep() \%>\%
+  juice()
+
+gss_cat_transformed <- na.omit(gss_cat_transformed)
+
+gss_cat_transformed <-
+   gss_cat_transformed \%>\%
+   mutate(across(where(is.numeric), as.integer))
+
+glimpse(gss_cat_transformed)
 
 gss_cat_tensor  <- as_tensor(gss_cat_transformed)
 .dict_size      <- dict_size(gss_cat_transformed)
-.embedding_size <- ceiling(.dict_size ** .25)
+.dict_size
+
+.embedding_size <- embedding_size_google(.dict_size)
 
 embedding_module <-
   nn_multi_embedding(.dict_size, .embedding_size)

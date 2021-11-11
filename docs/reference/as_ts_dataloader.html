@@ -154,7 +154,8 @@
   <span class='va'>batch_size</span>,
   horizon <span class='op'>=</span> <span class='fl'>1</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
-  scale <span class='op'>=</span> <span class='cn'>TRUE</span>
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  cat_recipe <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -206,6 +207,10 @@ For now only <strong>single</strong> data frames are handled with no categorical
       <td><p>(<code>logical</code> or <code>list</code>) Scale feature columns. Logical value or two-element list.
 with values (mean, std)</p></td>
     </tr>
+    <tr>
+      <th>cat_recipe</th>
+      <td><p>(<code>[recipes::recipe</code>]) A <code>recipe</code> with <code>step_integer</code> to transform categorical data.</p></td>
+    </tr>
     </table>
 
 
@@ -224,9 +229,32 @@ with values (mean, std)</p></td>
 <span class='va'>train_dl</span> <span class='op'>&lt;-</span>
  <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
  <span class='fu'>as_ts_dataloader</span><span class='op'>(</span><span class='va'>temp</span> <span class='op'>~</span> <span class='va'>date</span>, timesteps <span class='op'>=</span> <span class='fl'>20</span>, horizon <span class='op'>=</span> <span class='fl'>1</span>, batch_size <span class='op'>=</span> <span class='fl'>32</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in prep(.): nie udało się znaleźć funkcji 'prep'</span></div><div class='input'>
+
 <span class='va'>train_dl</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'train_dl'</span></div><div class='input'>
+</div><div class='output co'>#&gt; &lt;dataloader&gt;
+#&gt;   Public:
+#&gt;     .auto_collation: active binding
+#&gt;     .dataset_kind: map
+#&gt;     .has_getbatch: FALSE
+#&gt;     .index_sampler: active binding
+#&gt;     .iter: function () 
+#&gt;     .length: function () 
+#&gt;     batch_sampler: utils_sampler_batch, utils_sampler, R6
+#&gt;     batch_size: 32
+#&gt;     clone: function (deep = FALSE) 
+#&gt;     collate_fn: function (batch) 
+#&gt;     dataset: ts_dataset, dataset, R6
+#&gt;     drop_last: FALSE
+#&gt;     generator: NULL
+#&gt;     initialize: function (dataset, batch_size = 1, shuffle = FALSE, sampler = NULL, 
+#&gt;     multiprocessing_context: NULL
+#&gt;     num_workers: 0
+#&gt;     pin_memory: FALSE
+#&gt;     sampler: utils_sampler_sequential, utils_sampler, R6
+#&gt;     timeout: -1
+#&gt;     worker_globals: NULL
+#&gt;     worker_init_fn: NULL
+#&gt;     worker_packages: NULL</div><div class='input'>
 <span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_next.html'>dataloader_next</a></span><span class='op'>(</span><span class='fu'><a href='https://torch.mlverse.org/docs/reference/dataloader_make_iter.html'>dataloader_make_iter</a></span><span class='op'>(</span><span class='va'>train_ds</span><span class='op'>)</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in dataloader_next(dataloader_make_iter(train_ds)): nie udało się znaleźć funkcji 'dataloader_next'</span></div><div class='input'>
 </div></pre>

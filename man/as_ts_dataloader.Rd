@@ -15,7 +15,8 @@ as_ts_dataloader(
   batch_size,
   horizon = 1,
   sample_frac = 1,
-  scale = TRUE
+  scale = TRUE,
+  cat_recipe = NULL
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
+
+\item{cat_recipe}{(\verb{[recipes::recipe}]) A \code{recipe} with \code{step_integer} to transform categorical data.}
 }
 \description{
 Quick shortcut to create a torch dataloader based on the given dataset

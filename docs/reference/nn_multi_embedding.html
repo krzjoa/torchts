@@ -144,8 +144,8 @@
     </div>
 
     <pre class="usage"><span class='fu'>nn_multi_embedding</span><span class='op'>(</span>
-  num_embeddings <span class='op'>=</span> <span class='st'>"auto"</span>,
-  embedding_dim <span class='op'>=</span> <span class='st'>"auto"</span>,
+  <span class='va'>num_embeddings</span>,
+  <span class='va'>embedding_dim</span>,
   padding_idx <span class='op'>=</span> <span class='cn'>NULL</span>,
   max_norm <span class='op'>=</span> <span class='cn'>NULL</span>,
   norm_type <span class='op'>=</span> <span class='fl'>2</span>,
@@ -159,55 +159,70 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>num_embeddings</th>
-      <td><p>(<code>integer</code>): size of the dictionary of embeddings</p></td>
+      <td><p>(<code>integer</code>) Size of the dictionary of embeddings.</p></td>
     </tr>
     <tr>
       <th>embedding_dim</th>
-      <td><p>(<code>integer</code>): the size of each embedding vector</p></td>
+      <td><p>(<code>integer</code>) The size of each embedding vector.</p></td>
     </tr>
     <tr>
       <th>padding_idx</th>
-      <td><p>(<code>integer</code>, optional): If given, pads the output with
-the embedding vector at padding_idx (initialized to zeros) whenever it encounters the index.</p></td>
+      <td><p>(<code>integer</code>, optional) If given, pads the output with
+the embedding vector at <code>padding_idx</code> (initialized to zeros) whenever it encounters the index.</p></td>
     </tr>
     <tr>
       <th>max_norm</th>
-      <td><p>(<code>numeric</code>, optional): If given, each embedding vector with norm larger
+      <td><p>(<code>numeric</code>, optional) If given, each embedding vector with norm larger
 than max_norm is renormalized to have norm max_norm.</p></td>
     </tr>
     <tr>
       <th>norm_type</th>
-      <td><p>(<code>numeric</code>, optional): The p of the p-norm to compute for the max_norm option. Default 2.</p></td>
+      <td><p>(<code>numeric</code>, optional) The p of the p-norm to compute for the max_norm option. Default 2.</p></td>
     </tr>
     <tr>
       <th>scale_grad_by_freq</th>
-      <td><p>(<code>logical</code>, optional): If given, this will scale gradients by
-the inverse of frequency of the words in the mini-batch. Default FALSE</p></td>
+      <td><p>(<code>logical</code>, optional) If given, this will scale gradients by
+the inverse of frequency of the words in the mini-batch. Default FALSE.</p></td>
     </tr>
     <tr>
       <th>sparse</th>
-      <td><p>(<code>logical</code>, optional): If True, gradient w.r.t. weight matrix will be a sparse tensor.</p></td>
+      <td><p>(<code>logical</code>, optional) If TRUE, gradient w.r.t. weight matrix will be a sparse tensor.</p></td>
     </tr>
     <tr>
       <th>.weight</th>
-      <td><p>(<code>torch_tensor</code> or <code>list</code> of <code>torch_tensor</code>) embeddings weights (in case you want to set it manually)</p></td>
+      <td><p>(<code>torch_tensor</code> or <code>list</code> of <code>torch_tensor</code>) Embeddings weights (in case you want to set it manually).</p></td>
     </tr>
     </table>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"gss_cat"</span>, package <span class='op'>=</span> <span class='st'>"forcats"</span><span class='op'>)</span>
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/recipes'>recipes</a></span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'></span>
+#&gt; <span class='message'>Dołączanie pakietu: ‘recipes’</span></div><div class='output co'>#&gt; <span class='message'>Następujący obiekt został zakryty z ‘package:stats’:</span>
+#&gt; <span class='message'></span>
+#&gt; <span class='message'>    step</span></div><div class='input'>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='op'>(</span><span class='st'>"gss_cat"</span>, package <span class='op'>=</span> <span class='st'>"forcats"</span><span class='op'>)</span>
 
 <span class='va'>gss_cat_transformed</span> <span class='op'>&lt;-</span>
-  <span class='va'>gss_cat</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>sapply</a></span><span class='op'>(</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'>cat2idx</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span><span class='op'>[[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in cat2idx(x): nie udało się znaleźć funkcji 'cat2idx'</span></div><div class='input'>
+  <span class='fu'><a href='https://recipes.tidymodels.org/reference/recipe.html'>recipe</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_integer.html'>step_integer</a></span><span class='op'>(</span><span class='fu'><a href='https://recipes.tidymodels.org/reference/has_role.html'>all_nominal</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://recipes.tidymodels.org/reference/prep.html'>prep</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'><a href='https://recipes.tidymodels.org/reference/juice.html'>juice</a></span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error: `x` should be a data frame, matrix, or tibble</span></div><div class='input'>
+<span class='va'>gss_cat_transformed</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='va'>gss_cat_transformed</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in na.omit(gss_cat_transformed): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'>
+<span class='va'>gss_cat_transformed</span> <span class='op'>&lt;-</span>
+   <span class='va'>gss_cat_transformed</span> <span class='op'>%&gt;%</span>
+   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/across.html'>across</a></span><span class='op'>(</span><span class='fu'>where</span><span class='op'>(</span><span class='va'>is.numeric</span><span class='op'>)</span>, <span class='va'>as.integer</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in mutate(., across(where(is.numeric), as.integer)): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'>
+<span class='fu'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='op'>(</span><span class='va'>gss_cat_transformed</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in glimpse(gss_cat_transformed): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'>
 <span class='va'>gss_cat_tensor</span>  <span class='op'>&lt;-</span> <span class='fu'><a href='as_tensor.html'>as_tensor</a></span><span class='op'>(</span><span class='va'>gss_cat_transformed</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in as_tensor(gss_cat_transformed): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'><span class='va'>.dict_size</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='dict_size.html'>dict_size</a></span><span class='op'>(</span><span class='va'>gss_cat_transformed</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in lapply(X = X, FUN = FUN, ...): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'><span class='va'>.embedding_size</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>ceiling</a></span><span class='op'>(</span><span class='va'>.dict_size</span> <span class='op'>**</span> <span class='fl'>.25</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in lapply(X = X, FUN = FUN, ...): nie znaleziono obiektu 'gss_cat_transformed'</span></div><div class='input'><span class='va'>.dict_size</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu '.dict_size'</span></div><div class='input'>
+<span class='va'>.embedding_size</span> <span class='op'>&lt;-</span> <span class='fu'>embedding_size_google</span><span class='op'>(</span><span class='va'>.dict_size</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='error'>Error in pmin(ceiling(x^0.25), max_size): nie znaleziono obiektu '.dict_size'</span></div><div class='input'>
 <span class='va'>embedding_module</span> <span class='op'>&lt;-</span>
   <span class='fu'>nn_multi_embedding</span><span class='op'>(</span><span class='va'>.dict_size</span>, <span class='va'>.embedding_size</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='error'>Error in nn_multi_embedding(.dict_size, .embedding_size): nie udało się znaleźć funkcji 'nn_multi_embedding'</span></div><div class='input'>

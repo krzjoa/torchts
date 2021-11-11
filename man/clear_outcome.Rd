@@ -8,17 +8,41 @@ in new data by overriding with NA values}
 clear_outcome(data, index, outcome, timesteps, key = NULL)
 }
 \arguments{
-\item{data}{(data.frame) New data}
+\item{data}{(\code{data.frame}) New data}
 
 \item{index}{Date variable}
 
 \item{outcome}{Outcome (target) variable}
 
-\item{timesteps}{Number of timesteps used by RNN model}
+\item{timesteps}{(\code{integer}) Number of timesteps used by RNN model}
 
 \item{key}{A key (id) to group the data.frame (for panel data)}
 }
 \description{
 Partially clear outcome variable
 in new data by overriding with NA values
+}
+\examples{
+tarnow_temp <-
+  weather_pl \%>\%
+  filter(station == "TRN") \%>\%
+  select(date, tmax_daily, tmin_daily, press_mean_daily)
+
+TIMESTEPS <- 20
+HORIZON   <- 1
+
+data_split <-
+  time_series_split(
+    tarnow_temp, date,
+    initial = "18 years",
+    assess  = "2 years",
+    lag     = TIMESTEPS
+  )
+
+cleared_new_data <-
+  testing(data_split) \%>\%
+  clear_outcome(date, tmax_daily, TIMESTEPS)
+
+head(cleared_new_data, TIMESTEPS + 10)
+
 }

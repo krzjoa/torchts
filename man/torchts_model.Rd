@@ -14,7 +14,8 @@ torchts_model(
   optim,
   timesteps,
   horizon,
-  scale
+  scale,
+  extras
 )
 }
 \description{

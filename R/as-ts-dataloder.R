@@ -31,7 +31,8 @@ as_ts_dataloader <- function(data, formula, index = NULL,
                              predictors = NULL,
                              outcomes = NULL,
                              timesteps, batch_size, horizon = 1,
-                             sample_frac = 1, scale = TRUE){
+                             sample_frac = 1, scale = TRUE,
+                             cat_recipe = NULL){
   UseMethod("as_ts_dataloader")
 }
 
@@ -41,7 +42,8 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL,
                                      timesteps, batch_size,
-                                     horizon = 1, sample_frac = 1, scale = TRUE){
+                                     horizon = 1, sample_frac = 1,
+                                     scale = TRUE, cat_recipe = NULL){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -53,7 +55,8 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       timesteps   = timesteps,
       horizon     = horizon,
       sample_frac = sample_frac,
-      scale       = scale),
+      scale       = scale,
+      extras      = list(cat_recipe = cat_recipe)),
     batch_size = batch_size
     )
 }

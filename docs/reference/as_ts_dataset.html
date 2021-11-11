@@ -154,7 +154,9 @@
   <span class='va'>timesteps</span>,
   horizon <span class='op'>=</span> <span class='fl'>1</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
-  scale <span class='op'>=</span> <span class='cn'>TRUE</span>
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  cat_recipe <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -206,30 +208,35 @@ For now only <strong>single</strong> data frames are handled with no categorical
       <td><p>(<code>logical</code> or <code>list</code>) Scale feature columns. Logical value or two-element list.
 with values (mean, std)</p></td>
     </tr>
+    <tr>
+      <th>cat_recipe</th>
+      <td><p>(<code>[recipes::recipe</code>]) A <code>recipe</code> with <code>step_integer</code> to transform categorical data.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
-    <p>If <code>scale</code> is TRUE, only the input vaiables are scale and not the outcome ones.</p>
+    <p>If <code>scale</code> is TRUE, only the input variables are scale and not the outcome ones.</p>
 <p>See: <a href='https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re'>Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rsample.tidymodels.org'>rsample</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span>, warn.conflicts <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='va'>suwalki_temp</span> <span class='op'>&lt;-</span>
    <span class='va'>weather_pl</span> <span class='op'>%&gt;%</span>
-   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"SWK"</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>date</span>, temp <span class='op'>=</span> <span class='va'>tmax_daily</span>, <span class='va'>rr_type</span><span class='op'>)</span>
+   <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>station</span> <span class='op'>==</span> <span class='st'>"SWK"</span><span class='op'>)</span>
 
 <span class='co'># Splitting on training and test</span>
 <span class='va'>data_split</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>initial_time_split</a></span><span class='op'>(</span><span class='va'>suwalki_temp</span><span class='op'>)</span>
 
 <span class='va'>train_ds</span> <span class='op'>&lt;-</span>
  <span class='fu'><a href='https://rsample.tidymodels.org/reference/initial_split.html'>training</a></span><span class='op'>(</span><span class='va'>data_split</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
- <span class='fu'>as_ts_dataset</span><span class='op'>(</span><span class='va'>temp</span> <span class='op'>~</span> <span class='va'>date</span>, timesteps <span class='op'>=</span> <span class='fl'>20</span>, horizon <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Categorical variables found (1): rr_type</span></div><div class='output co'>#&gt; <span class='error'>Error in prep(.): nie udało się znaleźć funkcji 'prep'</span></div><div class='input'>
+ <span class='fu'>as_ts_dataset</span><span class='op'>(</span><span class='va'>tmax_daily</span> <span class='op'>~</span> <span class='va'>date</span> <span class='op'>+</span> <span class='va'>tmax_daily</span> <span class='op'>+</span> <span class='va'>rr_type</span>,
+               timesteps <span class='op'>=</span> <span class='fl'>20</span>, horizon <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Categorical variables found (1): rr_type</span></div><div class='input'>
 <span class='va'>train_ds</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'train_ds'</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error in torch_int(): nie udało się znaleźć funkcji 'torch_int'</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

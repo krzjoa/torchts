@@ -162,10 +162,10 @@ as_tensor.data.frame <- function(data, ...,
     if (length(unique(col_types)) > 1)
       stop(glue::glue(
         "Cannot convert this object to torch_tensor.
-       Various column types found. If no colnames are specified
-       in the as_tensor function, you have to convert all them to one,
-       convertible numeric-like type.
-       Date, character, list etc. cannot be correctly interpreted."
+         Various column types found. If no colnames are specified
+         in the as_tensor function, you have to convert all them to one,
+         convertible numeric-like type.
+         Date, character, list etc. cannot be correctly interpreted."
       ))
 
     return(torch::torch_tensor(

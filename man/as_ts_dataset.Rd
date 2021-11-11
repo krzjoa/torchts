@@ -15,7 +15,9 @@ as_ts_dataset(
   timesteps,
   horizon = 1,
   sample_frac = 1,
-  scale = TRUE
+  scale = TRUE,
+  cat_recipe = NULL,
+  ...
 )
 }
 \arguments{
@@ -42,6 +44,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
+
+\item{cat_recipe}{(\verb{[recipes::recipe}]) A \code{recipe} with \code{step_integer} to transform categorical data.}
 }
 \description{
 Create a torch dataset for time series data from a \code{data.frame}-like object
@@ -57,15 +61,15 @@ library(dplyr, warn.conflicts = FALSE)
 
 suwalki_temp <-
    weather_pl \%>\%
-   filter(station == "SWK") \%>\%
-   select(date, temp = tmax_daily, rr_type)
+   filter(station == "SWK")
 
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
- as_ts_dataset(temp ~ date + temp + rr_type, timesteps = 20, horizon = 1)
+ as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type,
+               timesteps = 20, horizon = 1)
 
 train_ds[1]
 

@@ -29,7 +29,7 @@ torchts_parse_formula <- function(formula, data){
 
   # TODO: simplify?
 
-  date_types <- c("Date", "POSIXt", "POSIXlt", "POSIXct")
+  date_types <- getOption("torchts_dates")
   available_cols <- colnames(data)
 
   raw_rhs <- rlang::f_rhs(formula)
@@ -45,20 +45,14 @@ torchts_parse_formula <- function(formula, data){
 
   variable_classes <-
     tibble(.var = colnames(data),
-           .type = sapply(data, class))
+           .class = sapply(data, class))
 
-  is_variable_categorical <-
+  variable_types <-
     tibble(.var = colnames(data),
-           .is_categorical = which_categorical(data))
+           .type = sapply(data, type))
 
-  if (sum(is_variable_categorical$.is_categorical) > 0)
-    message(sprintf(
-       "Categorical variables found (%d): %s",
-        sum(is_variable_categorical$.is_categorical),
-        listed(is_variable_categorical[is_variable_categorical$.is_categorical, ]$.var)
-    ))
-
-  names(variable_classes$.type) <- NULL
+  names(variable_classes$.class) <- NULL
+  names(variable_types$.type)    <- NULL
 
   all_variables <-
     attr(formula_terms, "variables")
@@ -87,12 +81,12 @@ torchts_parse_formula <- function(formula, data){
   output <-
     output %>%
     left_join(variable_classes, by = ".var") %>%
-    left_join(is_variable_categorical, by = ".var")
+    left_join(variable_types, by = ".var")
 
   if (!("index" %in% output$.role)) {
     output <-
       output %>%
-      mutate(.role = ifelse(.type %in% date_types,
+      mutate(.role = ifelse(.class %in% date_types,
                             "index", .role))
   }
 
@@ -113,10 +107,17 @@ torchts_parse_formula <- function(formula, data){
       bind_rows(output, .predictors)
   }
 
+  if (sum(output$.type == "categorical") > 0)
+    message(sprintf(
+      "Categorical variables found (%d): %s",
+      sum(output$.type == "categorical"),
+      listed(output[output$.type == "categorical", ]$.var)
+    ))
+
 
   # Checking, if all the variable in the formula appear in the data
-  if (any(is.na(output$.type))) {
-    vars_not_in_data <- unique(output$.var[is.na(output$.type)])
+  if (any(is.na(output$.class))) {
+    vars_not_in_data <- unique(output$.var[is.na(output$.class)])
     vars_not_in_data <- paste(vars_not_in_data, sep = ", ")
     stop(sprintf(
       "Following variables does not appear in the data: %s",
@@ -160,3 +161,16 @@ torchts_parse_formula <- function(formula, data){
 
   out
 }
+
+type <- function(x){
+  if (any(sapply(getOption("torchts_categoricals"),
+    function(cls) inherits(x, cls))))
+    return("categorical")
+  else if (any(sapply(getOption("torchts_dates"),
+                      function(cls) inherits(x, cls))))
+    return("date")
+  else
+    return("numeric")
+}
+
+

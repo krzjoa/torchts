@@ -150,8 +150,11 @@
   jump <span class='op'>=</span> <span class='va'>horizon</span>,
   predictors_spec <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
   outcomes_spec <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>,
+  categorical <span class='op'>=</span> <span class='cn'>NULL</span>,
   sample_frac <span class='op'>=</span> <span class='fl'>1</span>,
-  scale <span class='op'>=</span> <span class='cn'>TRUE</span>
+  scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  extras <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -185,8 +188,17 @@ It should be a list with names representing names of tensors served by dataset, 
 It should be a list with names representing names of tensors served b</p></td>
     </tr>
     <tr>
+      <th>categorical</th>
+      <td><p>(<code>character</code>) Names of specified column subsets considered as categorical.
+They will be provided as integer tensors.</p></td>
+    </tr>
+    <tr>
       <th>scale</th>
       <td><p>(<code>logical</code> or <code>list</code>) Scale feature columns. Boolean flag or list with <code>mean</code> and <code>sd</code> values.</p></td>
+    </tr>
+    <tr>
+      <th>extras</th>
+      <td><p>(<code>list</code>) List of extra onject to be stored inside the ts_dataset object.</p></td>
     </tr>
     <tr>
       <th>sample_fram</th>

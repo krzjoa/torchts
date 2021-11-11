@@ -160,7 +160,8 @@ rnn_fit <- function(formula,
     optim      = optimizer,
     timesteps  = timesteps,
     horizon    = horizon,
-    scale      = scale_params(train_dl)
+    scale      = scale_params(train_dl),
+    extras     = train_dl$ds$extras
   )
 
 }
@@ -188,7 +189,8 @@ predict.torchts_rnn <- function(object, new_data){
        timesteps   = object$timesteps,
        horizon     = object$horizon,
        batch_size  = batch_size,
-       scale       = object$scale
+       scale       = object$scale,
+       cat_recipe  = object$extras$cat_recipe
      )
 
   net <- object$net

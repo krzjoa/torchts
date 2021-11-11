@@ -80,7 +80,17 @@ ts_dataset <- torch::dataset(
     ))
 
     # WARNING: columns names are supposed to be in such order
-    self$col_map <- unique(unlist(predictors_spec))
+    self$predictors_spec_num <- predictors_spec[
+      !(names(predictors_spec) %in% categorical)
+    ]
+
+    self$predictors_spec_cat <- predictors_spec[
+      names(predictors_spec) %in% categorical
+    ]
+
+    self$col_map     <- unique(unlist(predictors_spec))
+    self$col_map_num <- unique(unlist(self$predictors_spec_num))
+    self$col_map_cat <- unique(unlist(self$predictors_spec_cat))
 
     # If scale is a list and contains two values: mean and std
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
@@ -91,8 +101,8 @@ ts_dataset <- torch::dataset(
       self$scale <- TRUE
     } else if (scale) {
     # Otherwise, if scale is logical and TRUE, comute scaling params from the data
-      self$mean  <- torch::torch_mean(self$data[, self$col_map], dim = 1, keepdim = TRUE)
-      self$sd    <- torch::torch_std(self$data[, self$col_map], dim = 1, keepdim = TRUE)
+      self$mean  <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      self$sd    <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
       self$scale <- TRUE
     } else {
       self$scale <- FALSE
@@ -110,18 +120,29 @@ ts_dataset <- torch::dataset(
     # It seems to work in the simpliest case
 
     if (self$scale) {
-      inputs <-
+      inputs_num <-
         purrr::map(
-          self$predictors_spec,
-          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map)]) /
-            self$sd[.., match(.x, self$col_map)]
+          self$predictors_spec_num,
+          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map_num)]) /
+            self$sd[.., match(.x, self$col_map_num)]
         )
     } else {
-      inputs <-
+      inputs_num <-
         purrr::map(
-          self$predictors_spec, ~ self$data[start:end, .x, drop = FALSE]
+          self$predictors_spec_num, ~ self$data[start:end, .x, drop = FALSE]
         )
     }
+
+    # Not scaled inputs
+    if (length(unlist(self$predictors_spec_cat)) > 0)
+      inputs_cat <-
+        purrr::map(
+          self$predictors_spec_cat, ~ self$data[start:end, .x, drop = FALSE]$to(torch_int())
+        )
+    else
+      inputs_cat <- NULL
+
+    inputs <- c(inputs_num, inputs_cat)
 
     targets <-
       purrr::map(self$outcomes_spec, ~ self$data[(end + 1):(end + self$horizon), .x])

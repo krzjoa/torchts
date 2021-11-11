@@ -59,6 +59,9 @@ model_rnn <- torch::nn_module(
 
     self$horizon <- horizon
 
+    self$multiembedding <-
+      nn_multi_embedding()
+
     self$rnn <-
       rnn_layer(
         input_size  = input_size,
@@ -73,10 +76,19 @@ model_rnn <- torch::nn_module(
 
   },
 
-  forward = function(x) {
+  forward = function(x_num, x_cat) {
+
+    # Transforming categorical features using multiembedding
+    if (!is.null(x_cat))
+      x_cat_transformed <- self$multiembedding(x_cat)
+    else
+      x_cat_transformed <- NULL
 
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
+
+    x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
+
     x1 <- self$rnn(x)
     x <- x1[[1]]
     self$hidden_state <- x1[[2]]
