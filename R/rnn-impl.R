@@ -213,7 +213,7 @@ predict.torchts_rnn <- function(object, new_data){
        # outcomes    = object$outcomes,
        timesteps      = object$timesteps,
        horizon        = object$horizon,
-       batch_size     = batch_size,
+       batch_size     = 1,
        scale          = object$scale,
        # Extras
        parsed_formula = object$parsed_formula,
