@@ -38,6 +38,12 @@ set_device.torchts_model <- function(object, device, ...){
 }
 
 #' @export
+set_device.model_spec <- function(object, device, ...){
+  object$args$device <- rlang::enquo(device)
+  object
+}
+
+#' @export
 set_device.nn_module <- function(object, device, ...){
   AVAILABLE_DEVICES <- c("cuda", "cpu")
 

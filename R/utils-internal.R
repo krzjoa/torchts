@@ -30,26 +30,6 @@ rep_if_one_element <- function(x, output_length){
     return(x)
 }
 
-
-#' Check, if recursion should be used in forecasting
-check_recursion <- function(object, new_data){
-
-  # TODO: check, if this procedure is sufficient
-
-  recursive_mode <- FALSE
-
-  # Check, if outcome is predictor
-  if (any(object$outcome %in% colnames(new_data))) {
-    # Check, there are na values in predictor column
-    if (any(is.na(new_data[object$outcome]))) {
-      if (nrow(new_data) > object$horizon)
-        recursive_mode <- TRUE
-    }
-  }
-
-  recursive_mode
-}
-
 #' Remove parsnip model
 #' For development purposes only
 remove_model <- function(model = "rnn"){
@@ -78,4 +58,9 @@ listed <- function(x){
 
 all_the_same <- function(x){
   all(x == x[1])
+}
+
+#' https://stackoverflow.com/questions/26083625/how-do-you-include-data-frame-output-inside-warnings-and-errors
+print_and_capture <- function(x){
+  paste(capture.output(print(x)), collapse = "\n")
 }

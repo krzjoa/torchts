@@ -7,10 +7,10 @@ prepare_dl <- function(data, formula, index,
                        timesteps, horizon,
                        categorical = NULL,
                        validation = NULL,
-                       scale = TRUE, batch_size){
+                       scale = TRUE, batch_size,
+                       parsed_formula = NULL, ...){
 
   # TODO: use predictors, outcomes instead of parsing formula second time
-
   valid_dl <- NULL
 
   if (!is.null(validation)) {
@@ -45,26 +45,28 @@ prepare_dl <- function(data, formula, index,
 
     valid_dl <-
       as_ts_dataloader(
-        data        = validation,
-        formula     = formula,
-        timesteps   = timesteps,
-        horizon     = horizon,
-        categorical = categorical,
-        scale       = scale,
-        batch_size  = batch_size
+        data           = validation,
+        formula        = formula,
+        timesteps      = timesteps,
+        horizon        = horizon,
+        categorical    = categorical,
+        scale          = scale,
+        batch_size     = batch_size,
+        parsed_formula = parsed_formula
       )
 
   }
 
   train_dl <-
     as_ts_dataloader(
-      data        = data,
-      formula     = formula,
-      timesteps   = timesteps,
-      horizon     = horizon,
-      categorical = categorical,
-      scale       = scale,
-      batch_size  = batch_size
+      data           = data,
+      formula        = formula,
+      timesteps      = timesteps,
+      horizon        = horizon,
+      categorical    = categorical,
+      scale          = scale,
+      batch_size     = batch_size,
+      parsed_formula = parsed_formula
     )
 
   list(
@@ -72,3 +74,26 @@ prepare_dl <- function(data, formula, index,
     valid_dl = valid_dl
   )
 }
+
+
+prepare_categorical <- function(data, categorical){
+
+  if (nrow(categorical) > 0) {
+
+    embedded_vars  <- dict_size(data[categorical$.var])
+    embedding_size <- embedding_size_google(embedded_vars)
+
+    embedding<-
+      embedding_spec(
+        num_embeddings = embedded_vars,
+        embedding_dim  = embedding_size
+      )
+
+  } else {
+    embedding <- NULL
+  }
+
+  embedding
+}
+
+

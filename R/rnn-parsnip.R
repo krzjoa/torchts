@@ -75,7 +75,7 @@ rnn <- function(mode = "regression",
   )
 
   parsnip::new_model_spec(
-    "rnn",
+    cls      = "rnn",
     args     = args,
     eng_args = NULL,
     mode     = mode,

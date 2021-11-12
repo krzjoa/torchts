@@ -19,11 +19,11 @@
 #'
 #' train_dl <-
 #'  training(data_split) %>%
-#'  as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 1, batch_size = 32)
+#'  as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 10, batch_size = 32)
 #'
 #' train_dl
 #'
-#' dataloader_next(dataloader_make_iter(train_ds))
+#' dataloader_next(dataloader_make_iter(train_dl))
 #'
 #' @export
 as_ts_dataloader <- function(data, formula, index = NULL,
@@ -33,7 +33,7 @@ as_ts_dataloader <- function(data, formula, index = NULL,
                              categorical = NULL,
                              timesteps, batch_size, horizon = 1,
                              sample_frac = 1, scale = TRUE,
-                             cat_recipe = NULL){
+                             ...){
   UseMethod("as_ts_dataloader")
 }
 
@@ -44,7 +44,7 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, batch_size,
                                      horizon = 1, sample_frac = 1,
-                                     scale = TRUE, cat_recipe = NULL){
+                                     scale = TRUE, ...){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -58,7 +58,8 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       horizon     = horizon,
       sample_frac = sample_frac,
       scale       = scale,
-      extras      = list(cat_recipe = cat_recipe)),
+      # Extra args
+      ...),
     batch_size = batch_size
     )
 }

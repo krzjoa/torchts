@@ -71,13 +71,16 @@ ts_dataset <- torch::dataset(
     self$outcomes_spec   <- outcomes_spec
     self$extras          <- extras
 
-    n <- (nrow(self$data) - self$timesteps) / self$jump
+    n <- (nrow(self$data) - self$timesteps - self$horizon)
     n <- floor(n)
 
-    self$starts <- sort(sample.int(
-      n = n,
-      size = n * sample_frac
-    ))
+    # starts <- sample.int(
+    #   n = n,
+    #   size = n * sample_frac
+    # )
+    starts <- seq(1, length(starts), jump)
+    starts <- sample(starts, size = length(starts) * sample_frac)
+    self$starts <- sort(starts)
 
     # WARNING: columns names are supposed to be in such order
     self$predictors_spec_num <- predictors_spec[
@@ -112,8 +115,8 @@ ts_dataset <- torch::dataset(
 
   .getitem = function(i) {
 
-    start <- self$starts[i * self$jump]
-    end   <- start + self$timesteps - 1
+    start <- self$starts[i]
+    end   <- start + self$timesteps - 1 # - self$horizon?
 
     # Input columns
     # TODO: Dropping dimension in inputs and not in targets?
@@ -145,7 +148,7 @@ ts_dataset <- torch::dataset(
     inputs <- c(inputs_num, inputs_cat)
 
     targets <-
-      purrr::map(self$outcomes_spec, ~ self$data[(end + 1):(end + self$horizon), .x])
+      purrr::map(self$outcomes_spec, ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
 
     c(inputs, targets)
 

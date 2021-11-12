@@ -13,7 +13,6 @@
 #' @param sample_frac (`numeric`) Sample a fraction of rows (default: 1, i.e.: all the rows).
 #' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
-#' @param cat_recipe (`[recipes::recipe`]) A `recipe` with `step_integer` to transform categorical data.
 #'
 #' @importFrom recipes recipe step_integer bake prep
 #'
@@ -44,7 +43,7 @@
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
                           predictors = NULL, outcomes = NULL, categorical = NULL,
                           timesteps, horizon = 1, sample_frac = 1,
-                          scale = TRUE, cat_recipe = NULL, ...){
+                          scale = TRUE, ...){
   UseMethod("as_ts_dataset")
 }
 
@@ -53,7 +52,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
 as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
                                   predictors = NULL, outcomes = NULL, categorical = NULL,
                                   timesteps, horizon = 1, sample_frac = 1,
-                                  scale = TRUE, cat_recipe = NULL, ...){
+                                  scale = TRUE, ...){
   stop(sprintf(
     "Object of class %s in not handled for now.", class(data)
   ))
@@ -64,17 +63,22 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE, cat_recipe = NULL, ...){
+                                     scale = TRUE, ...){
+
+  extra_args <- list(...)
 
   if (nrow(data) == 0) {
     stop("The data object is empty!")
   }
 
+  if (is.null(extra_args$parsed_formula))
+    parsed_formula <- torchts_parse_formula(formula, data = data)
+  else
+    parsed_formula <- extra_args$parsed_formula
+
   # Parsing formula
   # TODO: key is not used for now
-  if (!is.null(formula)) {
-
-    parsed_formula <- torchts_parse_formula(formula, data = data)
+  if (!is.null(parsed_formula)) {
 
     .predictors_columns <- predictors_spec(
 
@@ -109,11 +113,13 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
   if (!is.null(.predictors_columns$x_cat)) {
 
     # Prep recipe in none is passed
-    if (is.null(cat_recipe)) {
+    if (is.null(extra_args$cat_recipe)) {
       cat_recipe <-
         recipe(data) %>%
         step_integer(all_of(c(.predictors_columns$x_cat))) %>%
         prep()
+    } else {
+      cat_recipe <- extra_args$cat_recipe
     }
 
     data <-

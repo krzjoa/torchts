@@ -62,7 +62,7 @@ tk_summary_diagnostics(testing(data_split), date)[, 1:3]
 
 ```{r univariate.ts}
 TIMESTEPS <- 20
-HORIZON   <- 1
+HORIZON   <- 2
 
 # Training 
 rnn_model <- 
@@ -91,15 +91,15 @@ cleared_new_data <-
 # Forecast
 fcast <-
   rnn_model %>%
-  predict(new_data = testing(data_split))
+  predict(new_data = cleared_new_data)
 
 fcast_vs_true <- 
   bind_cols(
     n = 1:nrow(testing(data_split)),
     actual = testing(data_split)$tmax_daily, 
-    forecast = c(rep(NA, 20), fcast$.pred_V1)
+    fcast
   ) %>% 
-  tidyr::pivot_longer(c(actual, forecast))
+  tidyr::pivot_longer(c(actual, .pred))
   
 
 ggplot(fcast_vs_true) + 
@@ -145,9 +145,9 @@ fcast_vs_true <-
   bind_cols(
     n = 1:nrow(testing(data_split)),
     actual = testing(data_split)$tmax_daily, 
-    forecast = c(rep(NA, 20), fcast$.pred_V1)
+    fcast
   ) %>% 
-  tidyr::pivot_longer(c(actual, forecast))
+  tidyr::pivot_longer(c(actual, .pred))
   
 
 ggplot(fcast_vs_true) + 
@@ -197,7 +197,7 @@ tmax_daily <-
   bind_cols(
     n        = 1:nrow(testing(data_split)),
     actual   = testing(data_split)$tmax_daily, 
-    forecast = c(rep(NA, 20), fcast$.pred_tmax_daily),
+    forecast = fcast$.pred_tmax_daily,
     variable = "tmax_daily"
   ) %>% 
   tidyr::pivot_longer(c(actual, forecast))
@@ -206,7 +206,7 @@ tmin_daily <-
   bind_cols(
     n        = 1:nrow(testing(data_split)),
     actual   = testing(data_split)$tmin_daily, 
-    forecast = c(rep(NA, 20), fcast$.pred_tmin_daily),
+    forecast = fcast$.pred_tmin_daily,
     variable = "tmin_daily"
   ) %>% 
   tidyr::pivot_longer(c(actual, forecast))

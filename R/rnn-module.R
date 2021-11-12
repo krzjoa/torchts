@@ -51,8 +51,9 @@
 #' rnn_net <-
 #'   model_rnn(
 #'     input_size  = input_size,
-#'     output_size = 1,
+#'     output_size = 2,
 #'     hidden_size = 10,
+#'     horizon     = 10,
 #'     embedding   = .embedding_spec
 #'   )
 #'
@@ -77,7 +78,8 @@ model_rnn <- torch::nn_module(
                         final_module = nn_linear(hidden_size, output_size * horizon),
                         dropout = 0, batch_first = TRUE){
 
-    self$horizon <- horizon
+    self$horizon     <- horizon
+    self$output_size <- output_size
 
     if (!is.null(embedding))
       self$multiembedding <-
@@ -105,7 +107,7 @@ model_rnn <- torch::nn_module(
   forward = function(x_num, x_cat) {
 
     # Transforming categorical features using multiembedding
-    if (!is.null(x_cat)) {
+    if (!missing(x_cat)) {
 
       if (is.null(self$multiembedding)) {
         message("x_cat argument was passed, but embedding was not defined")
@@ -131,7 +133,7 @@ model_rnn <- torch::nn_module(
 
     # feed this to a single output neuron
     # final shape then is (batch_size, 1)
-    self$final_module(x)[,newaxis,]
+    self$final_module(x)$reshape(c(-1, self$horizon, self$output_size))
   }
 )
 

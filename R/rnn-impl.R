@@ -15,6 +15,7 @@
 #' @param batch_size (`integer`) Batch size.
 #' @param epochs (`integer`) Number of epochs to train the network.
 #' @param loss_fn (`function`) A `torch` loss function.
+#' @param device (`character`) A `torch` device.
 #'
 #' @importFrom torch nn_gru
 #' @importFrom rsample training testing
@@ -26,44 +27,43 @@
 #' library(timetk)
 #'
 #' # Preparing a dataset
-#' # TODO: turn to tiny_m5
+#' tiny_m5_sample <-
+#'   tiny_m5 %>%
+#'   filter(item_id == "FOODS_3_586", store_id == "CA_1") %>%
+#'   mutate(value = as.numeric(value))
 #'
+#' tk_summary_diagnostics(tiny_m5_sample)
+#' glimpse(tiny_m5_sample)
 #'
-#' tarnow_temp <-
-#'    weather_pl %>%
-#'    filter(station == "TRN") %>%
-#'    select(date, tmax_daily, tmin_daily, press_mean_daily, rr_type) %>%
-#'    mutate(rr_type = ifelse(is.na(rr_type), "NA", rr_type))
+#' TIMESTEPS <- 20
 #'
-#' # Splitting dataset
 #' data_split <-
-#'    time_series_split(
-#'       tarnow_temp, date,
-#'       initial = "18 years",
-#'       assess  = "2 years",
-#'       lag     = 20
-#'    )
+#'   time_series_split(
+#'     tiny_m5_sample, date,
+#'     initial = "4 years",
+#'     assess  = "1 year",
+#'     lag     = TIMESTEPS
+#'   )
 #'
-#' # Training a model
+#' # Training
 #' rnn_model <-
-#'    rnn_fit(
-#'      tmax_daily ~ date + tmax_daily + rr_type,
-#'      data = training(data_split),
-#'      hidden_units = 10,
-#'      timesteps = 20,
-#'      horizon   = 1,
-#'      epochs = 1,
-#'      batch_size = 32
-#'    )
+#'   rnn_fit(
+#'     value ~ date + value + sell_price + wday,
+#'     data = training(data_split),
+#'     hidden_units = 10,
+#'     timesteps = TIMESTEPS,
+#'     horizon   = 1,
+#'     epochs = 10,
+#'     batch_size = 32
+#'   )
 #'
 #' # Prediction
 #' cleared_new_data <-
 #'   testing(data_split) %>%
-#'   clear_outcome(date, tmax_daily, 20)
+#'   clear_outcome(date, value, TIMESTEPS)
 #'
-#' forecast <- predict(rnn_model, cleared_new_data)
-#'
-#'
+#' forecast <-
+#'   predict(rnn_model, cleared_new_data)
 #'
 #' @export
 rnn_fit <- function(formula,
@@ -79,16 +79,19 @@ rnn_fit <- function(formula,
                     batch_size = 1,
                     epochs = 10,
                     scale = TRUE,
-                    loss_fn = nnf_mse_loss){
+                    loss_fn = nnf_mse_loss,
+                    device = NULL){
 
   # TODO: thumb rule for number of hidden units
-  # TODO: for now, you don't have to define categorical features
 
   # Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
   # Może nie musiałaby się tego uczyć?
 
   # Sieci można używać bez treningu, ale nie modele w parsnipie
   # Trik: zero epok
+
+  # Checks
+  check_is_complete(data)
 
   # Parse formula
   parsed_formula <- torchts_parse_formula(formula, data)
@@ -112,42 +115,30 @@ rnn_fit <- function(formula,
     select(all_of(all_used_vars))
 
   # Categorical features
-  if (nrow(categorical) > 0) {
-
-    embedded_vars  <- dict_size(data[categorical$.var])
-    embedding_size <- embedding_size_google(embedded_vars)
-
-    embedding<-
-       embedding_spec(
-         num_embeddings = embedded_vars,
-         embedding_dim  = embedding_size
-       )
-
-  } else {
-    embedding_size <- NULL
-    embedding <- NULL
-  }
+  embedding <-
+    prepare_categorical(data, categorical)
 
   # TODO: consider step_integer here, with optional handling in dataset
 
   # Prepare dataloaders
   dls <-
     prepare_dl(
-      data        = data,
-      formula     = formula,
-      index       = index,
-      timesteps   = timesteps,
-      horizon     = horizon,
-      categorical = categorical,
-      validation  = validation,
-      scale       = scale,
-      batch_size  = batch_size
+      data           = data,
+      formula        = formula,
+      index          = index,
+      timesteps      = timesteps,
+      horizon        = horizon,
+      categorical    = categorical,
+      validation     = validation,
+      scale          = scale,
+      batch_size     = batch_size,
+      parsed_formula = parsed_formula
     )
 
   train_dl <- dls[[1]]
   valid_dl <- dls[[2]]
 
-  input_size <- nrow(numeric) + sum(embedding_size)
+  input_size <- nrow(numeric) + sum(embedding$embedding_dim)
 
   output_size <- length(outcomes)
 
@@ -163,6 +154,9 @@ rnn_fit <- function(formula,
         dropout     = dropout,
         batch_first = TRUE
     )
+
+  if (!is.null(device))
+    net <- set_device(net)
 
   # Preparing optimizer
   optimizer <- call_optim(optim, net$parameters)
@@ -180,17 +174,18 @@ rnn_fit <- function(formula,
 
   # Return torchts model
   torchts_model(
-    class      = "torchts_rnn",
-    net        = net,
-    index      = index,
-    key        = key,
-    outcomes   = outcomes,
-    predictors = predictors,
-    optim      = optimizer,
-    timesteps  = timesteps,
-    horizon    = horizon,
-    scale      = scale_params(train_dl),
-    extras     = train_dl$ds$extras
+    class          = "torchts_rnn",
+    net            = net,
+    index          = index,
+    key            = key,
+    outcomes       = outcomes,
+    predictors     = predictors,
+    optim          = optimizer,
+    timesteps      = timesteps,
+    parsed_formula = parsed_formula,
+    horizon        = horizon,
+    scale          = scale_params(train_dl),
+    extras         = train_dl$ds$extras
   )
 
 }
@@ -205,21 +200,24 @@ predict.torchts_rnn <- function(object, new_data){
   n_outcomes <- length(object$outcomes)
   batch_size <- 1
 
+  # Checks
   recursive_mode <- check_recursion(object, new_data)
 
   # Preparing dataloader
   new_data_dl <-
      as_ts_dataloader(
        new_data,
-       index       = object$index,
-       key         = object$key,
-       predictors  = object$predictors,
-       outcomes    = object$outcomes,
-       timesteps   = object$timesteps,
-       horizon     = object$horizon,
-       batch_size  = batch_size,
-       scale       = object$scale,
-       cat_recipe  = object$extras$cat_recipe
+       # index       = object$index,
+       # key         = object$key,
+       # predictors  = object$predictors,
+       # outcomes    = object$outcomes,
+       timesteps      = object$timesteps,
+       horizon        = object$horizon,
+       batch_size     = batch_size,
+       scale          = object$scale,
+       # Extras
+       parsed_formula = object$parsed_formula,
+       cat_recipe     = object$extras$cat_recipe
      )
 
   net <- object$net
