@@ -31,3 +31,9 @@ check_is_complete <- function(data){
   }
 
 }
+
+
+check_length_vs_horizon <- function(length, horizon){
+  last <- length %% horizon
+}
+

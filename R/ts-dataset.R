@@ -13,10 +13,10 @@
 #' They will be provided as integer tensors.
 #' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
 #' @param scale (`logical` or `list`) Scale feature columns. Boolean flag or list with `mean` and `sd` values.
-#' @param extras (`list`) List of extra onject to be stored inside the ts_dataset object.
+#' @param extras (`list`) List of extra object to be stored inside the ts_dataset object.
 #'
 #' @note
-#' If `scale` is TRUE, only the input vaiables are scale and not the outcome ones.
+#' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
 #'
 #' See: [Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)](https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re)
 #'
@@ -62,6 +62,8 @@ ts_dataset <- torch::dataset(
 
     # TODO: check data types
     # TODO: check, if jump works correctly
+    # TODO: consider adding margin to the last element if length %% horizon > 0
+
     self$data            <- data
     self$margin          <- max(timesteps, horizon)
     self$timesteps       <- timesteps
@@ -71,14 +73,16 @@ ts_dataset <- torch::dataset(
     self$outcomes_spec   <- outcomes_spec
     self$extras          <- extras
 
-    n <- (nrow(self$data) - self$timesteps - self$horizon)
+    # TODO: for now it doesn't handle keys
+    n <- (nrow(self$data) - self$timesteps)
     n <- floor(n)
 
     # starts <- sample.int(
     #   n = n,
     #   size = n * sample_frac
     # )
-    starts <- seq(1, length(starts), jump)
+
+    starts <- seq(1, n, jump)
     starts <- sample(starts, size = length(starts) * sample_frac)
     self$starts <- sort(starts)
 
@@ -103,7 +107,7 @@ ts_dataset <- torch::dataset(
       self$sd    <- as_tensor(scale$sd)
       self$scale <- TRUE
     } else if (scale) {
-    # Otherwise, if scale is logical and TRUE, comute scaling params from the data
+    # Otherwise, if scale is logical and TRUE, compute scaling params from the data
       self$mean  <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
       self$sd    <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
       self$scale <- TRUE

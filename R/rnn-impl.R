@@ -83,6 +83,7 @@ rnn_fit <- function(formula,
                     device = NULL){
 
   # TODO: thumb rule for number of hidden units
+  # TODO: rename to torchts_rnn?
 
   # Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
   # Może nie musiałaby się tego uczyć?
@@ -213,7 +214,7 @@ predict.torchts_rnn <- function(object, new_data){
        # outcomes    = object$outcomes,
        timesteps      = object$timesteps,
        horizon        = object$horizon,
-       batch_size     = 1,
+       batch_size     = batch_size,
        scale          = object$scale,
        # Extras
        parsed_formula = object$parsed_formula,
@@ -227,6 +228,9 @@ predict.torchts_rnn <- function(object, new_data){
                   ncol = length(object$outcomes))
   iter  <- 0
 
+  # b <- dataloader_next(dataloader_make_iter(new_data_dl))
+  net$stateful()
+
   coro::loop(for (b in new_data_dl) {
 
     output <- do.call(net, get_x(b))
@@ -237,12 +241,24 @@ predict.torchts_rnn <- function(object, new_data){
       start <- object$timesteps + iter * object$horizon + 1
       end   <- object$timesteps + iter * object$horizon + object$horizon
       cols  <- unlist(new_data_dl$dataset$outcomes_spec)
-      new_data_dl$dataset$data[start:end, cols] <- output
+
+      if (length(cols) == 1)
+        output <- output$reshape(nrow(output))
+
+      # TODO: insert do dataset even after last forecast for consistency?
+      if (dim(new_data_dl$dataset$data[start:end, cols]) == dim(output))
+        new_data_dl$dataset$data[start:end, cols] <- output
     }
 
     iter <- iter + 1
 
   })
+
+  net$stateful(FALSE)
+
+  # Make sure that forecast has right lenght
+  # TODO: keys!!!
+  preds <- head(preds, nrow(new_data))
 
   # Adding colnames if more than one outcome
   if (ncol(preds) > 1)

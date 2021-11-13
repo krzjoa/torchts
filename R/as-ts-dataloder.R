@@ -2,6 +2,10 @@
 #'
 #' @inheritParams as_ts_dataset
 #' @param batch_size (`numeric`) Batch size.
+#' @param drop_last (`logical`) Set to TRUE to drop the last incomplete batch,
+#' if the dataset size is not divisible by the batch size.
+#' If FALSE and the size of dataset is not divisible by the batch size,
+#' then the last batch will be smaller. (default: TRUE)
 #'
 #' @importFrom torch dataloader
 #'
@@ -31,8 +35,9 @@ as_ts_dataloader <- function(data, formula, index = NULL,
                              predictors = NULL,
                              outcomes = NULL,
                              categorical = NULL,
-                             timesteps, batch_size, horizon = 1,
+                             timesteps, horizon = 1,
                              sample_frac = 1, scale = TRUE,
+                             batch_size, drop_last = TRUE,
                              ...){
   UseMethod("as_ts_dataloader")
 }
@@ -42,9 +47,9 @@ as_ts_dataloader <- function(data, formula, index = NULL,
 as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
-                                     timesteps, batch_size,
-                                     horizon = 1, sample_frac = 1,
-                                     scale = TRUE, ...){
+                                     timesteps, horizon = 1, sample_frac = 1,
+                                     scale = TRUE, batch_size,
+                                     drop_last = TRUE, ...){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -60,7 +65,8 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       scale       = scale,
       # Extra args
       ...),
-    batch_size = batch_size
+    batch_size = batch_size,
+    drop_last  = drop_last
     )
 }
 

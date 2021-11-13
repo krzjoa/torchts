@@ -62,14 +62,15 @@ tk_summary_diagnostics(testing(data_split), date)[, 1:3]
 
 ```{r univariate.ts}
 TIMESTEPS <- 20
-HORIZON   <- 2
+HORIZON   <- 14
+EPOCHS    <- 200
 
 # Training 
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
-    epochs       = 3,
+    epochs       = EPOCHS,
     hidden_units = 20,
     batch_size   = 32,
     scale        = TRUE 
@@ -89,6 +90,12 @@ cleared_new_data <-
   clear_outcome(date, tmax_daily, 20)
 
 # Forecast
+# debugonce(predict.torchts_rnn)
+
+fcast <-
+  rnn_model %>%
+  predict(new_data = testing(data_split))
+
 fcast <-
   rnn_model %>%
   predict(new_data = cleared_new_data)
@@ -101,7 +108,6 @@ fcast_vs_true <-
   ) %>% 
   tidyr::pivot_longer(c(actual, .pred))
   
-
 ggplot(fcast_vs_true) + 
   geom_line(aes(n, value, col = name)) +
   theme_minimal() + 

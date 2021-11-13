@@ -100,7 +100,8 @@ model_rnn <- torch::nn_module(
       )
 
     self$final_module <- final_module
-    self$hidden_state <- NULL
+    self$hx           <- NULL
+    self$is_stateful  <- TRUE
 
   },
 
@@ -124,9 +125,18 @@ model_rnn <- torch::nn_module(
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
     x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
 
-    x1 <- self$rnn(x)
+    if (self$is_stateful)
+      hx <- self$hx
+    else
+      hx <- NULL
+
+    x1 <- self$rnn(x, hx)
+
     x <- x1[[1]]
-    self$hidden_state <- x1[[2]]
+
+    # TODO: hx for lstm is probably a list (because it returns two hidden state tensors)
+    self$hx <- x1[[2]]$clone()$detach()
+    # self$hx$requires_grad_(FALSE)
 
     # Final timestep with size (batch_size, hidden_size)
     x <- x[ , dim(x)[2], ]
@@ -134,6 +144,12 @@ model_rnn <- torch::nn_module(
     # feed this to a single output neuron
     # final shape then is (batch_size, 1)
     self$final_module(x)$reshape(c(-1, self$horizon, self$output_size))
+  },
+
+  stateful = function(flag = TRUE){
+    # https://discuss.pytorch.org/t/stateful-rnn-example/10912
+    #
+    self$is_stateful <- flag
   }
 )
 
