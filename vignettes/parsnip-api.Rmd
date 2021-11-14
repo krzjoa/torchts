@@ -61,9 +61,17 @@ tk_summary_diagnostics(testing(data_split), date)[, 1:3]
 ## Univariate time series
 
 ```{r univariate.ts}
-TIMESTEPS <- 20
+TIMESTEPS <- 60
 HORIZON   <- 14
-EPOCHS    <- 200
+EPOCHS    <- 100
+
+data_split <- 
+  time_series_split(
+    tarnow_temp, date, 
+    initial = "18 years",
+    assess  = "2 years", 
+    lag     = TIMESTEPS
+  )
 
 # Training 
 rnn_model <- 
@@ -87,7 +95,7 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 # Clear outcome variable
 cleared_new_data <- 
   testing(data_split) %>% 
-  clear_outcome(date, tmax_daily, 20)
+  clear_outcome(date, tmax_daily, TIMESTEPS)
 
 # Forecast
 # debugonce(predict.torchts_rnn)

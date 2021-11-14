@@ -30,6 +30,7 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
 
   # Info in Keras
   # 938/938 [==============================] - 1s 1ms/step - loss: 0.0563 - acc: 0.9829 - val_loss: 0.1041 - val_acc: 0.9692
+  # epoch <- 1
 
   for (epoch in seq_len(epochs)) {
 

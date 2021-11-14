@@ -37,3 +37,15 @@ check_length_vs_horizon <- function(length, horizon){
   last <- length %% horizon
 }
 
+
+check_stateful_vs_jump <- function(horizon, jump, stateful){
+  if ((horizon != jump) & stateful)
+    message(glue(
+      "Horizon is not equal to jump, while stateful flag is TRUE.
+       horizon = {horizon}, jump = {jump}.
+       It is not recommended, but it will be performed as Your Majesty wishes."
+    ))
+}
+
+
+

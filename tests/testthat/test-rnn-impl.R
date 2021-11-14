@@ -19,7 +19,7 @@ test_that("RNN autoregression output", {
     )
 
   non_trained_model <-
-    rnn_fit(
+    torchts_rnn(
       tmax_daily ~ date,
       data = training(data_split),
       dropout = FALSE,
@@ -59,7 +59,7 @@ test_that("RNN autoregression multioutput", {
     )
 
   non_trained_model <-
-    rnn_fit(
+    torchts_rnn(
       tmax_daily + tmin_daily ~ date,
       data = training(data_split),
       dropout = FALSE,

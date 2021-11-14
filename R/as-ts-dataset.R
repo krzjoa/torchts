@@ -43,7 +43,7 @@
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
                           predictors = NULL, outcomes = NULL, categorical = NULL,
                           timesteps, horizon = 1, sample_frac = 1,
-                          scale = TRUE, ...){
+                          scale = TRUE, jump = 1, ...){
   UseMethod("as_ts_dataset")
 }
 
@@ -52,7 +52,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
 as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
                                   predictors = NULL, outcomes = NULL, categorical = NULL,
                                   timesteps, horizon = 1, sample_frac = 1,
-                                  scale = TRUE, ...){
+                                  scale = TRUE, jump = 1, ...){
   stop(sprintf(
     "Object of class %s in not handled for now.", class(data)
   ))
@@ -63,7 +63,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE, ...){
+                                     scale = TRUE, jump = 1, ...){
 
   extra_args <- list(...)
 
@@ -168,6 +168,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     categorical     = "x_cat",
     sample_frac     = sample_frac,
     scale           = scale,
+    jump            = jump,
     extras          = list(cat_recipe = cat_recipe)
   )
 }

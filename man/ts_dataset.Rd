@@ -39,7 +39,7 @@ They will be provided as integer tensors.}
 
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Boolean flag or list with \code{mean} and \code{sd} values.}
 
-\item{extras}{(\code{list}) List of extra onject to be stored inside the ts_dataset object.}
+\item{extras}{(\code{list}) List of extra object to be stored inside the ts_dataset object.}
 
 \item{sample_fram}{(\code{numeric}) A numeric value > 0. and <= 1 to sample a subset of data.}
 }
@@ -47,7 +47,7 @@ They will be provided as integer tensors.}
 Create a time series dataset from a \code{torch_tensor} matrix
 }
 \note{
-If \code{scale} is TRUE, only the input vaiables are scale and not the outcome ones.
+If \code{scale} is TRUE, only the input variables are scale and not the outcome ones.
 
 See: \href{https://stats.stackexchange.com/questions/111467/is-it-necessary-to-scale-the-target-value-in-addition-to-scaling-features-for-re}{Is it necessary to scale the target value in addition to scaling features for regression analysis? (Cross Validated)}
 }

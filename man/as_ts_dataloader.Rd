@@ -13,11 +13,12 @@ as_ts_dataloader(
   outcomes = NULL,
   categorical = NULL,
   timesteps,
-  batch_size,
   horizon = 1,
   sample_frac = 1,
   scale = TRUE,
-  cat_recipe = NULL
+  batch_size,
+  drop_last = TRUE,
+  ...
 )
 }
 \arguments{
@@ -38,8 +39,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{timesteps}{(\code{integer}) The time series chunk length.}
 
-\item{batch_size}{(\code{numeric}) Batch size.}
-
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
 \item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
@@ -47,7 +46,12 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
 
-\item{cat_recipe}{(\verb{[recipes::recipe}]) A \code{recipe} with \code{step_integer} to transform categorical data.}
+\item{batch_size}{(\code{numeric}) Batch size.}
+
+\item{drop_last}{(\code{logical}) Set to TRUE to drop the last incomplete batch,
+if the dataset size is not divisible by the batch size.
+If FALSE and the size of dataset is not divisible by the batch size,
+then the last batch will be smaller. (default: TRUE)}
 }
 \description{
 Quick shortcut to create a torch dataloader based on the given dataset
@@ -66,10 +70,10 @@ data_split <- initial_time_split(suwalki_temp)
 
 train_dl <-
  training(data_split) \%>\%
- as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 1, batch_size = 32)
+ as_ts_dataloader(temp ~ date, timesteps = 20, horizon = 10, batch_size = 32)
 
 train_dl
 
-dataloader_next(dataloader_make_iter(train_ds))
+dataloader_next(dataloader_make_iter(train_dl))
 
 }

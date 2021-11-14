@@ -16,7 +16,6 @@ as_ts_dataset(
   horizon = 1,
   sample_frac = 1,
   scale = TRUE,
-  cat_recipe = NULL,
   ...
 )
 }
@@ -44,8 +43,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
-
-\item{cat_recipe}{(\verb{[recipes::recipe}]) A \code{recipe} with \code{step_integer} to transform categorical data.}
 }
 \description{
 Create a torch dataset for time series data from a \code{data.frame}-like object

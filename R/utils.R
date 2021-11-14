@@ -60,6 +60,14 @@ clear_outcome <- function(data, index, outcome, timesteps, key = NULL){
     mutate(across(!!outcome, ~ c(.x[1:timesteps], rep(NA, n() - timesteps))))
 }
 
+inherits_any <- function(col, types){
+  any(sapply(types, function(type) inherits(col, type)))
+}
+
+inherits_any_char <- function(class, desired_classes){
+  sapply(class, function(cls) any(cls[[1]] %in% desired_classes))
+}
+
 
 # TODO: key_hierarchy
 

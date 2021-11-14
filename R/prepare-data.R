@@ -1,13 +1,14 @@
 #' Prepare dataloders
 #'
 #' @inheritParams as_ts_dataset
-#' @inheritParams rnn_fit
+#' @inheritParams torchts_rnn
 #'
 prepare_dl <- function(data, formula, index,
                        timesteps, horizon,
                        categorical = NULL,
                        validation = NULL,
                        scale = TRUE, batch_size,
+                       shuffle, jump,
                        parsed_formula = NULL, ...){
 
   # TODO: use predictors, outcomes instead of parsing formula second time
@@ -66,6 +67,8 @@ prepare_dl <- function(data, formula, index,
       categorical    = categorical,
       scale          = scale,
       batch_size     = batch_size,
+      shuffle        = shuffle,
+      jump           = jump,
       parsed_formula = parsed_formula
     )
 

@@ -86,7 +86,7 @@ torchts_parse_formula <- function(formula, data){
   if (!("index" %in% output$.role)) {
     output <-
       output %>%
-      mutate(.role = ifelse(.class %in% date_types,
+      mutate(.role = ifelse(inherits_any_char(.class, date_types),
                             "index", .role))
   }
 

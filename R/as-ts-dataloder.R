@@ -2,6 +2,7 @@
 #'
 #' @inheritParams as_ts_dataset
 #' @param batch_size (`numeric`) Batch size.
+#' @param shuffle (`logical`) Shuffle examples.
 #' @param drop_last (`logical`) Set to TRUE to drop the last incomplete batch,
 #' if the dataset size is not divisible by the batch size.
 #' If FALSE and the size of dataset is not divisible by the batch size,
@@ -37,7 +38,8 @@ as_ts_dataloader <- function(data, formula, index = NULL,
                              categorical = NULL,
                              timesteps, horizon = 1,
                              sample_frac = 1, scale = TRUE,
-                             batch_size, drop_last = TRUE,
+                             batch_size, shuffle = FALSE,
+                             jump = 1, drop_last = TRUE,
                              ...){
   UseMethod("as_ts_dataloader")
 }
@@ -48,8 +50,8 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE, batch_size,
-                                     drop_last = TRUE, ...){
+                                     scale = TRUE, batch_size, shuffle = FALSE,
+                                     jump = 1, drop_last = TRUE, ...){
   dataloader(
     as_ts_dataset(
       data        = data,
@@ -63,9 +65,13 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       horizon     = horizon,
       sample_frac = sample_frac,
       scale       = scale,
+      jump        = jump,
       # Extra args
       ...),
+
+    # Dataloade args
     batch_size = batch_size,
+    shuffle    = shuffle,
     drop_last  = drop_last
     )
 }

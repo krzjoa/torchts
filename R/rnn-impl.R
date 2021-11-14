@@ -7,17 +7,21 @@
 #' @param dropout (`logical`) Use dropout (default = FALSE).
 #' @param timesteps (`integer`) Number of timesteps used to produce a forecast.
 #' @param horizon (`integer`) Forecast horizon.
+#' @param jump (`interger`) Input window shift.
 #' @param rnn_layer (`nn_rnn_base`) A `torch` recurrent layer.
 #' @param optim (`function`) A function returning a `torch` optimizer (like `optim_adam`)
 #' or R expression like `optim_adam(amsgrad = TRUE)`. Such expression will be handled and feed with
 #' `params` and `lr` arguments.
 #' @param validation (`data.frame` or `numeric`) Validation dataset or percent of TODO.
+#' @param stateful (`logical` or `list`) Determine network behaviour: is stateful or not.
 #' @param batch_size (`integer`) Batch size.
 #' @param epochs (`integer`) Number of epochs to train the network.
+#' @param shuffle (`logical`) A dataloader argument - shuffle rows or not?
+#' @param scale (`logical` or `list`)
 #' @param loss_fn (`function`) A `torch` loss function.
 #' @param device (`character`) A `torch` device.
 #'
-#' @importFrom torch nn_gru
+#' @importFrom torch nn_gru optim_adam
 #' @importFrom rsample training testing
 #'
 #' @examples
@@ -47,7 +51,7 @@
 #'
 #' # Training
 #' rnn_model <-
-#'   rnn_fit(
+#'   torchts_rnn(
 #'     value ~ date + value + sell_price + wday,
 #'     data = training(data_split),
 #'     hidden_units = 10,
@@ -66,24 +70,27 @@
 #'   predict(rnn_model, cleared_new_data)
 #'
 #' @export
-rnn_fit <- function(formula,
+torchts_rnn <- function(formula,
                     data,
                     learn_rate = 0.9,
                     hidden_units,
                     dropout = FALSE,
                     timesteps = 20,
                     horizon = 1,
+                    jump = horizon,
                     rnn_layer = nn_gru,
                     optim = optim_adam(),
                     validation = NULL,
+                    stateful = FALSE,
                     batch_size = 1,
                     epochs = 10,
+                    shuffle = TRUE,
                     scale = TRUE,
                     loss_fn = nnf_mse_loss,
                     device = NULL){
 
   # TODO: thumb rule for number of hidden units
-  # TODO: rename to torchts_rnn?
+  # TODO: jump vs shift
 
   # Po dniu można grupować. Co, jeśli możemy te wiedzę przekazać bezpośrednio do sieci?
   # Może nie musiałaby się tego uczyć?
@@ -93,6 +100,7 @@ rnn_fit <- function(formula,
 
   # Checks
   check_is_complete(data)
+  # check_stateful_vs_jump(horizon, jump, stateful)
 
   # Parse formula
   parsed_formula <- torchts_parse_formula(formula, data)
@@ -133,6 +141,8 @@ rnn_fit <- function(formula,
       validation     = validation,
       scale          = scale,
       batch_size     = batch_size,
+      shuffle        = shuffle,
+      jump           = jump,
       parsed_formula = parsed_formula
     )
 
@@ -229,7 +239,7 @@ predict.torchts_rnn <- function(object, new_data){
   iter  <- 0
 
   # b <- dataloader_next(dataloader_make_iter(new_data_dl))
-  net$stateful()
+  # net$stateful()
 
   coro::loop(for (b in new_data_dl) {
 
@@ -254,9 +264,9 @@ predict.torchts_rnn <- function(object, new_data){
 
   })
 
-  net$stateful(FALSE)
+  # net$stateful(FALSE)
 
-  # Make sure that forecast has right lenght
+  # Make sure that forecast has right length
   # TODO: keys!!!
   preds <- head(preds, nrow(new_data))
 

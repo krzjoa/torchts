@@ -9,6 +9,8 @@
 #' @param dropout (`logical` or [`dials::dropout`]) Flag to use dropout.
 #' @param batch_size (`integer`) Batch size.
 #' @param scale (`logical`) Scale input features.
+#' @param shuffle (`logical`) Shuffle examples during the training (default: FALSE).
+#' @param jump (`integer`) Input window shift.
 #'
 #' @details
 #' This is a `parsnip` API to the recurent network models. For now the only
@@ -24,6 +26,7 @@
 #' If you'd like to get a non-trained model, simply set `epochs = 0`.
 #' You still have to "fit" the model to stick the standard `parsnip`'s API procedure.
 #'
+#' @importFrom parsnip fit fit_xy translate
 #'
 #' @examples
 #' library(torchts)
@@ -61,7 +64,13 @@ rnn <- function(mode = "regression",
                 hidden_units = NULL,
                 dropout = NULL,
                 batch_size = 32,
-                scale = TRUE){
+                scale = TRUE,
+                shuffle = FALSE,
+                jump = 1){
+
+  # TODO: add variables
+  # * validation?
+  # *
 
   args <- list(
     timesteps     = rlang::enquo(timesteps),
@@ -71,7 +80,9 @@ rnn <- function(mode = "regression",
     hidden_units  = rlang::enquo(hidden_units),
     dropout       = rlang::enquo(dropout),
     batch_size    = rlang::enquo(batch_size),
-    scale         = rlang::enquo(scale)
+    scale         = rlang::enquo(scale),
+    shuffle       = rlang::enquo(shuffle),
+    jump          = rlang::enquo(jump)
   )
 
   parsnip::new_model_spec(
@@ -166,6 +177,33 @@ make_rnn <- function(){
     has_submodel = FALSE
   )
 
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "scale",
+    original     = "scale",
+    func         = list(pkg = "torchts", fun = "scale"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "shuffle",
+    original     = "shuffle",
+    func         = list(pkg = "torchts", fun = "shuffle"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "jump",
+    original     = "jump",
+    func         = list(pkg = "torchts", fun = "jump"),
+    has_submodel = FALSE
+  )
+
   # Encoding
   parsnip::set_encoding(
     model = "rnn",
@@ -179,16 +217,6 @@ make_rnn <- function(){
     )
   )
 
-  parsnip::set_model_arg(
-    model        = "rnn",
-    eng          = "torchts",
-    parsnip      = "scale",
-    original     = "scale",
-    func         = list(pkg = "torchts", fun = "scale"),
-    has_submodel = FALSE
-  )
-
-
   # Fit
   parsnip::set_fit(
     model = "rnn",
@@ -197,7 +225,7 @@ make_rnn <- function(){
     value = list(
       interface = "formula",
       protect   = c("formula", "data"),
-      func      = c(fun = "rnn_fit"),
+      func      = c(fun = "torchts_rnn"),
       defaults  = list()
     )
   )

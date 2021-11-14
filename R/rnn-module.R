@@ -150,7 +150,12 @@ model_rnn <- torch::nn_module(
     # https://discuss.pytorch.org/t/stateful-rnn-example/10912
     #
     self$is_stateful <- flag
+  },
+
+  reset_state = function(){
+    self$hx <- NULL
   }
+
 )
 
 

@@ -13,6 +13,7 @@ torchts_model(
   predictors,
   optim,
   timesteps,
+  parsed_formula,
   horizon,
   scale,
   extras

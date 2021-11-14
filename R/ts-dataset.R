@@ -63,6 +63,12 @@ ts_dataset <- torch::dataset(
     # TODO: check data types
     # TODO: check, if jump works correctly
     # TODO: consider adding margin to the last element if length %% horizon > 0
+    # TODO: take into account last predicted values when computing scaling values?
+    # Real life values, information leak
+
+    # TODO: check col maps!!!!!
+
+    # browser()
 
     self$data            <- data
     self$margin          <- max(timesteps, horizon)
@@ -74,7 +80,7 @@ ts_dataset <- torch::dataset(
     self$extras          <- extras
 
     # TODO: for now it doesn't handle keys
-    n <- (nrow(self$data) - self$timesteps)
+    n <- (nrow(self$data) - self$timesteps - self$horizon)
     n <- floor(n)
 
     # starts <- sample.int(
@@ -98,19 +104,22 @@ ts_dataset <- torch::dataset(
     self$col_map     <- unique(unlist(predictors_spec))
     self$col_map_num <- unique(unlist(self$predictors_spec_num))
     self$col_map_cat <- unique(unlist(self$predictors_spec_cat))
+    self$col_map_out <- unique(unlist(self$outcomes_spec))
 
     # If scale is a list and contains two values: mean and std
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
     if (is.list(scale) & all(c("mean", "sd") %in% names(scale))) {
       # TODO: additional check - length of scaling vector
-      self$mean  <- as_tensor(scale$mean)
-      self$sd    <- as_tensor(scale$sd)
-      self$scale <- TRUE
+      self$mean    <- as_tensor(scale$mean)
+      self$sd      <- as_tensor(scale$sd)
+      self$scale   <- TRUE
+      self$scale_y <- TRUE
     } else if (scale) {
     # Otherwise, if scale is logical and TRUE, compute scaling params from the data
-      self$mean  <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
-      self$sd    <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
-      self$scale <- TRUE
+      self$mean    <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      self$sd      <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      self$scale   <- TRUE
+      self$scale_y <- TRUE
     } else {
       self$scale <- FALSE
     }
@@ -151,8 +160,21 @@ ts_dataset <- torch::dataset(
 
     inputs <- c(inputs_num, inputs_cat)
 
-    targets <-
-      purrr::map(self$outcomes_spec, ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
+    if (self$scale_y) {
+      targets <-
+        purrr::map(
+          self$outcomes_spec,
+          ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
+             - self$mean[.., match(.x, self$col_map_out)]) /
+            self$sd[.., match(.x, self$col_map_out)]
+        )
+    } else {
+      targets <-
+        purrr::map(self$outcomes_spec,
+                   ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
+    }
+
+
 
     c(inputs, targets)
 

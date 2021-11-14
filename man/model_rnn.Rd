@@ -74,8 +74,9 @@ input_size <- 1 + embedding_size_google(n_unique_values) # tmax_daily + rr_type 
 rnn_net <-
   model_rnn(
     input_size  = input_size,
-    output_size = 1,
+    output_size = 2,
     hidden_size = 10,
+    horizon     = 10,
     embedding   = .embedding_spec
   )
 
