@@ -81,6 +81,9 @@ model_rnn <- torch::nn_module(
     self$horizon     <- horizon
     self$output_size <- output_size
 
+    # Add "preprocessing" dense layer
+    # initial_module or initial_layer
+
     if (!is.null(embedding))
       self$multiembedding <-
         nn_multi_embedding(

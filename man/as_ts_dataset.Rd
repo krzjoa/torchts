@@ -16,6 +16,7 @@ as_ts_dataset(
   horizon = 1,
   sample_frac = 1,
   scale = TRUE,
+  jump = 1,
   ...
 )
 }

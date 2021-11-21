@@ -27,6 +27,7 @@ valid_batch <- function(net, input, target,
 fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
                         optimizer, loss_fn){
 
+  message("Training started")
 
   # Info in Keras
   # 938/938 [==============================] - 1s 1ms/step - loss: 0.0563 - acc: 0.9829 - val_loss: 0.1041 - val_acc: 0.9692
@@ -38,6 +39,12 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
     train_loss <- c()
 
     # b <- dataloader_next(dataloader_make_iter(train_dl))
+    train_pb <- progress_bar$new(
+      "Epoch :epoch/:nepochs [:bar] :current/:total (:percent)",
+      total = length(train_dl),
+      clear = FALSE,
+      width = 50
+    )
 
     coro::loop(for (b in train_dl) {
       loss <- train_batch(
@@ -48,6 +55,7 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
         loss_fun  = loss_fn
       )
       train_loss <- c(train_loss, loss)
+      train_pb$tick(tokens = list(epoch = epoch, nepochs = epochs))
     })
 
     valid_loss_info <- ""
@@ -65,11 +73,12 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
       valid_loss_info <- sprintf("validation: %3.5f", mean(valid_loss))
     }
 
-    cat(sprintf(
-      "\nEpoch %d/%d | training: %3.5f %s \n",
-      epoch, epochs, mean(train_loss), valid_loss_info
-    ))
+    message(sprintf(" | training: %3.5f %s \n",
+      mean(train_loss), valid_loss_info
+    ), appendLF = FALSE)
   }
+
+  browser()
 
   net
 }

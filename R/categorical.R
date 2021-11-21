@@ -56,8 +56,7 @@ dict_size <- function(data){
 }
 
 #' @name embedding_size
-#'
-#' Propose the length of embedding vector for each embedded feature.
+#' @title Propose the length of embedding vector for each embedded feature.
 #'
 #' @param x (`integer`) A vector with dictionary size for each feature
 #' @param

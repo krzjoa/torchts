@@ -13,7 +13,9 @@ rnn(
   hidden_units = NULL,
   dropout = NULL,
   batch_size = 32,
-  scale = TRUE
+  scale = TRUE,
+  shuffle = FALSE,
+  jump = 1
 )
 }
 \arguments{
@@ -34,6 +36,10 @@ rnn(
 \item{batch_size}{(\code{integer}) Batch size.}
 
 \item{scale}{(\code{logical}) Scale input features.}
+
+\item{shuffle}{(\code{logical}) Shuffle examples during the training (default: FALSE).}
+
+\item{jump}{(\code{integer}) Input window shift.}
 }
 \description{
 General interface to recurrent neural network models
@@ -43,6 +49,17 @@ This is a \code{parsnip} API to the recurent network models. For now the only
 available engine is \code{torchts_rnn}. This is the first release - in the next version
 additional features will be added such as handling \emph{categorical} or \emph{static} variables.
 }
+\section{Empty model}{
+
+Neural networks, unlike many other models (e.g. linear models) can return values
+before any training epoch ended. It's because every neural networks model starts with
+"random" parameters, which are gradually tuned in the following iterations according to the
+Gradient Descent algorithm.
+
+If you'd like to get a non-trained model, simply set \code{epochs = 0}.
+You still have to "fit" the model to stick the standard \code{parsnip}'s API procedure.
+}
+
 \examples{
 library(torchts)
 library(parsnip)

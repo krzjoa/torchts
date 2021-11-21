@@ -17,6 +17,8 @@ as_ts_dataloader(
   sample_frac = 1,
   scale = TRUE,
   batch_size,
+  shuffle = FALSE,
+  jump = 1,
   drop_last = TRUE,
   ...
 )
@@ -47,6 +49,8 @@ For now only \strong{single} data frames are handled with no categorical feature
 with values (mean, std)}
 
 \item{batch_size}{(\code{numeric}) Batch size.}
+
+\item{shuffle}{(\code{logical}) Shuffle examples.}
 
 \item{drop_last}{(\code{logical}) Set to TRUE to drop the last incomplete batch,
 if the dataset size is not divisible by the batch size.

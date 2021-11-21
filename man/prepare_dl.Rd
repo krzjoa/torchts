@@ -14,6 +14,8 @@ prepare_dl(
   validation = NULL,
   scale = TRUE,
   batch_size,
+  shuffle,
+  jump,
   parsed_formula = NULL,
   ...
 )
@@ -38,6 +40,10 @@ For now only \strong{single} data frames are handled with no categorical feature
 with values (mean, std)}
 
 \item{batch_size}{(\code{integer}) Batch size.}
+
+\item{shuffle}{(\code{logical}) A dataloader argument - shuffle rows or not?}
+
+\item{jump}{(\code{interger}) Input window shift.}
 }
 \description{
 Prepare dataloders

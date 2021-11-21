@@ -19,6 +19,7 @@ torchts_rnn(
   stateful = FALSE,
   batch_size = 1,
   epochs = 10,
+  shuffle = TRUE,
   scale = TRUE,
   loss_fn = nnf_mse_loss,
   device = NULL
@@ -54,6 +55,10 @@ or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be 
 \item{batch_size}{(\code{integer}) Batch size.}
 
 \item{epochs}{(\code{integer}) Number of epochs to train the network.}
+
+\item{shuffle}{(\code{logical}) A dataloader argument - shuffle rows or not?}
+
+\item{scale}{(\code{logical} or \code{list})}
 
 \item{loss_fn}{(\code{function}) A \code{torch} loss function.}
 

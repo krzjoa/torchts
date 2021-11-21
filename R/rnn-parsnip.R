@@ -17,7 +17,7 @@
 #' available engine is `torchts_rnn`. This is the first release - in the next version
 #' additional features will be added such as handling *categorical* or *static* variables.
 #'
-#' @section Empty model
+#' @section Empty model:
 #' Neural networks, unlike many other models (e.g. linear models) can return values
 #' before any training epoch ended. It's because every neural networks model starts with
 #' "random" parameters, which are gradually tuned in the following iterations according to the
