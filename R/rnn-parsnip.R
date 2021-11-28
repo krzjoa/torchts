@@ -11,11 +11,15 @@
 #' @param scale (`logical`) Scale input features.
 #' @param shuffle (`logical`) Shuffle examples during the training (default: FALSE).
 #' @param jump (`integer`) Input window shift.
+#' @param sample_frac (`numeric`) A percent of subsamples used for training.
 #'
 #' @details
 #' This is a `parsnip` API to the recurent network models. For now the only
-#' available engine is `torchts_rnn`. This is the first release - in the next version
-#' additional features will be added such as handling *categorical* or *static* variables.
+#' available engine is `torchts_rnn`.
+#'
+#' @section Categorical features:
+#' Categorical features are detected automatically - if a column of your input data (defined in the formula)
+#' is `logical`, `character`, `factor` or `integer`.
 #'
 #' @section Empty model:
 #' Neural networks, unlike many other models (e.g. linear models) can return values
@@ -66,7 +70,8 @@ rnn <- function(mode = "regression",
                 batch_size = 32,
                 scale = TRUE,
                 shuffle = FALSE,
-                jump = 1){
+                jump = 1,
+                sample_frac = 1.){
 
   # TODO: add variables
   # * validation?
@@ -82,7 +87,8 @@ rnn <- function(mode = "regression",
     batch_size    = rlang::enquo(batch_size),
     scale         = rlang::enquo(scale),
     shuffle       = rlang::enquo(shuffle),
-    jump          = rlang::enquo(jump)
+    jump          = rlang::enquo(jump),
+    sample_frac   = rlang::enquo(sample_frac)
   )
 
   parsnip::new_model_spec(
@@ -201,6 +207,15 @@ make_rnn <- function(){
     parsnip      = "jump",
     original     = "jump",
     func         = list(pkg = "torchts", fun = "jump"),
+    has_submodel = FALSE
+  )
+
+  parsnip::set_model_arg(
+    model        = "rnn",
+    eng          = "torchts",
+    parsnip      = "sample_frac",
+    original     = "sample_frac",
+    func         = list(pkg = "torchts", fun = "sample_frac"),
     has_submodel = FALSE
   )
 

@@ -29,5 +29,6 @@
 #'
 #' @export
 as.vector.torch_tensor <- function(x, mode = 'any'){
+  # TODO: dim order, as_tibble, as.data.frame with dims order
   as.vector(as.array(x), mode = mode)
 }

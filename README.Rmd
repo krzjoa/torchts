@@ -37,8 +37,6 @@ The development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("krzjoa/torchts")
 ```
-## Usage
-
 ## parsnip models
 
 ```{r parsnip.api}
@@ -75,7 +73,7 @@ prediction <-
 
 ```
 
-### Transforming data.frames to tensors
+## Transforming data.frames to tensors
 
 In `as_tensor` function we can specify columns, that are used to 
 create a tensor out of the input `data.frame`. Listed column names 
@@ -83,15 +81,29 @@ are only used to determine dimension sizes - they are removed after that
 and are not present in the final tensor.
 
 ```{r example}
-data("mts-examples", package="MTS")
+temperature_pl <- 
+  weather_pl %>% 
+  select(station, date, tmax_daily)
 
-dim(ibmspko)
-head(ibmspko)
+# Expected shape is 
+c(
+  n_distinct(temperature_pl$station),
+  n_distinct(temperature_pl$date),
+  1
+)
 
-monthly_returns <- 
-  ibmspko %>% 
-  as_tensor(date)
+debugonce(as_tensor.data.frame)
 
-dim(monthly_returns)
-monthly_returns[1:6, ]
+temperature_tensor <- 
+  temperature_pl %>% 
+  as_tensor(station, date)
+
+dim(temperature_tensor)
+temperature_tensor[1, 1:10]
+
+temperature_pl %>% 
+  filter(station == "SWK") %>% 
+  arrange(date) %>% 
+  head(10)
+
 ```

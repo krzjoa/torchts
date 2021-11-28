@@ -73,7 +73,10 @@ data_split <-
     lag     = TIMESTEPS
   )
 
+devtools::load_all()
+
 # Training 
+# TODO: debug
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,

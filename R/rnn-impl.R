@@ -7,7 +7,7 @@
 #' @param dropout (`logical`) Use dropout (default = FALSE).
 #' @param timesteps (`integer`) Number of timesteps used to produce a forecast.
 #' @param horizon (`integer`) Forecast horizon.
-#' @param jump (`interger`) Input window shift.
+#' @param jump (`integer`) Input window shift.
 #' @param rnn_layer (`nn_rnn_base`) A `torch` recurrent layer.
 #' @param optim (`function`) A function returning a `torch` optimizer (like `optim_adam`)
 #' or R expression like `optim_adam(amsgrad = TRUE)`. Such expression will be handled and feed with
@@ -18,6 +18,7 @@
 #' @param epochs (`integer`) Number of epochs to train the network.
 #' @param shuffle (`logical`) A dataloader argument - shuffle rows or not?
 #' @param scale (`logical` or `list`)
+#' @param sample_frac (`numeric`) A fraction of time series to be sampled.
 #' @param loss_fn (`function`) A `torch` loss function.
 #' @param device (`character`) A `torch` device.
 #'
@@ -72,13 +73,14 @@
 #' @export
 torchts_rnn <- function(formula,
                     data,
-                    learn_rate = 0.9,
+                    learn_rate = 0.001,
                     hidden_units,
                     dropout = FALSE,
                     timesteps = 20,
                     horizon = 1,
                     jump = horizon,
                     rnn_layer = nn_gru,
+                    initial_layer_size = NULL,
                     optim = optim_adam(),
                     validation = NULL,
                     stateful = FALSE,
@@ -86,6 +88,7 @@ torchts_rnn <- function(formula,
                     epochs = 10,
                     shuffle = TRUE,
                     scale = TRUE,
+                    sample_frac = 0.5,
                     loss_fn = nnf_mse_loss,
                     device = NULL){
 
@@ -140,6 +143,7 @@ torchts_rnn <- function(formula,
       categorical    = categorical,
       validation     = validation,
       scale          = scale,
+      sample_frac    = sample_frac,
       batch_size     = batch_size,
       shuffle        = shuffle,
       jump           = jump,
@@ -154,6 +158,11 @@ torchts_rnn <- function(formula,
   output_size <- length(outcomes)
 
   # Creating a model
+  # initial_layer <-
+  #   nn_linear(input_size - length(embedding$num_embeddings),
+  #             geometric_pyramid(input_size - length(embedding$num_embeddings), hidden_size))
+
+
   net <-
     model_rnn(
         rnn_layer   = rnn_layer,

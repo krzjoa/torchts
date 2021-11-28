@@ -9,7 +9,8 @@
 #' @param hidden_size (`integer`) A size of recurrent hidden layer.
 #' @param horizon (`integer`) Horizon size. How many steps ahead produce from the last n steps?
 #' @param embedding (`embedding_spec`) List with two values: num_embeddings and embedding_dim.
-#' @param final_module (`nn_module`) If not null, applied instead of default linear layer.
+#' @param initial_layer (`nn_module`) A `torch` module to preprocess numeric features before the recurrent layer.
+#' @param final_layer (`nn_module`) If not null, applied instead of default linear layer.
 #' @param dropout (`logical`) Use dropout.
 #' @param batch_first (`logical`) Channel order.
 #'
@@ -75,14 +76,17 @@ model_rnn <- torch::nn_module(
                         input_size, output_size,
                         hidden_size, horizon = 1,
                         embedding = NULL,
-                        final_module = nn_linear(hidden_size, output_size * horizon),
+                        initial_layer = nn_nonlinear,
+                        last_timesteps = 1,
+                        final_layer = nn_linear,
                         dropout = 0, batch_first = TRUE){
 
-    self$horizon     <- horizon
-    self$output_size <- output_size
+    # TODO: Should rnn_input_size include categoricals (pereferably, yes)
+    # TODO: simplify API -
 
-    # Add "preprocessing" dense layer
-    # initial_module or initial_layer
+    self$horizon        <- horizon
+    self$output_size    <- output_size
+    self$last_timesteps <- last_timesteps
 
     if (!is.null(embedding))
       self$multiembedding <-
@@ -93,22 +97,57 @@ model_rnn <- torch::nn_module(
     else
       self$multiembedding <- NULL
 
+    # Initial layer
+    if (inherits(initial_layer, "nn_module_generator")) {
+      input_size       <- input_size - length(embedding$num_embeddings)
+      init_output_size <- geometric_pyramid(input_size, hidden_size)
+      self$initial_layer <- initial_layer(
+        input_size, init_output_size
+      )
+      rnn_input_size <- init_output_size + sum(embedding$embedding_dim)
+    } else if (inherits(initial_layer, "nn_module")) {
+      self$initial_layer <- initial_layer
+      # TODO: here we suppose it's a linear layer!!!!
+      rnn_input_size <- length(initial_layer$bias) + sum(embedding$embedding_dim)
+    } else if (is.null(initial_layer)) {
+      rnn_input_size <- input_size
+    } else
+      stop("Wrong type of the final_layer argument!")
+
+    # Add "preprocessing" dense layer
+    # if (is.null(initial_layer)) {
+    #   self$initial_layer <- initial_layer
+    #   rnn_input_size <- length(x$bias) + sum(embedding$embedding_dim)
+    # } else {
+    #   rnn_input_size <- input_size
+    # }
+
     self$rnn <-
       rnn_layer(
-        input_size  = input_size,
+        input_size  = rnn_input_size,
         hidden_size = hidden_size,
         num_layers  = 1,
         dropout     = dropout,
         batch_first = batch_first
       )
 
-    self$final_module <- final_module
+    # Final layer
+    if (inherits(final_layer, "nn_module_generator"))
+      self$final_layer <- final_layer(hidden_size * last_timesteps, output_size * horizon)
+    else if (inherits(final_layer, "nn_module"))
+      self$final_layer <- final_layer
+    else
+      stop("Wrong type of the final_layer argument!")
+
     self$hx           <- NULL
+
+    # Statefulness
     self$is_stateful  <- TRUE
 
   },
 
   forward = function(x_num, x_cat) {
+    browser()
 
     # Transforming categorical features using multiembedding
     if (!missing(x_cat)) {
@@ -141,12 +180,14 @@ model_rnn <- torch::nn_module(
     self$hx <- x1[[2]]$clone()$detach()
     # self$hx$requires_grad_(FALSE)
 
-    # Final timestep with size (batch_size, hidden_size)
-    x <- x[ , dim(x)[2], ]
+    # Final timesteps with size (batch_size, hidden_size)
+    last_timesteps <- seq(dim(x)[2] - self$last_timesteps, dim(x)[2] )
+
+    x <- x[ , last_timesteps, ]
 
     # feed this to a single output neuron
     # final shape then is (batch_size, 1)
-    self$final_module(x)$reshape(c(-1, self$horizon, self$output_size))
+    self$final_layer(x)$reshape(c(-1, self$horizon, self$output_size))
   },
 
   stateful = function(flag = TRUE){

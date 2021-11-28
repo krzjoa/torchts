@@ -34,3 +34,6 @@
 ## Other
 * [AR-Net](https://arxiv.org/pdf/1911.12436.pdf)
 
+## Heuristics
+https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
+

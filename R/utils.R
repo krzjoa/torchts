@@ -68,6 +68,13 @@ inherits_any_char <- function(class, desired_classes){
   sapply(class, function(cls) any(cls[[1]] %in% desired_classes))
 }
 
+zeroable <- function(x){
+  if (is.null(x))
+    return(0)
+  else
+    return(x)
+}
+
 
 # TODO: key_hierarchy
 

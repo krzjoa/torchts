@@ -7,8 +7,8 @@ prepare_dl <- function(data, formula, index,
                        timesteps, horizon,
                        categorical = NULL,
                        validation = NULL,
-                       scale = TRUE, batch_size,
-                       shuffle, jump,
+                       scale = TRUE, sample_frac = 1,
+                       batch_size, shuffle, jump,
                        parsed_formula = NULL, ...){
 
   # TODO: use predictors, outcomes instead of parsing formula second time
@@ -52,6 +52,7 @@ prepare_dl <- function(data, formula, index,
         horizon        = horizon,
         categorical    = categorical,
         scale          = scale,
+        # sample_frac    = sample_frac,
         batch_size     = batch_size,
         parsed_formula = parsed_formula
       )
@@ -66,6 +67,7 @@ prepare_dl <- function(data, formula, index,
       horizon        = horizon,
       categorical    = categorical,
       scale          = scale,
+      sample_frac    = sample_frac,
       batch_size     = batch_size,
       shuffle        = shuffle,
       jump           = jump,

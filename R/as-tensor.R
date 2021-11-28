@@ -149,7 +149,7 @@ as_tensor.data.frame <- function(data, ...,
   # TODO: add data.table (keys)
   # TODO: add tsibble
 
-  ALLOWED_TYPES <- c("Date", "numeric", "inter")
+  ALLOWED_TYPES <- c("Date", "numeric", "integer")
 
   # Check column types
   col_types <- sapply(data, class)
@@ -188,7 +188,9 @@ as_tensor.data.frame <- function(data, ...,
     length(other_cols)
   )
 
-  data <- dplyr::arrange(data, ...)
+  colnames_reverted <- rev(as.character(exprs))
+
+  data <- dplyr::arrange(data, across(all_of(colnames_reverted)))
   data <- dplyr::select(data, -!!selected_cols)
 
   .array <-

@@ -37,4 +37,30 @@ test_that("data.frame with a non-numeric colum: raises error", {
 })
 
 
+test_that("Check data order after reshaping", {
+
+  # TODO: add tests for more than 3 shapes
+
+  temperature_pl <-
+    weather_pl %>%
+    select(station, date, tmax_daily)
+
+  temperature_tensor <-
+    temperature_pl %>%
+    as_tensor(station, date)
+
+  result <-
+   temperature_tensor[1, 1:10] %>%
+   as.vector()
+
+  expected <-
+    temperature_pl %>%
+      filter(station == "SWK") %>%
+      arrange(date) %>%
+      head(10) %>%
+      pull()
+
+  expect_equal(result, expected, tolerance=1e-7)
+})
+
 

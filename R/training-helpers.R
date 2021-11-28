@@ -27,11 +27,13 @@ valid_batch <- function(net, input, target,
 fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
                         optimizer, loss_fn){
 
-  message("Training started")
+  message("\nTraining started")
 
   # Info in Keras
   # 938/938 [==============================] - 1s 1ms/step - loss: 0.0563 - acc: 0.9829 - val_loss: 0.1041 - val_acc: 0.9692
   # epoch <- 1
+
+  loss_history <- c()
 
   for (epoch in seq_len(epochs)) {
 
@@ -73,12 +75,14 @@ fit_network <- function(net, train_dl, valid_dl = NULL, epochs,
       valid_loss_info <- sprintf("validation: %3.5f", mean(valid_loss))
     }
 
-    message(sprintf(" | training: %3.5f %s \n",
-      mean(train_loss), valid_loss_info
-    ), appendLF = FALSE)
-  }
+    mean_epoch_loss <- mean(train_loss)
+    loss_history    <- c(loss_history, mean_epoch_loss)
 
-  browser()
+    message(sprintf(" | train: %3.5f %s \n",
+                    mean_epoch_loss, valid_loss_info
+    ), appendLF = FALSE)
+
+  }
 
   net
 }
