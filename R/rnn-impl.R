@@ -285,6 +285,9 @@ predict.torchts_rnn <- function(object, new_data){
   else
     preds <- as.vector(preds)
 
+  # Revert scaling if used for target
+
+
   preds
 }
 

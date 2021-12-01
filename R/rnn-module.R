@@ -84,6 +84,8 @@ model_rnn <- torch::nn_module(
     # TODO: Should rnn_input_size include categoricals (pereferably, yes)
     # TODO: simplify API -
 
+    # browser()
+
     self$horizon        <- horizon
     self$output_size    <- output_size
     self$last_timesteps <- last_timesteps
@@ -147,7 +149,7 @@ model_rnn <- torch::nn_module(
   },
 
   forward = function(x_num, x_cat) {
-    browser()
+    # browser()
 
     # Transforming categorical features using multiembedding
     if (!missing(x_cat)) {
@@ -172,6 +174,9 @@ model_rnn <- torch::nn_module(
     else
       hx <- NULL
 
+    if (!is.null(self$initial_layer))
+      x <- self$initial_layer(x)
+
     x1 <- self$rnn(x, hx)
 
     x <- x1[[1]]
@@ -181,7 +186,7 @@ model_rnn <- torch::nn_module(
     # self$hx$requires_grad_(FALSE)
 
     # Final timesteps with size (batch_size, hidden_size)
-    last_timesteps <- seq(dim(x)[2] - self$last_timesteps, dim(x)[2] )
+    last_timesteps <- seq(dim(x)[2] - self$last_timesteps + 1, dim(x)[2] )
 
     x <- x[ , last_timesteps, ]
 
