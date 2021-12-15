@@ -206,6 +206,7 @@ torchts_rnn <- function(formula,
     timesteps      = timesteps,
     parsed_formula = parsed_formula,
     horizon        = horizon,
+    device         = device,
     scale          = scale_params(train_dl),
     extras         = train_dl$ds$extras
   )
