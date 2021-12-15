@@ -44,28 +44,12 @@ tk_summary_diagnostics(tarnow_temp, date)
 As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
 In the next step, we'll split our data into two training and testing datasets using a handy `time_series_split` function.
 
-```{r preparing.data.2}
-# Splitting on training and test
-# data_split <- 
-#   time_series_split(
-#     tarnow_temp, date, 
-#     initial = "18 years",
-#     assess  = "2 years", 
-#     lag     = 20
-#   )
-# 
-# # Training dataset
-# tk_summary_diagnostics(training(data_split), date)[, 1:3]
-# 
-# # Testing dataset
-# tk_summary_diagnostics(testing(data_split), date)[, 1:3]
-```
 ## Univariate time series
 
 ```{r univariate.ts}
 TIMESTEPS <- 60
 HORIZON   <- 14
-EPOCHS    <- 100
+EPOCHS    <- 3
 
 data_split <- 
   time_series_split(
@@ -74,8 +58,6 @@ data_split <-
     assess  = "2 years", 
     lag     = TIMESTEPS
   )
-
-# devtools::load_all()
 
 # Training 
 # TODO: debug
@@ -88,6 +70,7 @@ rnn_model <-
     batch_size   = 32,
     scale        = TRUE 
   ) %>% 
+  set_device('cuda') %>% 
   fit(tmax_daily ~ date, 
       data = training(data_split))
 ```
