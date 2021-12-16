@@ -144,7 +144,7 @@ model_rnn <- torch::nn_module(
     self$hx           <- NULL
 
     # Statefulness
-    self$is_stateful  <- TRUE
+    self$is_stateful  <- FALSE
 
   },
 

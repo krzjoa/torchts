@@ -243,12 +243,13 @@ predict.torchts_rnn <- function(object, new_data){
        cat_recipe     = object$extras$cat_recipe
      )
 
+  net <- object$net
+
   if (!is.null(object$device)) {
-    net         <- set_device(net, device)
-    new_data_dl <- set_device(new_data_dl, device)
+    net         <- set_device(net, object$device)
+    new_data_dl <- set_device(new_data_dl, object$device)
   }
 
-  net <- object$net
   net$eval()
 
   preds <- matrix(nrow = object$timesteps,
@@ -262,7 +263,7 @@ predict.torchts_rnn <- function(object, new_data){
 
     output <- do.call(net, get_x(b))
     output <- output$reshape(c(-1, n_outcomes))
-    preds  <- rbind(preds, as_array(output))
+    preds  <- rbind(preds, as_array(output$cpu()))
 
     if (recursive_mode) {
       start <- object$timesteps + iter * object$horizon + 1
@@ -294,6 +295,8 @@ predict.torchts_rnn <- function(object, new_data){
     preds <- as.vector(preds)
 
   # Revert scaling if used for target
+  browser()
+  preds <-
 
 
   preds

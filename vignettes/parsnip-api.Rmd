@@ -49,7 +49,7 @@ In the next step, we'll split our data into two training and testing datasets us
 ```{r univariate.ts}
 TIMESTEPS <- 60
 HORIZON   <- 14
-EPOCHS    <- 3
+EPOCHS    <- 5
 
 data_split <- 
   time_series_split(
@@ -60,7 +60,6 @@ data_split <-
   )
 
 # Training 
-# TODO: debug
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,
@@ -73,6 +72,8 @@ rnn_model <-
   set_device('cuda') %>% 
   fit(tmax_daily ~ date, 
       data = training(data_split))
+
+rnn_model
 ```
 
 We want to generate forecast for a full year. To do so, we'll remove the outcome column values
