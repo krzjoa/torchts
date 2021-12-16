@@ -63,9 +63,9 @@ In the next step, we'll split our data into two training and testing datasets us
 ## Univariate time series
 
 ```{r univariate.ts}
-TIMESTEPS <- 60
-HORIZON   <- 14
-EPOCHS    <- 100
+TIMESTEPS <- 30
+HORIZON   <- 7
+EPOCHS    <- 3
 
 data_split <- 
   time_series_split(
@@ -97,6 +97,8 @@ we'd like to forecast. Bear in mind that input data differs from the inputs for 
 In this specific case, we have to keep some "history" (in this case: `r TIMESTEPS` steps, i.e: `r TIMESTEPS` days).
 
 ```{r model.forecast.1}
+# TODO: Add day counter in a year
+
 # Clear outcome variable
 cleared_new_data <- 
   testing(data_split) %>% 

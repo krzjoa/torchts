@@ -286,7 +286,19 @@ predict.torchts_rnn <- function(object, new_data){
     preds <- as.vector(preds)
 
   # Revert scaling if used for target
+  # TODO: check example for two or more variables
+  if (!is.null(object$scale)) {
+    mean_param <- as.vector(object$scale$mean)
+    sd_param   <- as.vector(object$scale$sd)
 
+    if (is.matrix(preds)) {
+      preds <- sweep(preds, 2, sd_param, "*")
+      preds <- sweep(preds, 2, mean_param, "+")
+    } else {
+      preds <- preds * sd_param + mean_param
+    }
+
+  }
 
   preds
 }

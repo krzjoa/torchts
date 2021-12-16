@@ -37,3 +37,7 @@
 ## Heuristics
 https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
 
+
+## R + Keras
+https://www.datatechnotes.com/2019/01/regression-example-with-lstm-networks.html
+
