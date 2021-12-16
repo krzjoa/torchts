@@ -13,6 +13,7 @@ prepare_dl(
   categorical = NULL,
   validation = NULL,
   scale = TRUE,
+  sample_frac = 1,
   batch_size,
   shuffle,
   jump,
@@ -39,11 +40,13 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
 with values (mean, std)}
 
+\item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
+
 \item{batch_size}{(\code{integer}) Batch size.}
 
 \item{shuffle}{(\code{logical}) A dataloader argument - shuffle rows or not?}
 
-\item{jump}{(\code{interger}) Input window shift.}
+\item{jump}{(\code{integer}) Input window shift.}
 }
 \description{
 Prepare dataloders

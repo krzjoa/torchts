@@ -149,7 +149,6 @@ model_rnn <- torch::nn_module(
   },
 
   forward = function(x_num, x_cat) {
-    # browser()
 
     # Transforming categorical features using multiembedding
     if (!missing(x_cat)) {
@@ -167,7 +166,11 @@ model_rnn <- torch::nn_module(
 
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
-    x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
+    # Error when x_num is cuda and x_cat_transformed is null
+    if (is.null(x_cat_transformed))
+      x <- x_num
+    else
+      x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
 
     if (self$is_stateful)
       hx <- self$hx

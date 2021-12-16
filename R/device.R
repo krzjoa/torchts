@@ -27,6 +27,10 @@ set_device <- function(object, device, ...){
 
 #' @export
 set_device.default <- function(object, device, ...){
+
+  if (is.null(object))
+    return(object)
+
   stop(sprintf(
     "Object of class %s has no devices defined!", class(object)
   ))
@@ -39,12 +43,28 @@ set_device.torchts_model <- function(object, device, ...){
 
 #' @export
 set_device.model_spec <- function(object, device, ...){
-  object$args$device <- rlang::enquo(device)
+  object$eng_args$device <- device #rlang::enquo(device)
   object
 }
 
 #' @export
+set_device.dataloader <- function(object, device, ...){
+  object$dataset$data <- .set_device(object$dataset$data, device, ...)
+  object
+}
+
+
+#' @export
 set_device.nn_module <- function(object, device, ...){
+  .set_device(object, device, ...)
+}
+
+
+set_device.torch_tensor <- function(object, device, ...){
+  .set_device(object, device, ...)
+}
+
+.set_device <- function(object, device, ...){
   AVAILABLE_DEVICES <- c("cuda", "cpu")
 
   if (!(device %in% AVAILABLE_DEVICES))
@@ -62,10 +82,8 @@ set_device.nn_module <- function(object, device, ...){
 
 }
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #                         show_devices
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 

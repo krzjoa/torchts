@@ -11,7 +11,9 @@ model_rnn(
   hidden_size,
   horizon = 1,
   embedding = NULL,
-  final_module = nn_linear(hidden_size, output_size * horizon),
+  initial_layer = nn_nonlinear,
+  last_timesteps = 1,
+  final_layer = nn_linear,
   dropout = 0,
   batch_first = TRUE
 )
@@ -29,7 +31,9 @@ model_rnn(
 
 \item{embedding}{(\code{embedding_spec}) List with two values: num_embeddings and embedding_dim.}
 
-\item{final_module}{(\code{nn_module}) If not null, applied instead of default linear layer.}
+\item{initial_layer}{(\code{nn_module}) A \code{torch} module to preprocess numeric features before the recurrent layer.}
+
+\item{final_layer}{(\code{nn_module}) If not null, applied instead of default linear layer.}
 
 \item{dropout}{(\code{logical}) Use dropout.}
 

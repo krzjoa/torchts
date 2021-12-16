@@ -162,7 +162,6 @@ torchts_rnn <- function(formula,
   #   nn_linear(input_size - length(embedding$num_embeddings),
   #             geometric_pyramid(input_size - length(embedding$num_embeddings), hidden_size))
 
-
   net <-
     model_rnn(
         rnn_layer   = rnn_layer,
@@ -175,8 +174,11 @@ torchts_rnn <- function(formula,
         batch_first = TRUE
     )
 
-  if (!is.null(device))
-    net <- set_device(net)
+  if (!is.null(device)) {
+    net      <- set_device(net, device)
+    train_dl <- set_device(train_dl, device)
+    valid_dl <- set_device(valid_dl, device)
+  }
 
   # Preparing optimizer
   optimizer <- call_optim(optim, net$parameters)
@@ -204,6 +206,7 @@ torchts_rnn <- function(formula,
     timesteps      = timesteps,
     parsed_formula = parsed_formula,
     horizon        = horizon,
+    device         = device,
     scale          = scale_params(train_dl),
     extras         = train_dl$ds$extras
   )
@@ -239,6 +242,11 @@ predict.torchts_rnn <- function(object, new_data){
        parsed_formula = object$parsed_formula,
        cat_recipe     = object$extras$cat_recipe
      )
+
+  if (!is.null(object$device)) {
+    net         <- set_device(net, device)
+    new_data_dl <- set_device(new_data_dl, device)
+  }
 
   net <- object$net
   net$eval()

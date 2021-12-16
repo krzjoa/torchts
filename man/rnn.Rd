@@ -15,7 +15,8 @@ rnn(
   batch_size = 32,
   scale = TRUE,
   shuffle = FALSE,
-  jump = 1
+  jump = 1,
+  sample_frac = 1
 )
 }
 \arguments{
@@ -27,7 +28,7 @@ rnn(
 
 \item{learn_rate}{(\code{numeric} or \code{\link[dials:learn_rate]{dials::learn_rate}}) Learning rate.}
 
-\item{epochs}{(\code{integer} or \code{\link[dials:dropout]{dials::epochs}}) Number of epochs.}
+\item{epochs}{(\code{integer} or \code{\link[dials:epochs]{dials::epochs}}) Number of epochs.}
 
 \item{hidden_units}{(\code{integer}) Number of hidden units.}
 
@@ -40,15 +41,22 @@ rnn(
 \item{shuffle}{(\code{logical}) Shuffle examples during the training (default: FALSE).}
 
 \item{jump}{(\code{integer}) Input window shift.}
+
+\item{sample_frac}{(\code{numeric}) A percent of subsamples used for training.}
 }
 \description{
 General interface to recurrent neural network models
 }
 \details{
 This is a \code{parsnip} API to the recurent network models. For now the only
-available engine is \code{torchts_rnn}. This is the first release - in the next version
-additional features will be added such as handling \emph{categorical} or \emph{static} variables.
+available engine is \code{torchts_rnn}.
 }
+\section{Categorical features}{
+
+Categorical features are detected automatically - if a column of your input data (defined in the formula)
+is \code{logical}, \code{character}, \code{factor} or \code{integer}.
+}
+
 \section{Empty model}{
 
 Neural networks, unlike many other models (e.g. linear models) can return values

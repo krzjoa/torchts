@@ -7,13 +7,14 @@
 torchts_rnn(
   formula,
   data,
-  learn_rate = 0.9,
+  learn_rate = 0.001,
   hidden_units,
   dropout = FALSE,
   timesteps = 20,
   horizon = 1,
   jump = horizon,
   rnn_layer = nn_gru,
+  initial_layer_size = NULL,
   optim = optim_adam(),
   validation = NULL,
   stateful = FALSE,
@@ -21,6 +22,7 @@ torchts_rnn(
   epochs = 10,
   shuffle = TRUE,
   scale = TRUE,
+  sample_frac = 0.5,
   loss_fn = nnf_mse_loss,
   device = NULL
 )
@@ -40,7 +42,7 @@ torchts_rnn(
 
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
-\item{jump}{(\code{interger}) Input window shift.}
+\item{jump}{(\code{integer}) Input window shift.}
 
 \item{rnn_layer}{(\code{nn_rnn_base}) A \code{torch} recurrent layer.}
 
@@ -59,6 +61,8 @@ or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be 
 \item{shuffle}{(\code{logical}) A dataloader argument - shuffle rows or not?}
 
 \item{scale}{(\code{logical} or \code{list})}
+
+\item{sample_frac}{(\code{numeric}) A fraction of time series to be sampled.}
 
 \item{loss_fn}{(\code{function}) A \code{torch} loss function.}
 

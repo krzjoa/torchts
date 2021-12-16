@@ -16,7 +16,7 @@ LazyData: true
 BugReports: https://github.com/krzjoa/torchts/issues
 URL: https://github.com/krzjoa/torchts, https://krzjoa.github.io/torchts/
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     covr,
     knitr,
