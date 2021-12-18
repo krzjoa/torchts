@@ -15,7 +15,9 @@ torchts_model(
   timesteps,
   parsed_formula,
   horizon,
+  device,
   scale,
+  col_map_out,
   extras
 )
 }

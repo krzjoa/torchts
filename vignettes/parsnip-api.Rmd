@@ -33,12 +33,16 @@ devtools::load_all()
 First, let's prepare input data set using excelent `timetk` library. `weather_pl` dataset from `torchts` package contains 19-year history of weather data from two Polish "poles of extreme temperature", i.e. Suwałki and Tarnów. In this excercise, we'll use a slice of data registered in the "pole of warmth", i.e in the city of [Tarnów](https://en.wikipedia.org/wiki/Tarn%C3%B3w).
 
 ```{r preparing.data.1}
-tarnow_temp <- 
+starnow_temp <- 
   weather_pl %>% 
   filter(station == "TRN") %>% 
   select(date, tmax_daily, tmin_daily, press_mean_daily)
 
 tk_summary_diagnostics(tarnow_temp, date)
+
+tarnow_temp <- 
+  tarnow_temp %>% 
+  mutate(year_day = as.numeric(lubridate::day(date)))
 ```
 
 As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
@@ -47,9 +51,9 @@ In the next step, we'll split our data into two training and testing datasets us
 ## Univariate time series
 
 ```{r univariate.ts}
-TIMESTEPS <- 60
-HORIZON   <- 14
-EPOCHS    <- 5
+EPOCHS    <- 10
+HORIZON   <- 5
+TIMESTEPS <- 28
 
 data_split <- 
   time_series_split(
@@ -60,17 +64,22 @@ data_split <-
   )
 
 # Training 
+# TODO: Błąd z integerem (categorical?)
+# TODO: select loss function
+# TODO: add smoothed series (like a sine)
+
 rnn_model <- 
   rnn(
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
     epochs       = EPOCHS,
+    learn_rate   = 0.01,
     hidden_units = 20,
     batch_size   = 32,
     scale        = TRUE 
   ) %>% 
   set_device('cuda') %>% 
-  fit(tmax_daily ~ date, 
+  fit(tmax_daily ~ date + lol, 
       data = training(data_split))
 
 rnn_model
@@ -82,6 +91,7 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 
 ```{r model.forecast.1}
 # Clear outcome variable
+# Ostrzeżenie, jeśli wyczyszczono za dużo danych
 cleared_new_data <- 
   testing(data_split) %>% 
   clear_outcome(date, tmax_daily, TIMESTEPS)

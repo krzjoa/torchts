@@ -2,6 +2,15 @@
 
 * handling missing data as a separate vignette
 * add a vignette with name explanation (index, key, outcome = target etc.)
+* monitor hidden state
+https://fairyonice.github.io/Understand-Keras%27s-RNN-behind-the-scenes-with-a-sin-wave-example.html
+* sine
+https://towardsdatascience.com/can-machine-learn-the-concept-of-sine-4047dced3f11
+* check model "confusion", i.e. variance for nearly the same examples
+https://stats.stackexchange.com/questions/220307/rnn-learning-sine-waves-of-different-frequencies
+
+## BUGS
+* Learning rate on gpu (seem it works...)
 
 ## Which name?
 
@@ -36,4 +45,8 @@
 
 ## Heuristics
 https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
+
+
+## R + Keras
+https://www.datatechnotes.com/2019/01/regression-example-with-lstm-networks.html
 

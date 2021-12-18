@@ -89,7 +89,7 @@ torchts_rnn <- function(formula,
                     shuffle = TRUE,
                     scale = TRUE,
                     sample_frac = 0.5,
-                    loss_fn = nnf_mse_loss,
+                    loss_fn = nnf_mae,
                     device = NULL){
 
   # TODO: thumb rule for number of hidden units
@@ -208,6 +208,7 @@ torchts_rnn <- function(formula,
     horizon        = horizon,
     device         = device,
     scale          = scale_params(train_dl),
+    col_map_out    = col_map_out(train_dl),
     extras         = train_dl$ds$extras
   )
 
@@ -224,16 +225,13 @@ predict.torchts_rnn <- function(object, new_data){
   batch_size <- 1
 
   # Checks
+  check_is_new_data_complete(object, new_data)
   recursive_mode <- check_recursion(object, new_data)
 
   # Preparing dataloader
   new_data_dl <-
      as_ts_dataloader(
        new_data,
-       # index       = object$index,
-       # key         = object$key,
-       # predictors  = object$predictors,
-       # outcomes    = object$outcomes,
        timesteps      = object$timesteps,
        horizon        = object$horizon,
        batch_size     = batch_size,
@@ -295,12 +293,15 @@ predict.torchts_rnn <- function(object, new_data){
     preds <- as.vector(preds)
 
   # Revert scaling if used for target
-  browser()
-  preds <-
-
+  preds <- invert_scaling(
+    preds, object$scale, object$col_map_out
+  )
 
   preds
 }
+
+
+
 
 
 #

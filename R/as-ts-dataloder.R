@@ -75,22 +75,3 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
     drop_last  = drop_last
     )
 }
-
-#' Accessor for `scale_params` values in a dataloader object
-#' @export
-scale_params <- function(dataloader, ...){
-  # TODO: change name?
-  UseMethod("scale_params")
-}
-
-#' @export
-scale_params.dataloader <- function(dataloader, ...){
-  # TODO: maybe don't use S3?
-  dataloader$dataset$scale_params
-}
-
-
-
-
-
-

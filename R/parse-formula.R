@@ -107,13 +107,6 @@ torchts_parse_formula <- function(formula, data){
       bind_rows(output, .predictors)
   }
 
-  if (sum(output$.type == "categorical") > 0)
-    message(sprintf(
-      "Categorical variables found (%d): %s",
-      sum(output$.type == "categorical"),
-      listed(output[output$.type == "categorical", ]$.var)
-    ))
-
 
   # Checking, if all the variable in the formula appear in the data
   if (any(is.na(output$.class))) {
@@ -125,6 +118,12 @@ torchts_parse_formula <- function(formula, data){
     ))
   }
 
+  if (sum(output$.type == "categorical") > 0)
+    message(sprintf(
+      "Categorical variables found (%d): %s",
+      sum(output$.type == "categorical"),
+      listed(output[output$.type == "categorical", ]$.var)
+    ))
 
   output
 }

@@ -80,7 +80,8 @@ ts_dataset <- torch::dataset(
     self$extras          <- extras
 
     # TODO: for now it doesn't handle keys
-    n <- (nrow(self$data) - self$timesteps - self$horizon)
+    # TODO: Proper leghth?
+    n <- (nrow(self$data) - self$timesteps - self$horizon) + 1
     n <- floor(n)
 
     # starts <- sample.int(
@@ -108,6 +109,7 @@ ts_dataset <- torch::dataset(
 
     # If scale is a list and contains two values: mean and std
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
+    # For now, it always scale
     if (is.list(scale) & all(c("mean", "sd") %in% names(scale))) {
       # TODO: additional check - length of scaling vector
       self$mean    <- as_tensor(scale$mean)
@@ -121,7 +123,8 @@ ts_dataset <- torch::dataset(
       self$scale   <- TRUE
       self$scale_y <- TRUE
     } else {
-      self$scale <- FALSE
+      self$scale   <- FALSE
+      self$scale_y <- FALSE
     }
 
   },
@@ -173,8 +176,6 @@ ts_dataset <- torch::dataset(
         purrr::map(self$outcomes_spec,
                    ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
     }
-
-
 
     c(inputs, targets)
 

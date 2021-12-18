@@ -21,11 +21,13 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/krzjoa/torchts/branch/master/graph/badge.svg)](https://codecov.io/gh/krzjoa/torchts?branch=master)
 [![Buy hex
 stciker](https://img.shields.io/badge/buy%20hex-torchts-green)](https://www.redbubble.com/i/sticker/torchts-R-package-hex-sticker-by-krzjoa/93537989.EJUG5)
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/kjoachimiak)
+
 
 <!-- badges: end -->
 
 > Time series models with torch
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/kjoachimiak)
 
 ## Installation
 
@@ -37,6 +39,7 @@ The development version from [GitHub](https://github.com/) with:
 # install.packages("devtools")
 devtools::install_github("krzjoa/torchts")
 ```
+
 ## parsnip models
 
 ```{r parsnip.api}
@@ -52,18 +55,32 @@ tarnow_temp <-
   filter(station == "TRN") %>% 
   select(date, tmax_daily)
 
+# Params
+EPOCHS    <- 10
+HORIZON   <- 1
+TIMESTEPS <- 28
+
 # Splitting on training and test
 data_split <- 
   time_series_split(
     tarnow_temp, date, 
     initial = "18 years",
     assess  = "2 years", 
-    lag     = 20
+    lag     = TIMESTEPS
   )
 
 # Training 
 rnn_model <- 
-  rnn(epochs = 3, hidden_units = 32) %>% 
+  rnn(
+    timesteps    = TIMESTEPS,
+    horizon      = HORIZON,
+    epochs       = EPOCHS,
+    learn_rate   = 0.01,
+    hidden_units = 20,
+    batch_size   = 32,
+    scale        = TRUE 
+  ) %>% 
+  set_device('cpu')  %>% 
   fit(tmax_daily ~ date, 
       data = training(data_split))
 
@@ -71,6 +88,19 @@ prediction <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
+# Plotting
+fcast_vs_true <- 
+  bind_cols(
+    n = 1:nrow(testing(data_split)),
+    actual = testing(data_split)$tmax_daily, 
+    fcast
+  ) %>% 
+  tidyr::pivot_longer(c(actual, .pred))
+  
+ggplot(fcast_vs_true) + 
+  geom_line(aes(n, value, col = name)) +
+  theme_minimal() + 
+  ggtitle("Forecast vs actual values")
 ```
 
 ## Transforming data.frames to tensors
@@ -107,3 +137,10 @@ temperature_pl %>%
   head(10)
 
 ```
+
+## Similar projects in Python 
+
+* [PyTorch Forecasting](https://pytorch-forecasting.readthedocs.io/en/stable/)
+* [PyTorchTS](https://github.com/zalandoresearch/pytorch-ts)
+* [TorchTS](https://rose-stl-lab.github.io/torchTS/)
+* [GluonTS ](https://ts.gluon.ai/)

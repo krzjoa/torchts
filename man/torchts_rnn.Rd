@@ -23,7 +23,7 @@ torchts_rnn(
   shuffle = TRUE,
   scale = TRUE,
   sample_frac = 0.5,
-  loss_fn = nnf_mse_loss,
+  loss_fn = nnf_mae,
   device = NULL
 )
 }

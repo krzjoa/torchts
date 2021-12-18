@@ -133,6 +133,9 @@ model_rnn <- torch::nn_module(
         batch_first = batch_first
       )
 
+    # Init reset/forget gate bias to facilitate remembering previous steps
+    init_gate_bias(self$rnn)
+
     # Final layer
     if (inherits(final_layer, "nn_module_generator"))
       self$final_layer <- final_layer(hidden_size * last_timesteps, output_size * horizon)
@@ -164,6 +167,8 @@ model_rnn <- torch::nn_module(
       x_cat_transformed <- NULL
     }
 
+
+
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
     # Error when x_num is cuda and x_cat_transformed is null
@@ -189,6 +194,7 @@ model_rnn <- torch::nn_module(
     # self$hx$requires_grad_(FALSE)
 
     # Final timesteps with size (batch_size, hidden_size)
+    # What if there is more layers?
     last_timesteps <- seq(dim(x)[2] - self$last_timesteps + 1, dim(x)[2] )
 
     x <- x[ , last_timesteps, ]

@@ -32,6 +32,25 @@ check_is_complete <- function(data){
 
 }
 
+#' Check if new data has NAs in columns others than predicted outcome
+check_is_new_data_complete <- function(object, new_data){
+
+  only_predictors <- setdiff(
+    object$predictors, object$outcomes
+  )
+
+  complete_cases <- complete.cases(new_data[only_predictors])
+
+  if (!all(complete_cases)) {
+    sample_rows <-
+      dplyr::slice_sample(new_data[!complete_cases,], n = 3)
+    stop("Only the outcome variable column is allowed to contains NAs (on its beginning).
+          NA values in other columns detected.
+          Passed new data contains incomplete rows, for example: \n",
+          print_and_capture(sample_rows))
+  }
+
+}
 
 check_length_vs_horizon <- function(length, horizon){
   last <- length %% horizon
