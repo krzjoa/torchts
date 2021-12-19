@@ -153,6 +153,8 @@ model_rnn <- torch::nn_module(
 
   forward = function(x_num, x_cat) {
 
+    # browser()
+
     # Transforming categorical features using multiembedding
     if (!missing(x_cat)) {
 

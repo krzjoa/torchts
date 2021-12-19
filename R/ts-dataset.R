@@ -67,9 +67,6 @@ ts_dataset <- torch::dataset(
     # Real life values, information leak
 
     # TODO: check col maps!!!!!
-
-    # browser()
-
     self$data            <- data
     self$margin          <- max(timesteps, horizon)
     self$timesteps       <- timesteps
@@ -118,8 +115,10 @@ ts_dataset <- torch::dataset(
       self$scale_y <- TRUE
     } else if (scale) {
     # Otherwise, if scale is logical and TRUE, compute scaling params from the data
-      self$mean    <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
-      self$sd      <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      # self$mean    <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      # self$sd      <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
+      self$mean    <- torch::torch_mean(self$data, dim = 1, keepdim = TRUE)
+      self$sd      <- torch::torch_std(self$data, dim = 1, keepdim = TRUE)
       self$scale   <- TRUE
       self$scale_y <- TRUE
     } else {
@@ -190,7 +189,7 @@ ts_dataset <- torch::dataset(
   active = list(
     scale_params = function(){
       if (self$scale)
-        list(mean = self$mean, sd = self$sd)
+        list(mean = self$mean$cpu(), sd = self$sd$cpu())
       else
         self$scale
     }

@@ -110,7 +110,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   }
 
-  if (!is.null(.predictors_columns$x_cat)) {
+  if (length(.predictors_columns$x_cat) != 0) {
 
     # Prep recipe in none is passed
     if (is.null(extra_args$cat_recipe)) {
@@ -139,6 +139,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     ))
 
   # Filtering unused columns
+  # This step keep also the proper column order
   data <- select(data, all_of(all_variables))
 
   # Transforming column names to column number

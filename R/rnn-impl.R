@@ -181,7 +181,7 @@ torchts_rnn <- function(formula,
   }
 
   # Preparing optimizer
-  optimizer <- call_optim(optim, net$parameters)
+  optimizer <- call_optim(optim, learn_rate, net$parameters)
 
   # Training
   net <-

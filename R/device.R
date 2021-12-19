@@ -50,6 +50,12 @@ set_device.model_spec <- function(object, device, ...){
 #' @export
 set_device.dataloader <- function(object, device, ...){
   object$dataset$data <- .set_device(object$dataset$data, device, ...)
+
+  if (object$dataset$scale) {
+    object$dataset$mean <- set_device(object$dataset$mean, device, ...)
+    object$dataset$sd   <- set_device(object$dataset$sd, device, ...)
+  }
+
   object
 }
 

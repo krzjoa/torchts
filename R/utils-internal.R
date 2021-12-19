@@ -1,12 +1,13 @@
 #' An auxilliary function to call optimizer
-call_optim <- function(optim, params){
+call_optim <- function(optim, learn_rate, params){
   if (!rlang::is_quosure(optim))
     quosure <- rlang::enquo(optim)
   else
     quosure <- optim
   fun     <- rlang::call_fn(quosure)
   args <- c(
-    list(params = params),
+    list(lr = learn_rate,
+         params = params),
     rlang::call_args(quosure)
   )
   do.call({fun}, args)

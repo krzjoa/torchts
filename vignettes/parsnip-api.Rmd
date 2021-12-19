@@ -33,7 +33,7 @@ devtools::load_all()
 First, let's prepare input data set using excelent `timetk` library. `weather_pl` dataset from `torchts` package contains 19-year history of weather data from two Polish "poles of extreme temperature", i.e. Suwałki and Tarnów. In this excercise, we'll use a slice of data registered in the "pole of warmth", i.e in the city of [Tarnów](https://en.wikipedia.org/wiki/Tarn%C3%B3w).
 
 ```{r preparing.data.1}
-starnow_temp <- 
+tarnow_temp <- 
   weather_pl %>% 
   filter(station == "TRN") %>% 
   select(date, tmax_daily, tmin_daily, press_mean_daily)
@@ -42,7 +42,7 @@ tk_summary_diagnostics(tarnow_temp, date)
 
 tarnow_temp <- 
   tarnow_temp %>% 
-  mutate(year_day = as.numeric(lubridate::day(date)))
+  mutate(year_day = as.numeric(lubridate::yday(date)))
 ```
 
 As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
@@ -64,9 +64,14 @@ data_split <-
   )
 
 # Training 
-# TODO: Błąd z integerem (categorical?)
+# TODO: błąd z integerem (categorical?)
 # TODO: select loss function
 # TODO: add smoothed series (like a sine)
+# TODO: add torch_scaler objects
+
+devtools::load_all()
+debugonce(torchts_rnn)
+debugonce(as_ts_dataset.data.frame)
 
 rnn_model <- 
   rnn(
@@ -79,7 +84,7 @@ rnn_model <-
     scale        = TRUE 
   ) %>% 
   set_device('cuda') %>% 
-  fit(tmax_daily ~ date + lol, 
+  fit(tmax_daily ~ date  + year_day, 
       data = training(data_split))
 
 rnn_model
