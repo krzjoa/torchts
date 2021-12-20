@@ -60,6 +60,8 @@ ts_dataset <- torch::dataset(
             Handling of such objects in ts_dataset is not implemented yet.
             Provide a tabular-like tensor.")
 
+    # TODO: for now scaling system is simplified
+
     # TODO: check data types
     # TODO: check, if jump works correctly
     # TODO: consider adding margin to the last element if length %% horizon > 0
@@ -99,6 +101,8 @@ ts_dataset <- torch::dataset(
       names(predictors_spec) %in% categorical
     ]
 
+
+    # TODO: to be removed
     self$col_map     <- unique(unlist(predictors_spec))
     self$col_map_num <- unique(unlist(self$predictors_spec_num))
     self$col_map_cat <- unique(unlist(self$predictors_spec_cat))
@@ -141,8 +145,8 @@ ts_dataset <- torch::dataset(
       inputs_num <-
         purrr::map(
           self$predictors_spec_num,
-          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., match(.x, self$col_map_num)]) /
-            self$sd[.., match(.x, self$col_map_num)]
+          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., .x]) /
+            self$sd[.., .x]
         )
     } else {
       inputs_num <-
@@ -167,8 +171,7 @@ ts_dataset <- torch::dataset(
         purrr::map(
           self$outcomes_spec,
           ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
-             - self$mean[.., match(.x, self$col_map_out)]) /
-            self$sd[.., match(.x, self$col_map_out)]
+             - self$mean[.., .x]) / self$sd[.., .x]
         )
     } else {
       targets <-

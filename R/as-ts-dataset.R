@@ -126,6 +126,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
       cat_recipe %>%
       bake(new_data = data)
 
+  } else {
+    cat_recipe <- NULL
   }
 
   if (is.null(.index_columns) | length(.index_columns) == 0)

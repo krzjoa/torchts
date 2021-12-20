@@ -128,7 +128,7 @@ model_rnn <- torch::nn_module(
       rnn_layer(
         input_size  = rnn_input_size,
         hidden_size = hidden_size,
-        num_layers  = 1,
+        num_layers  = 2,
         dropout     = dropout,
         batch_first = batch_first
       )
@@ -169,8 +169,6 @@ model_rnn <- torch::nn_module(
       x_cat_transformed <- NULL
     }
 
-
-
     # list of [output, hidden]
     # we use the output, which is of size (batch_size, timesteps, hidden_size)
     # Error when x_num is cuda and x_cat_transformed is null
@@ -179,9 +177,13 @@ model_rnn <- torch::nn_module(
     else
       x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
 
-    if (self$is_stateful)
+    # browser()
+
+    if (self$is_stateful) {
       hx <- self$hx
-    else
+      # if (!is.null(self$hx))
+      #   self$hx <- torch_tensor(array(1, dim = dim(self$hx)))
+    } else
       hx <- NULL
 
     if (!is.null(self$initial_layer))
@@ -192,7 +194,8 @@ model_rnn <- torch::nn_module(
     x <- x1[[1]]
 
     # TODO: hx for lstm is probably a list (because it returns two hidden state tensors)
-    self$hx <- x1[[2]]$clone()$detach()
+    # self$hx <- x1[[2]]$clone()$detach()
+    self$hx <- detach_hidden_state(x1[[2]])
     # self$hx$requires_grad_(FALSE)
 
     # Final timesteps with size (batch_size, hidden_size)

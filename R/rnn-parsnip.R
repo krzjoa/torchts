@@ -74,6 +74,8 @@ rnn <- function(mode = "regression",
                 sample_frac = 1.){
 
   # TODO: add variables
+  # * init_layer (rnn_layer)
+  # * cell_type
   # * validation?
   # *
 

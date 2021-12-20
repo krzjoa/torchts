@@ -254,6 +254,8 @@ predict.torchts_rnn <- function(object, new_data){
                   ncol = length(object$outcomes))
   iter  <- 0
 
+  net$is_stateful <- FALSE
+
   # b <- dataloader_next(dataloader_make_iter(new_data_dl))
   # net$stateful()
 
@@ -291,6 +293,8 @@ predict.torchts_rnn <- function(object, new_data){
     colnames(preds) <- object$outcomes
   else
     preds <- as.vector(preds)
+
+  # browser()
 
   # Revert scaling if used for target
   preds <- invert_scaling(

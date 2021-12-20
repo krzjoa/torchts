@@ -6,6 +6,10 @@
 https://fairyonice.github.io/Understand-Keras%27s-RNN-behind-the-scenes-with-a-sin-wave-example.html
 * sine
 https://towardsdatascience.com/can-machine-learn-the-concept-of-sine-4047dced3f11
+https://mourafiq.com/2016/05/15/predicting-sequences-using-rnn-in-tensorflow.html
+https://goelhardik.github.io/2016/05/25/lstm-sine-wave/
+https://codesachin.wordpress.com/2016/01/23/predicting-trigonometric-waves-few-steps-ahead-with-lstms-in-tensorflow/
+
 * check model "confusion", i.e. variance for nearly the same examples
 https://stats.stackexchange.com/questions/220307/rnn-learning-sine-waves-of-different-frequencies
 
@@ -50,3 +54,7 @@ https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden
 ## R + Keras
 https://www.datatechnotes.com/2019/01/regression-example-with-lstm-networks.html
 
+
+## RNN
+* A Formal Hierarchy of RNN Architectures
+https://arxiv.org/abs/2004.08500

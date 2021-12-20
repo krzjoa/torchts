@@ -26,7 +26,7 @@ invert_scaling <- function(preds, scale, col_map_out){
 
 #' Colmap for outcome variable
 col_map_out <- function(dataloader){
-  dataloader$dataset$col_map_out
+  unlist(dataloader$dataset$outcomes_spec)
 }
 
 

@@ -23,6 +23,14 @@ update_dl <- function(dl, output){
 }
 
 
+detach_hidden_state <- function(hx){
+  if (is.list(hx))
+    return(purrr::map(hx, ~ .x$clone()$detach()))
+  else
+    return(hx$clone()$detach())
+}
+
+
 #' Repeat element if it length == 1
 rep_if_one_element <- function(x, output_length){
   if (length(x) == 1)
