@@ -1,4 +1,3 @@
-
 #' Plot forecast vs ground truth
 #'
 #' @export

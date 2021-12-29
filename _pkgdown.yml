@@ -6,13 +6,18 @@ authors:
   Krzysztof Joachimiak:
     href: https://krzjoa.github.io
 reference:
+- title: torchts ready-to-use models API
+  - torchts_rnn
+  - torchts_mlp
 - title: parsnip API
   contents:
   - rnn
 - title: Modules
   contents:
   - model_rnn
+  - model_mlp
   - nn_multi_embedding
+  - nn_mlp
 - title: Data transformations
   contents:
   - as_tensor
@@ -32,6 +37,7 @@ reference:
   - embedding_size
   - clear_outcome
   - set_device
+  - plot_forecast
 - title: Data
   contents:
   - weather_pl
