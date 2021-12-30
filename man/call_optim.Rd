@@ -4,7 +4,7 @@
 \alias{call_optim}
 \title{An auxilliary function to call optimizer}
 \usage{
-call_optim(optim, params)
+call_optim(optim, learn_rate, params)
 }
 \description{
 An auxilliary function to call optimizer

@@ -4,7 +4,7 @@
 \alias{col_map_out}
 \title{Colmap for outcome variable}
 \usage{
-col_map_out()
+col_map_out(dataloader)
 }
 \description{
 Colmap for outcome variable

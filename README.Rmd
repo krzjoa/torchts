@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -49,6 +50,7 @@ library(rsample)
 library(dplyr, warn.conflicts = FALSE)
 library(parsnip)
 library(timetk)
+library(ggplot2)
 
 tarnow_temp <- 
   weather_pl %>% 
@@ -56,7 +58,7 @@ tarnow_temp <-
   select(date, tmax_daily)
 
 # Params
-EPOCHS    <- 10
+EPOCHS    <- 3
 HORIZON   <- 1
 TIMESTEPS <- 28
 
@@ -88,19 +90,11 @@ prediction <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
-# Plotting
-fcast_vs_true <- 
-  bind_cols(
-    n = 1:nrow(testing(data_split)),
-    actual = testing(data_split)$tmax_daily, 
-    fcast
-  ) %>% 
-  tidyr::pivot_longer(c(actual, .pred))
-  
-ggplot(fcast_vs_true) + 
-  geom_line(aes(n, value, col = name)) +
-  theme_minimal() + 
-  ggtitle("Forecast vs actual values")
+plot_forecast(
+  data     = testing(data_split),
+  forecast = prediction,
+  outcome  = tmax_daily
+)
 ```
 
 ## Transforming data.frames to tensors
@@ -115,14 +109,12 @@ temperature_pl <-
   weather_pl %>% 
   select(station, date, tmax_daily)
 
-# Expected shape is 
+# Expected shape
 c(
   n_distinct(temperature_pl$station),
   n_distinct(temperature_pl$date),
   1
 )
-
-debugonce(as_tensor.data.frame)
 
 temperature_tensor <- 
   temperature_pl %>% 
@@ -135,7 +127,6 @@ temperature_pl %>%
   filter(station == "SWK") %>% 
   arrange(date) %>% 
   head(10)
-
 ```
 
 ## Similar projects in Python 

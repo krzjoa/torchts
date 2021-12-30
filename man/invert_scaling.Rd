@@ -4,7 +4,7 @@
 \alias{invert_scaling}
 \title{Helper function to invert scaling}
 \usage{
-invert_scaling(values, scale)
+invert_scaling(preds, scale, col_map_out)
 }
 \description{
 Helper function to invert scaling

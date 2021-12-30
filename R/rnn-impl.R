@@ -1,4 +1,4 @@
-#' RNN model for time series forecasting - `torchts` engine for `parsnip` API
+#' RNN model for time series forecasting
 #'
 #' @param formula (`formula`) A formula describing, how to use the data
 #' @param data (`data.frame`) A input data.frame.

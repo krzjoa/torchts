@@ -9,7 +9,7 @@ prepare_dl <- function(data, formula, index,
                        validation = NULL,
                        scale = TRUE, sample_frac = 1,
                        batch_size, shuffle, jump,
-                       parsed_formula = NULL, ...){
+                       parsed_formula = NULL, flatten = FALSE, ...){
 
   # TODO: use predictors, outcomes instead of parsing formula second time
   valid_dl <- NULL

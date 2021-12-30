@@ -1,9 +1,10 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1
+pandoc: 2.14.0.3
+pkgdown: 2.0.1
 pkgdown_sha: ~
 articles:
   data-prepare-rnn: data-prepare-rnn.html
   naming-convention: naming-convention.html
   parsnip-api: parsnip-api.html
-last_built: 2021-11-11T23:51Z
+  torchts-api: torchts-api.html
+last_built: 2021-12-30T00:12Z
 

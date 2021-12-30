@@ -1,6 +1,8 @@
 #' A configurable feed forward network (Multi-Layer Perceptron)
 #' with embedding
 #'
+#' @importFrom torch torch_cat
+#'
 #' @examples
 #' net <- model_mlp(4, 2, 1)
 #' x <- as_tensor(iris[, 1:4])
@@ -21,13 +23,17 @@
 #'
 #' n_unique_values <- dict_size(iris_prep)
 #'
-#' .embedding_spec <-
-#'    embedding_spec(
+#' .init_layer_spec <-
+#'    init_layer_spec(
 #'      num_embeddings = n_unique_values,
-#'      embedding_dim  = embedding_size_google(n_unique_values)
+#'      embedding_dim  = embedding_size_google(n_unique_values),
+#'      numeric_in     = 4,
+#'      numeric_out    = 2
 #'    )
 #'
-#' net <- model_mlp(list(embedding = .embedding_spec, 4), 2, 1)
+#' net <- model_mlp(.init_layer_spec, 2, 1)
+#'
+#' net(x_num, x_cat)
 #'
 #' @export
 model_mlp <- torch::nn_module(
@@ -43,27 +49,25 @@ model_mlp <- torch::nn_module(
     if (is.list(layers[[1]])) {
 
         first_layer <- layers[[1]]
-        # embedding_idx <- which(names(first_layer) == 'embedding')
-
-        embedding <- first_layer$embedding
 
         self$multiembedding <-
           nn_multi_embedding(
-            num_embeddings = embedding$num_embeddings,
-            embedding_dim  = embedding$embedding_dim
+            num_embeddings = first_layer$num_embeddings,
+            embedding_dim  = first_layer$embedding_dim
           )
 
         self$initial_layer <-
           nn_nonlinear(
-            first_layer[[2]],
-            layers[[2]]
+            first_layer$numeric_in,
+            first_layer$numeric_out
           )
 
       first_layer_output <-
-        length(initial_layer$bias) + sum(embedding$embedding_dim)
+        first_layer$numeric_out +
+        sum(first_layer$embedding_dim)
 
       layers <- c(
-        list(first_layer_output), layers[[-1]]
+        list(first_layer_output), layers[-1]
       )
 
     }
@@ -77,12 +81,15 @@ model_mlp <- torch::nn_module(
   forward = function(x_num, x_cat){
 
     # Pass trough initial layer
-    if (!is.null(x_cat)) {
+    if (!missing(x_cat)) {
+
       output <-
-        torch_cat(
-          self$multiembedding(x_cat),
-          self$initial_layer(x_num)
-        )
+        torch_cat(list(
+            self$multiembedding(x_cat),
+            self$initial_layer(x_num)
+        ), dim = -1)
+    } else {
+      output <- x_num
     }
 
     self$mlp(output)
@@ -90,6 +97,18 @@ model_mlp <- torch::nn_module(
   }
 
 )
+
+init_layer_spec <- function(num_embeddings,
+                            embedding_dim,
+                            numeric_in,
+                            numeric_out){
+  list(
+    num_embeddings = num_embeddings,
+    embedding_dim  = embedding_dim,
+    numeric_in     = numeric_in,
+    numeric_out    = numeric_out
+  )
+}
 
 
 
