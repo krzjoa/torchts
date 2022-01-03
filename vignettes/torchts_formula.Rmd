@@ -1,0 +1,62 @@
+---
+title: "Explaining formulae in torchts"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explaining formulae in torchts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Meaning of **formulae** in `torchts` package slightly differs from the typical 
+way we can understand this object in the most of regression models in R.
+It should not be a surprise - some formulae syntax innovations can be found, for instance,
+in other time series related packages such as `fable` and `modeltime`.
+
+This is how we read a formula in the `torchts`:
+
+### 1. Simple autoregressive model
+
+<center>
+$value \sim date$
+</center>
+Future values of **value** column are base on the previous values of this variable.
+For now, lags are typically specified in the model object, not in the formula itself
+(it may change in the future).
+
+You should always specify a time-related variable as date, integer index etc.
+You are not obliged to specify **value** explicitly on the right side of the formula.
+
+### 2. Explanatory and explained variables
+<center>
+$tmax\_daily \sim tmin\_daily + date$
+</center>
+Future **tmax_daily** values are based on the previous **tmin_daily** values.
+**tmax_daily** values are not taken into account as explanatory variable in this case.
+
+
+### 3. Explanatory and explained variables(with autoregression)
+<center>
+$tmax\_daily \sim tmax\_daily  + tmin\_daily + date$
+</center>
+Future **tmax_daily** values are based on both 
+the previous **tmax_daily**  and **tmin_daily** values.
+It's an example of **autoregression with external regressors**.
+
+
+### 4. Model with values from the future
+<center>
+$value \sim date + value + price + lead(price)$
+</center>
+Future values of the **value** variable are based on the previous values from this column as well
+as previous values from the price column and the **future** value from the price column.
+
+In some cases, especially in the **demand forecasting**, there exist some variable 
+that are known in advance (as future price or holidays). Sometimes we can treat some other 
+forecasts (e.g. weather forecast) as a known values to feed the model with.

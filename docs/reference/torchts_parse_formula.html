@@ -48,6 +48,9 @@ index
     <li>
       <a href="../articles/torchts-api.html">torchts ready-to-use models API</a>
     </li>
+    <li>
+      <a href="../articles/torchts_formula.html">Explaining formulae in torchts</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/krzjoa/torchts/" class="external-link">
@@ -109,6 +112,10 @@ index
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date),     tarnow_temp):</span> could not find function "torchts_parse_formula"</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="fu">torchts_parse_formula</span><span class="op">(</span><span class="va">min_temp</span> <span class="op">~</span> <span class="va">max_temp</span> <span class="op">+</span> <span class="va">date</span>, <span class="va">tarnow_temp</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in torchts_parse_formula(min_temp ~ max_temp + date, tarnow_temp):</span> could not find function "torchts_parse_formula"</span>
+<span class="r-in"></span>
+<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="fu">torchts_parse_formula</span><span class="op">(</span><span class="va">min_temp</span> <span class="op">~</span> <span class="va">max_temp</span> <span class="op">+</span> <span class="va">date</span> <span class="op">+</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html" class="external-link">lead</a></span><span class="op">(</span><span class="va">min_temp</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>, <span class="va">tarnow_temp</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in torchts_parse_formula(min_temp ~ max_temp + date + lead(min_temp,     1:5), tarnow_temp):</span> could not find function "torchts_parse_formula"</span>
+<span class="r-in"></span>
 </code></pre></div>
     </div>
   </div>

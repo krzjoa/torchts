@@ -151,6 +151,9 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     select(-!!.index_columns) %>%
     colnames()
 
+  # For maximal flexibility use
+  # past_spec and future_spec instead of .predictors_spec and .outcomes_spec
+
   .predictors_spec <-
     purrr::map(.predictors_columns, ~ match(.x, column_order))
 

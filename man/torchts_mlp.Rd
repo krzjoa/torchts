@@ -2,7 +2,7 @@
 % Please edit documentation in R/mlp-impl.R
 \name{torchts_mlp}
 \alias{torchts_mlp}
-\title{RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API}
+\title{MLP model for time series forecasting}
 \usage{
 torchts_mlp(
   formula,
@@ -61,7 +61,7 @@ or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be 
 \item{device}{(\code{character}) A \code{torch} device.}
 }
 \description{
-RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API
+MLP model for time series forecasting
 }
 \examples{
 library(dplyr, warn.conflicts = FALSE)
@@ -89,8 +89,8 @@ data_split <-
   )
 
 # Training
-rnn_model <-
-  torchts_rnn(
+mlp_model <-
+  torchts_mlp(
     value ~ date + value + sell_price + wday,
     data = training(data_split),
     hidden_units = 10,

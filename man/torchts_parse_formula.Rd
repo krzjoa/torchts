@@ -35,4 +35,7 @@ debugonce(torchts_parse_formula)
 View(torchts_parse_formula(max_temp + min_temp ~ max_temp + min_temp + index(date), tarnow_temp))
 View(torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date), tarnow_temp))
 View(torchts_parse_formula(min_temp ~ max_temp + date, tarnow_temp))
+
+View(torchts_parse_formula(min_temp ~ max_temp + date + lead(min_temp, 1:5), tarnow_temp))
+
 }

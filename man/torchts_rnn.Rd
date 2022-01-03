@@ -2,7 +2,7 @@
 % Please edit documentation in R/rnn-impl.R
 \name{torchts_rnn}
 \alias{torchts_rnn}
-\title{RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API}
+\title{RNN model for time series forecasting}
 \usage{
 torchts_rnn(
   formula,
@@ -69,7 +69,7 @@ or R expression like \code{optim_adam(amsgrad = TRUE)}. Such expression will be 
 \item{device}{(\code{character}) A \code{torch} device.}
 }
 \description{
-RNN model for time series forecasting - \code{torchts} engine for \code{parsnip} API
+RNN model for time series forecasting
 }
 \examples{
 library(dplyr, warn.conflicts = FALSE)

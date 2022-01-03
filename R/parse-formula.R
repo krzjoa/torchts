@@ -128,10 +128,13 @@ torchts_parse_formula <- function(formula, data){
       listed(output[output$.type == "categorical", ]$.var)
     ))
 
+  # Removing names from the list
+  names(output$.role) <- NULL
+
   output
 }
 
-.recursive_parse <- function(object, .role = NULL){
+.recursive_parse <- function(object, .role = NULL, .modifier = NULL){
 
   out <- NULL
 
@@ -141,26 +144,27 @@ torchts_parse_formula <- function(formula, data){
       .role <- "predictor"
 
     if (as.character(object) == "+")
-      out <- tibble(.var = NULL, .role = NULL)
+      out <- tibble(.var = NULL, .role = NULL, .modifier = NULL)
     else
       out <- tibble(
         .var  = as.character(object),
-        .role = list(.role)
+        .role = list(.role),
+        .modifier = .modifier
       )
 
   } else if (typeof(object) == "language") {
     .candidate_role <- rlang::call_name(object)
+    object    <- rlang::call_args(object)
     if (as.character(.candidate_role) != "+") {
-      browser()
-      .role  <- .role # NULL # c(.role, .candidate_role)
+      .modifier <- .candidate_role
+      .modifier <- parse_modifier(object, .candidate_role)
     }
-
-    object <- rlang::call_args(object)
-    out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .role))
+    out    <- purrr::map_dfr(object, ~ .recursive_parse(.x, .role, .modifier))
   } else if (typeof(object) == "name") {
     out <- tibble(
       .var  = as.character(object),
-      .role = list(.role)
+      .role = list(.role),
+      .modifier = .modifier
     )
   }
 
@@ -176,6 +180,17 @@ type <- function(x){
     return("date")
   else
     return("numeric")
+}
+
+parse_modifier <- function(args, candidate){
+  numeric_arg <- Filter(is.numeric, args)
+
+
+
+  if (length(numeric_arg) == 0)
+    return(candidate)
+
+  paste0(candidate,"(", numeric_arg[[1]] ,")")
 }
 
 

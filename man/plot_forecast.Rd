@@ -4,7 +4,18 @@
 \alias{plot_forecast}
 \title{Plot forecast vs ground truth}
 \usage{
-plot_forecast(data, forecast, outcome, index = NULL, interactive = TRUE, ...)
+plot_forecast(
+  data,
+  forecast,
+  outcome,
+  index = NULL,
+  interactive = TRUE,
+  title = "Forecast vs actual values",
+  ...
+)
+}
+\arguments{
+\item{interactive}{(\code{logical})}
 }
 \description{
 Plot forecast vs ground truth

@@ -18,6 +18,7 @@ prepare_dl(
   shuffle,
   jump,
   parsed_formula = NULL,
+  flatten = FALSE,
   ...
 )
 }

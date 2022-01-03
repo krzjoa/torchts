@@ -65,7 +65,9 @@ inherits_any <- function(col, types){
 }
 
 inherits_any_char <- function(class, desired_classes){
-  sapply(class, function(cls) any(cls[[1]] %in% desired_classes))
+  output <- sapply(class, function(cls) any(cls[[1]] %in% desired_classes))
+  names(output) <- NULL
+  output
 }
 
 zeroable <- function(x){

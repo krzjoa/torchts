@@ -5,34 +5,16 @@ tarnow_temp <-
   filter(station == "TRN") %>%
   select(date, max_temp = tmax_daily, min_temp = tmin_daily)
 
-test_that("Test simple formula with explicit index", {
-
-  output <-
-    torchts_parse_formula(max_temp ~ max_temp + index(date), tarnow_temp)
-
-  expected <- tribble(
-   ~ .var, ~ .role, ~ .class, ~ .type,
-    "max_temp", "outcome", "numeric", "numeric",
-    "max_temp", "predictor", "numeric", "numeric",
-    "date", "index", "Date", "date"
-  )
-
-  class(expected$.role) <- "list"
-
-  expect_equal(expected, output)
-})
-
-
 test_that("Test simple formula", {
 
   output <-
     torchts_parse_formula(max_temp ~ date, tarnow_temp)
 
   expected <- tribble(
-   ~ .var, ~ .role, ~ .class, ~ .type, ~ .type,
-    "max_temp", "outcome", "numeric", "numeric", "numeric",
-    "date", "index", "Date", "date", "date",
-    "max_temp", "predictor", "numeric", "numeric", "numeric"
+   ~ .var, ~ .role, ~ .class, ~ .type,
+    "max_temp", "outcome", "numeric", "numeric",
+    "date", "index", "Date", "date",
+    "max_temp", "predictor", "numeric", "numeric"
   )
 
   class(expected$.role) <- "list"
@@ -44,7 +26,7 @@ test_that("Test simple formula", {
 test_that("Test formula with two outcome variables", {
 
   output <-
-    torchts_parse_formula(max_temp + min_temp ~ max_temp + index(date), tarnow_temp)
+    torchts_parse_formula(max_temp + min_temp ~ max_temp + date, tarnow_temp)
 
   expected <- tribble(
    ~ .var, ~ .role, ~ .class, ~ .type,
@@ -63,7 +45,7 @@ test_that("Test formula with two outcome variables", {
 test_that("Test formula, where outcome is not an input variable as well", {
 
   output <-
-    torchts_parse_formula(min_temp ~ max_temp + index(date), tarnow_temp)
+    torchts_parse_formula(min_temp ~ max_temp + date, tarnow_temp)
 
   expected <- tribble(
    ~ .var, ~ .role, ~ .class, ~ .type,
@@ -78,7 +60,7 @@ test_that("Test formula, where outcome is not an input variable as well", {
 })
 
 
-test_that("Test formula without explit predictors", {
+test_that("Test formula without explicit predictors", {
 
   output <-
     torchts_parse_formula(max_temp + min_temp ~ date, tarnow_temp)
@@ -89,7 +71,7 @@ test_that("Test formula without explit predictors", {
     "min_temp", "outcome", "numeric", "numeric",
     "date", "index", "Date", "date",
     "max_temp", "predictor", "numeric", "numeric",
-    "min_temp", "predictor", "numeric"
+    "min_temp", "predictor", "numeric", "numeric"
   )
 
   class(expected$.role) <- "list"
@@ -129,7 +111,7 @@ test_that("Test formula with multiple predictors and outcomes where index is fir
 
   output <-
     torchts_parse_formula(
-      min_temp + max_temp ~ index(date) + min_temp + max_temp,
+      min_temp + max_temp ~ date + min_temp + max_temp,
       tarnow_temp
     )
 
@@ -138,7 +120,7 @@ test_that("Test formula with multiple predictors and outcomes where index is fir
     "min_temp", "outcome", "numeric", "numeric",
     "max_temp", "outcome", "numeric", "numeric",
     "date", "index", "Date", "date",
-    "min_temp", "predictor", "numeric",
+    "min_temp", "predictor", "numeric", "numeric",
     "max_temp", "predictor", "numeric", "numeric"
   )
 
@@ -146,6 +128,30 @@ test_that("Test formula with multiple predictors and outcomes where index is fir
 
   expect_equal(expected, output)
 })
+
+
+test_that("Test formula with a modifier", {
+
+  output <-
+    torchts_parse_formula(
+      min_temp ~ date + min_temp + max_temp + lead(max_temp, 5),
+      tarnow_temp
+    )
+
+  expected <- tribble(
+    ~ .var, ~ .role, ~ .modifier, ~ .class, ~ .type,
+    "min_temp", "outcome", NA, "numeric", "numeric",
+    "date", "index", NA, "Date", "date",
+    "min_temp", "predictor", NA, "numeric", "numeric",
+    "max_temp", "predictor", NA, "numeric", "numeric",
+    "max_temp", "predictor", "lead(5)", "numeric", "numeric"
+  )
+
+  class(expected$.role) <- "list"
+
+  expect_equal(expected, output)
+})
+
 
 
 

@@ -43,6 +43,9 @@
     <li>
       <a href="../articles/torchts-api.html">torchts ready-to-use models API</a>
     </li>
+    <li>
+      <a href="../articles/torchts_formula.html">Explaining formulae in torchts</a>
+    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/krzjoa/torchts/" class="external-link">
@@ -69,9 +72,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plot_forecast</span><span class="op">(</span><span class="va">data</span>, <span class="va">forecast</span>, <span class="va">outcome</span>, index <span class="op">=</span> <span class="cn">NULL</span>, interactive <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">plot_forecast</span><span class="op">(</span>
+  <span class="va">data</span>,
+  <span class="va">forecast</span>,
+  <span class="va">outcome</span>,
+  index <span class="op">=</span> <span class="cn">NULL</span>,
+  interactive <span class="op">=</span> <span class="cn">TRUE</span>,
+  title <span class="op">=</span> <span class="st">"Forecast vs actual values"</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
+    <div id="arguments">
+    <h2>Arguments</h2>
+    <dl><dt>interactive</dt>
+<dd><p>(<code>logical</code>)</p></dd>
+</dl></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

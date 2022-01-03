@@ -58,3 +58,8 @@ https://www.datatechnotes.com/2019/01/regression-example-with-lstm-networks.html
 ## RNN
 * A Formal Hierarchy of RNN Architectures
 https://arxiv.org/abs/2004.08500
+
+
+## Formula proposals
+
+h(value, 7) ~ b(value, 28) + price + lead(price, 5) 
