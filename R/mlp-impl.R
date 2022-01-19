@@ -140,10 +140,11 @@ torchts_mlp <- function(formula,
   valid_dl <- dls[[2]]
 
   input_size <- nrow(numeric) + sum(embedding$embedding_dim)
+  input_size <- input_size * timesteps
 
   output_size <- length(outcomes)
 
-  layer_sizes <- c(hidden_units, output_size)
+  layer_sizes <- c(input_size, hidden_units, output_size)
 
   if (is.null(embedding)) {
     model_args <- as.list(layer_sizes)
@@ -186,7 +187,7 @@ torchts_mlp <- function(formula,
 
   # Return torchts model
   torchts_model(
-    class          = "torchts_rnn",
+    class          = "torchts_mlp",
     net            = net,
     index          = index,
     key            = key,
@@ -246,9 +247,6 @@ predict.torchts_mlp <- function(object, new_data){
 
   net$is_stateful <- FALSE
 
-  # b <- dataloader_next(dataloader_make_iter(new_data_dl))
-  # net$stateful()
-
   coro::loop(for (b in new_data_dl) {
 
     output <- do.call(net, get_x(b))
@@ -272,8 +270,6 @@ predict.torchts_mlp <- function(object, new_data){
 
   })
 
-  # net$stateful(FALSE)
-
   # Make sure that forecast has right length
   # TODO: keys!!!
   preds <- head(preds, nrow(new_data))
@@ -293,8 +289,6 @@ predict.torchts_mlp <- function(object, new_data){
 
   preds
 }
-
-
 
 
 

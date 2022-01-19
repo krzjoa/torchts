@@ -52,6 +52,23 @@ vars_with_role <- function(parsed_formula, role){
   parsed_formula$.var[parsed_formula$.role == role]
 }
 
+get_vars <- function(parsed_formula, role, type){
+  parsed_formula[parsed_formula$.role == role &
+                   parsed_formula$.type == type &
+                   is.na(parsed_formula$.modifier), ]$.var
+}
+
+get_vars2 <- function(parsed_formula, role, type, modifier){
+  parsed_formula$.modifier <- ifelse(
+    is.na(parsed_formula$.modifier),
+    "",
+    parsed_formula$.modifier
+  )
+  parsed_formula[parsed_formula$.role == role &
+                 parsed_formula$.type == type &
+                 parsed_formula$.modifier == modifier, ]$.var
+}
+
 filter_vars <- function(parsed_formula, role = NULL, class = NULL){
   parsed_formula$.var[
     parsed_formula$.role == role &

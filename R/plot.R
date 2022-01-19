@@ -10,7 +10,7 @@
 #'
 #' @export
 plot_forecast <- function(data, forecast, outcome,
-                          index = NULL, interactive = TRUE,
+                          index = NULL, interactive = FALSE,
                           title = "Forecast vs actual values",
                           ...){
 

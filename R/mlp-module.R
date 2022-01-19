@@ -78,10 +78,16 @@ model_mlp <- torch::nn_module(
 
   },
 
-  forward = function(x_num, x_cat){
+  forward = function(x_num = NULL, x_cat = NULL, x_fut_num = NULL, x_fut_cat = NULL){
+
+    if (!is.null(x_cat) & !is.null(x_fut_cat))
+      x_cat <- torch_cat(list(x_cat, x_fut_cat))
+
+    if (!is.null(x_num) & !is.null(x_fut_num))
+      x_num <- torch_cat(list(x_num, x_fut_num))
 
     # Pass trough initial layer
-    if (!missing(x_cat)) {
+    if (!is.null(x_cat)) {
 
       output <-
         torch_cat(list(

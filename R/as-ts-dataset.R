@@ -39,6 +39,20 @@
 #'
 #' train_ds[1]
 #'
+#' train_ds <-
+#'  training(data_split) %>%
+#'  as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type + lead(rr_type),
+#'                timesteps = 20, horizon = 1)
+#'
+#' train_ds[1]
+#'
+#' train_ds <-
+#'  training(data_split) %>%
+#'  as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type + lead(tmin_daily),
+#'                timesteps = 20, horizon = 1)
+#'
+#' train_ds[1]
+#'
 #' @export
 as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
                           predictors = NULL, outcomes = NULL, categorical = NULL,
@@ -61,9 +75,12 @@ as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
-                                     outcomes = NULL, categorical = NULL,
+                                     outcomes = NULL,
+                                     categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
                                      scale = TRUE, jump = 1, ...){
+
+  # TODO: remove key, index, outcomes etc. (define only with formula or parsed formula)?
 
   extra_args <- list(...)
 
@@ -80,19 +97,21 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
   # TODO: key is not used for now
   if (!is.null(parsed_formula)) {
 
-    .predictors_columns <- predictors_spec(
+    .predictors_columns <- past_spec(
 
       # Numeric time-varying variables
-      x_num = parsed_formula[parsed_formula$.role == "predictor" &
-                            parsed_formula$.type == "numeric", ]$.var,
+      x_num = get_vars(parsed_formula, "predictor", "numeric"),
 
       # Categorical time-varying variables
-      x_cat = parsed_formula[parsed_formula$.role == "predictor" &
-                             parsed_formula$.type == "categorical", ]$.var
+      x_cat = get_vars(parsed_formula, "predictor", "categorical")
     )
 
-    .outcomes_columns <- list(
-      y = parsed_formula[parsed_formula$.role == "outcome", ]$.var
+    # Future spec: outcomes + predictors
+    .future_columns <- future_spec(
+      y = vars_with_role(parsed_formula, "outcome"),
+      # Possible predictors from the future (e.g. coming holidays)
+      x_fut_num = get_vars2(parsed_formula, "predictor", "numeric", "lead"),
+      x_fut_cat = get_vars2(parsed_formula, "predictor", "categorical", "lead")
     )
 
     .index_columns <-
@@ -100,7 +119,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   } else {
 
-    .predictors_columns  <- predictors_spec(
+    # Add future predictors or remove this option
+    .predictors_columns  <- past_spec(
       x_num = setdiff(predictors, categorical),
       x_cat = categorical[categorical %in% predictors]
     )
@@ -114,9 +134,13 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
     # Prep recipe in none is passed
     if (is.null(extra_args$cat_recipe)) {
+
+      cat_columns <- c(.predictors_columns$x_cat,
+                       .future_columns$x_fut_cat)
+
       cat_recipe <-
         recipe(data) %>%
-        step_integer(all_of(c(.predictors_columns$x_cat))) %>%
+        step_integer(all_of(cat_columns)) %>%
         prep()
     } else {
       cat_recipe <- extra_args$cat_recipe
@@ -136,7 +160,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
   all_variables <-
     unique(c(
       unlist(.predictors_columns),
-      unlist(.outcomes_columns),
+      unlist(.future_columns),
       unlist(.index_columns)
     ))
 
@@ -151,31 +175,26 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     select(-!!.index_columns) %>%
     colnames()
 
-  # For maximal flexibility use
-  # past_spec and future_spec instead of .predictors_spec and .outcomes_spec
-
-  .predictors_spec <-
+  .past_spec <-
     purrr::map(.predictors_columns, ~ match(.x, column_order))
 
-  .outcomes_spec <-
-    purrr::map(.outcomes_columns, ~ match(.x, column_order))
+  .future_spec <-
+    purrr::map(.future_columns, ~ match(.x, column_order))
 
-  # TODO: hardcoded!!!
   data_tensor <-
     as_tensor(data, !!.index_columns)
 
-  # TODO: change ts_dataset
   ts_dataset(
-    data            = data_tensor,
-    timesteps       = timesteps,
-    horizon         = horizon,
-    predictors_spec = .predictors_spec,
-    outcomes_spec   = .outcomes_spec,
-    categorical     = "x_cat",
-    sample_frac     = sample_frac,
-    scale           = scale,
-    jump            = jump,
-    extras          = list(cat_recipe = cat_recipe)
+    data         = data_tensor,
+    timesteps    = timesteps,
+    horizon      = horizon,
+    past_spec    = .past_spec,
+    future_spec  = .future_spec,
+    categorical  = c("x_cat", "x_fut_cat"),
+    sample_frac  = sample_frac,
+    scale        = scale,
+    jump         = jump,
+    extras       = list(cat_recipe = cat_recipe)
   )
 }
 
@@ -183,17 +202,17 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 #' Predictors specification
 #' It facilitates to keep the same variables in all the specification list
 #' and avoid typos
-predictors_spec <- function(x_num = NULL, x_cat = NULL){
+past_spec <- function(x_num = NULL, x_cat = NULL){
   output <- list(x_num = x_num, x_cat = x_cat)
-  Filter(function(var) !is.null(var), output)
+  Filter(function(var) !is.null(var) & length(var) != 0, output)
 }
 
-
-# prepare_categorical <- function(x, ...){
-#
-# }
-
-
-
-
+future_spec <- function(y, x_fut_num = NULL, x_fut_cat = NULL){
+  output <- list(
+    y         = y,
+    x_fut_num = x_fut_num,
+    x_fut_cat = x_fut_cat
+  )
+  Filter(function(var) !is.null(var) & length(var) != 0, output)
+}
 

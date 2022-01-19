@@ -63,8 +63,24 @@ data_split <-
     lag     = TIMESTEPS
   )
 
-rnn_model <- 
-  torchts_rnn(
+# rnn_model <- 
+#   torchts_rnn(
+#     tmax_daily ~ date,
+#     data = training(data_split),
+#     timesteps    = TIMESTEPS,
+#     horizon      = HORIZON,
+#     epochs       = EPOCHS,
+#     learn_rate   = 0.001,
+#     hidden_units = 20,
+#     batch_size   = 32,
+#     scale        = TRUE 
+#   )
+
+#Błąd w poleceniu '(function (self, other) ':
+#  mat1 and mat2 shapes cannot be multiplied (896x1 and 28x20)
+#
+rnn_model <-
+  torchts_mlp(
     tmax_daily ~ date,
     data = training(data_split),
     timesteps    = TIMESTEPS,
@@ -73,7 +89,7 @@ rnn_model <-
     learn_rate   = 0.001,
     hidden_units = 20,
     batch_size   = 32,
-    scale        = TRUE 
+    scale        = TRUE
   )
 
 rnn_model

@@ -125,11 +125,14 @@ torchts_parse_formula <- function(formula, data){
     message(sprintf(
       "Categorical variables found (%d): %s",
       sum(output$.type == "categorical"),
-      listed(output[output$.type == "categorical", ]$.var)
+      listed(unique(output[output$.type == "categorical", ]$.var))
     ))
 
   # Removing names from the list
   names(output$.role) <- NULL
+
+  if (!".modifier" %in% colnames(output))
+    output$.modifier <- NA
 
   output
 }

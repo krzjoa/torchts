@@ -5,9 +5,9 @@
 #' @param timesteps (`integer`) Number of timesteps for input tensor.
 #' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor.
 #' @param jump (`integer`) Jump length. By default: horizon length.
-#' @param predictors_spec (`list`) Input specification.
+#' @param past_spec (`list`) Specification of the variables which values from the past will be available.
 #' It should be a list with names representing names of tensors served by dataset, and values being feature indices.
-#' @param outcomes_spec (`list`) Target specification.
+#' @param future_spec (`list`) Specification of the variableswith known values from the future.
 #' It should be a list with names representing names of tensors served b
 #' @param categorical (`character`) Names of specified column subsets considered as categorical.
 #' They will be provided as integer tensors.
@@ -38,8 +38,8 @@
 #'      data = weather_pl_tensor,
 #'      timesteps = 28,
 #'      horizon = 7,
-#'      predictors_spec = list(x = 2:7),
-#'      outcomes_spec   = list(y = 1),
+#'      past_spec = list(x = 2:7),
+#'      future_spec   = list(y = 1),
 #'      scale = TRUE
 #'    )
 #'
@@ -50,8 +50,8 @@ ts_dataset <- torch::dataset(
   name = "ts_dataset",
 
   initialize = function(data, timesteps, horizon, jump = horizon,
-                        predictors_spec  = list(x = NULL),
-                        outcomes_spec = list(y = NULL), categorical = NULL,
+                        past_spec  = list(x = NULL),
+                        future_spec = list(y = NULL), categorical = NULL,
                         sample_frac = 1, scale = TRUE, extras = NULL, ...) {
 
     # Change unit test where non-tabular data handling is added
@@ -74,39 +74,48 @@ ts_dataset <- torch::dataset(
     self$timesteps       <- timesteps
     self$horizon         <- horizon
     self$jump            <- jump
-    self$predictors_spec <- predictors_spec
-    self$outcomes_spec   <- outcomes_spec
+    self$past_spec <- past_spec
+    self$future_spec   <- future_spec
     self$extras          <- extras
 
     # TODO: for now it doesn't handle keys
-    # TODO: Proper leghth?
+    # TODO: Proper length
     n <- (nrow(self$data) - self$timesteps - self$horizon) + 1
     n <- floor(n)
-
-    # starts <- sample.int(
-    #   n = n,
-    #   size = n * sample_frac
-    # )
 
     starts <- seq(1, n, jump)
     starts <- sample(starts, size = length(starts) * sample_frac)
     self$starts <- sort(starts)
 
     # WARNING: columns names are supposed to be in such order
-    self$predictors_spec_num <- predictors_spec[
-      !(names(predictors_spec) %in% categorical)
+    self$past_spec_num <- past_spec[
+      !(names(past_spec) %in% categorical)
     ]
 
-    self$predictors_spec_cat <- predictors_spec[
-      names(predictors_spec) %in% categorical
+    self$past_spec_cat <- past_spec[
+      names(past_spec) %in% categorical
     ]
 
+    # Future variables
+    self$future_spec_cat <- future_spec[
+      names(future_spec) %in% categorical &
+      grepl("x", names(future_spec))
+    ]
+
+    self$future_spec_num <- future_spec[
+      !names(future_spec) %in% categorical &
+      grepl("x", names(future_spec))
+    ]
+
+    self$outcomes_spec<- future_spec[
+      grepl("y", names(future_spec))
+    ]
 
     # TODO: to be removed
-    self$col_map     <- unique(unlist(predictors_spec))
-    self$col_map_num <- unique(unlist(self$predictors_spec_num))
-    self$col_map_cat <- unique(unlist(self$predictors_spec_cat))
-    self$col_map_out <- unique(unlist(self$outcomes_spec))
+    self$col_map     <- unique(unlist(past_spec))
+    self$col_map_num <- unique(unlist(self$past_spec_num))
+    self$col_map_cat <- unique(unlist(self$past_spec_cat))
+    self$col_map_out <- unique(unlist(self$future_spec))
 
     # If scale is a list and contains two values: mean and std
     # Compare: https://easystats.github.io/datawizard/reference/standardize.html
@@ -138,48 +147,71 @@ ts_dataset <- torch::dataset(
     end   <- start + self$timesteps - 1 # - self$horizon?
 
     # Input columns
-    # TODO: Dropping dimension in inputs and not in targets?
-    # It seems to work in the simpliest case
+    # TODO: Dropping dimension in past and not in future?
+    # It seems to work in the simplest case
 
     if (self$scale) {
-      inputs_num <-
+      past_num <-
         purrr::map(
-          self$predictors_spec_num,
+          self$past_spec_num,
           ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., .x]) /
             self$sd[.., .x]
         )
     } else {
-      inputs_num <-
+      past_num <-
         purrr::map(
-          self$predictors_spec_num, ~ self$data[start:end, .x, drop = FALSE]
+          self$past_spec_num, ~ self$data[start:end, .x, drop = FALSE]
         )
     }
 
-    # Not scaled inputs
-    if (length(unlist(self$predictors_spec_cat)) > 0)
-      inputs_cat <-
+    # Not scaled past
+    if (length(unlist(self$past_spec_cat)) > 0)
+      past_cat <-
         purrr::map(
-          self$predictors_spec_cat, ~ self$data[start:end, .x, drop = FALSE]$to(torch_int())
+          self$past_spec_cat, ~ self$data[start:end, .x, drop = FALSE]$to(torch_int())
         )
     else
-      inputs_cat <- NULL
+      past_cat <- NULL
 
-    inputs <- c(inputs_num, inputs_cat)
+    past <- c(past_num, past_cat)
+
+
+    # Future values
+    if (self$scale) {
+      fut_num <-
+        purrr::map(
+          self$future_spec_num,
+          ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
+             - self$mean[.., .x]) / self$sd[.., .x]
+        )
+    } else {
+      fut_num <-
+        purrr::map(self$future_spec_num,
+                   ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
+    }
+
+    fut_cat <-
+      purrr::map(self$future_spec_cat,
+                 ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
+
 
     if (self$scale_y) {
-      targets <-
+      y <-
         purrr::map(
           self$outcomes_spec,
           ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
              - self$mean[.., .x]) / self$sd[.., .x]
         )
     } else {
-      targets <-
+      y <-
         purrr::map(self$outcomes_spec,
                    ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
     }
 
-    c(inputs, targets)
+
+    future <- c(fut_num, fut_cat, y)
+
+    c(past, future)
 
   },
 

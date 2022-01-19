@@ -10,6 +10,6 @@
 
   # Parsnip models
   # remove_model("rnn")
-  make_rnn()
-  make_lagged_mlp()
+  # make_rnn()
+  # make_lagged_mlp()
 }
