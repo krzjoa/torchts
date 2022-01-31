@@ -83,8 +83,8 @@ torchts_mlp <- function(formula,
                         epochs = 10,
                         shuffle = TRUE,
                         scale = TRUE,
-                        sample_frac = 0.5,
-                        loss_fn = nnf_mae,
+                        sample_frac = 1.,
+                        loss_fn = nn_mse_loss(),
                         device = NULL){
 
   # Checks
@@ -142,7 +142,7 @@ torchts_mlp <- function(formula,
   input_size <- nrow(numeric) + sum(embedding$embedding_dim)
   input_size <- input_size * timesteps
 
-  output_size <- length(outcomes)
+  output_size <- length(outcomes) * horizon
 
   layer_sizes <- c(input_size, hidden_units, output_size)
 
@@ -157,6 +157,14 @@ torchts_mlp <- function(formula,
     )
     model_args <- c(list(ils), as.list(layer_sizes[-1]))
   }
+
+  model_args <- c(
+    model_args,
+    list(
+      horizon = horizon,
+      output_size = length(outcomes)
+    )
+  )
 
   # Creating a model
   net <-
@@ -227,6 +235,7 @@ predict.torchts_mlp <- function(object, new_data){
       horizon        = object$horizon,
       batch_size     = batch_size,
       scale          = object$scale,
+      # jump           = object$horizon,
       # Extras
       parsed_formula = object$parsed_formula,
       cat_recipe     = object$extras$cat_recipe
@@ -241,17 +250,25 @@ predict.torchts_mlp <- function(object, new_data){
 
   net$eval()
 
-  preds <- matrix(nrow = object$timesteps,
-                  ncol = length(object$outcomes))
+  # preds <- matrix(nrow = object$timesteps,
+  #                 ncol = length(object$outcomes))
+  preds <-rep(NA, object$timesteps)
   iter  <- 0
-
-  net$is_stateful <- FALSE
 
   coro::loop(for (b in new_data_dl) {
 
+    # print(get_x(b))
+
     output <- do.call(net, get_x(b))
-    output <- output$reshape(c(-1, n_outcomes))
-    preds  <- rbind(preds, as_array(output$cpu()))
+
+    # browser()
+
+    # print(get_x(b))
+    # print(output)
+    # print(as.vector(output))
+
+    #output <- output$reshape(c(-1, n_outcomes))
+    preds  <- c(preds, as.vector(output$detach()$cpu()))
 
     if (recursive_mode) {
       start <- object$timesteps + iter * object$horizon + 1
@@ -274,18 +291,18 @@ predict.torchts_mlp <- function(object, new_data){
   # TODO: keys!!!
   preds <- head(preds, nrow(new_data))
 
-  # Adding colnames if more than one outcome
-  if (ncol(preds) > 1)
-    colnames(preds) <- object$outcomes
-  else
-    preds <- as.vector(preds)
-
   # browser()
 
+  # Adding colnames if more than one outcome
+  # if (ncol(preds) > 1)
+  #   colnames(preds) <- object$outcomes
+  # else
+  #   preds <- as.vector(preds)
+
   # Revert scaling if used for target
-  preds <- invert_scaling(
-    preds, object$scale, object$col_map_out
-  )
+  # preds <- invert_scaling(
+  #   preds, object$scale, object$col_map_out
+  # )
 
   preds
 }

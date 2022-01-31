@@ -41,8 +41,6 @@ nn_mlp <- torch::nn_module(
       if (length(int_elements(layers)) < length(layers))
         activation <- NULL
 
-      # browser()
-
       int_indices <- which(
         sapply(layers, is_int)
       )
@@ -53,7 +51,11 @@ nn_mlp <- torch::nn_module(
           .next = dplyr::lead(int_indices)
         )
 
+      # Layer is a "candidate layer"
+      # The last element in the "layers" table has length equal to 0.
+      # See: .is_last() function
       layer_names <- NULL
+      n_layers    <- length(layers)
 
       for (i in seq_along(layers)) {
 
@@ -76,12 +78,14 @@ nn_mlp <- torch::nn_module(
 
         layer_names <- c(layer_names, layer_name)
 
+        if (i == n_layers - 1)
+          next
+
         if (!is.null(activation)) {
           activation_layer_name <- glue::glue("layer_{i}_activation")
           self[[activation_layer_name]] <- activation #clone_if_module(activation)
           layer_names <- c(layer_names, activation_layer_name)
         }
-
 
       }
 

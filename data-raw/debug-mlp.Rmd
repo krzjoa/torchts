@@ -1,0 +1,223 @@
+---
+title: "debug"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prepare data
+
+```{r libs}
+library(torch)
+#library(torchts)
+library(rsample)
+library(dplyr, warn.conflicts = FALSE)
+library(ggplot2)
+library(parsnip)
+library(timetk)
+
+# write.csv(weather_pl, file = "../weather_pl.csv")
+
+devtools::load_all()
+```
+
+## Data
+```{r data}
+tarnow_temp <- 
+  weather_pl %>% 
+  filter(station == 'TRN') %>% 
+  arrange(date)
+head(tarnow_temp)
+
+
+train <- tarnow_temp %>% 
+  filter(date < as.Date('2018-01-01'))
+
+test <- tarnow_temp %>% 
+  filter(date >= as.Date('2018-01-01'))
+```
+
+```{r ts_dataset}
+
+TimeSeriesDataset <- torch::dataset(
+  "TimeSeriesDataSet",
+  
+  initialize = function(ts, lookback, horizon, jump, trim_last = TRUE){
+          # TS
+        self$ts       <- ts
+        self$lookback <- lookback
+        self$horizon  <- horizon
+        self$jump     <- jump
+        
+        # Non overlapping chunks
+        # Tu jest błąd 
+        self$chunk_size <-  (lookback + horizon)
+        if (trim_last)
+            self$length <-  (length(ts) - self$chunk_size ) %/% jump
+        else
+            self$length <-  (length(ts) - self$horizon) %/% jump
+    },
+
+    .length = function(){
+     self$length
+    },
+
+    .getitem = function(idx){
+      # Input 
+        first <- (idx - 1) * self$jump + 1
+        last_input <- first + self$lookback - 1
+        X <- self$ts[first:last_input]
+        
+        # Output 
+        y <- self$ts[last_input:(last_input + self$horizon - 1)]
+        
+        X_tensor <- torch_tensor(X, dtype = torch_float32())
+        y_tensor <- torch_tensor(y, dtype = torch_float32())
+        
+        return(list(
+          X_tensor$squeeze()$cuda(), 
+          y_tensor$squeeze()$cuda()
+        ))
+    }
+)
+```
+
+
+```{r declare.vars}
+TIMESTEPS <- 28
+HORIZON   <- 7
+```
+
+```{r scale.data}
+mean_val <- mean(train$tmax_daily)
+sd_val   <- sd(train$tmax_daily)
+
+train_scaled <- (train$tmax_daily - mean_val) /  sd_val 
+test_scaled  <- (test$tmax_daily - mean_val) / sd_val
+```
+
+```{r create.ds}
+train_ds <- TimeSeriesDataset(train_scaled, TIMESTEPS, HORIZON, 1)
+test_ds  <- TimeSeriesDataset(test_scaled, TIMESTEPS, HORIZON, HORIZON, FALSE)
+```
+
+
+```{r cmp.data}
+test_ds[1][1]
+```
+
+```{r creat.net}
+MLP <- 
+  nn_module(
+    
+    "MLP",
+    
+    initialize = function(input_size, output_size, layers){
+        self$linear_1     <- nn_linear(input_size, layers[1])
+        self$activation_1 <- nn_relu()
+        self$linear_2     <- nn_linear(layers[1], layers[2])
+        self$activation_2 <- nn_relu()
+        self$linear_3     <- nn_linear(layers[2], output_size)
+    },
+
+    
+    forward = function(X){
+        X <- self$activation_1(self$linear_1(X))
+        X <- self$activation_2(self$linear_2(X))
+        self$linear_3(X)
+    }
+)
+```
+
+```{r init.net}
+net <- MLP(TIMESTEPS, HORIZON, c(50, 30))
+net <- net$cuda()
+epochs <- 10
+```
+
+```{r optimizer}
+optimizer <- optim_adam(net$parameters)
+loss_fun <-  nn_mse_loss()
+
+epochs <-  30
+
+#X, y = next(iter(train_dl))
+#X.shape
+
+```
+
+```{r creating.dls}
+train_dl <- dataloader(train_ds, batch_size = 32)
+test_dl  <- dataloader(test_ds, batch_size = 1)
+```
+
+```{r training.loop}
+dataloader_next(
+  dataloader_make_iter(train_dl)
+)[1]
+
+
+net$train()
+
+for (e in seq_len(epochs)) {
+  train_loss <- 0.0
+  
+  coro::loop(for (b in train_dl) {
+      
+      X <- b[[1]]
+      y <- b[[2]]
+
+      optimizer$zero_grad()
+      target <- net(X)
+      loss <- loss_fun(target, y)
+      # Calculate gradients 
+      loss$backward()
+      # Update Weights
+      optimizer$step()
+      # Calculate Loss
+      train_loss <- train_loss + loss$item()
+    })
+    print(glue::glue(
+      'Epoch {e} \t\t Training Loss: {train_loss / length(train_dl)}'
+      ))
+}
+
+```
+```{r forecast}
+# Forecast
+forecast <- function(net, test_dl, timesteps){
+  targets <- rep(NA, timesteps)
+  net$eval()
+  coro::loop(for(b in test_dl){
+      X <- b[[1]]
+      # y <- b[[2]]
+      # print(dim(X))
+      if (dim(X)[2] == TIMESTEPS) {
+        out <- net(X)$cpu()$flatten()$detach()
+        out <- as.vector(out)
+        targets <- c(out, targets)
+      }
+  })
+  targets
+}
+```
+
+```{r fcast}
+fcast <- forecast(net, test_dl, TIMESTEPS)
+```
+
+```{r show.fcast}
+plot(ts(fcast))
+fcast
+```
+# Diagnoza
+* przepisać i zedugować ts_dataset
+* zdebugować i być może przepisać torchts_mlp
+* przyda się wizualizacja tych sieci
+* wejściem powinien być data.frame, a nie tensor -> dzięki temu można np. użyć disk.frame a może nawet połączenia do bazy!
+
+
+
+

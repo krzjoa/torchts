@@ -13,8 +13,9 @@ https://codesachin.wordpress.com/2016/01/23/predicting-trigonometric-waves-few-s
 * check model "confusion", i.e. variance for nearly the same examples
 https://stats.stackexchange.com/questions/220307/rnn-learning-sine-waves-of-different-frequencies
 
-## BUGS
-* Learning rate on gpu (seem it works...)
+* verbosity level as percentage
+* 
+
 
 ## Which name?
 
@@ -63,3 +64,6 @@ https://arxiv.org/abs/2004.08500
 ## Formula proposals
 
 h(value, 7) ~ b(value, 28) + price + lead(price, 5) 
+
+## Visualization
+https://github.com/tensorspace-team/tensorspace

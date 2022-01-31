@@ -40,10 +40,13 @@ model_mlp <- torch::nn_module(
 
   "model_mlp",
 
-  initialize = function(..., embedding = NULL,
+  initialize = function(..., horizon, output_size, embedding = NULL,
                         activation = nnf_relu){
 
     layers <- list(...)
+
+    self$horizon     <- horizon
+    self$output_size <- output_size
 
     # If first element is a list, it describes embedding + numerical features
     if (is.list(layers[[1]])) {
@@ -98,8 +101,21 @@ model_mlp <- torch::nn_module(
       output <- x_num
     }
 
-    self$mlp(output)
+    # Transform batch_size x (timesteps *  features)
+    current_shape <- dim(output)
 
+    # output <- output$reshape(c(
+    #   current_shape[1], current_shape[2] * current_shape[3]
+    # ))
+
+    output <- self$mlp(output)
+
+    # Reshape output
+    # output <- output$reshape(c(
+    #   current_shape[1], self$horizon, self$output_size
+    # ))
+
+    output
   }
 
 )

@@ -211,7 +211,12 @@ ts_dataset <- torch::dataset(
 
     future <- c(fut_num, fut_cat, y)
 
-    c(past, future)
+    output <- c(past, future)
+
+    # Resahping for MLP
+    output <- purrr::map(output, ~ .x$reshape(-1))
+
+    output
 
   },
 
