@@ -213,10 +213,11 @@ plot(ts(fcast))
 fcast
 ```
 # Diagnoza
-* przepisać i zedugować ts_dataset
+* przepisać i zdebugować ts_dataset
 * zdebugować i być może przepisać torchts_mlp
 * przyda się wizualizacja tych sieci
 * wejściem powinien być data.frame, a nie tensor -> dzięki temu można np. użyć disk.frame a może nawet połączenia do bazy!
+* skalować od razu na wejściu do datasetu -> obecny scenariusz niewiele daje(?)
 
 
 

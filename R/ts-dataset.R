@@ -1,7 +1,6 @@
 #' Create a time series dataset from a `torch_tensor` matrix
 #'
-#' @param data (`torch_tensor`) An input data object. For now it only accepts two-dimensional tensor, i.e. matrices.
-#' Each row is a timestep of a **single** time series.
+#' @param data (`data.frame`) An data.frame-like input object.
 #' @param timesteps (`integer`) Number of timesteps for input tensor.
 #' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor.
 #' @param jump (`integer`) Jump length. By default: horizon length.
@@ -12,7 +11,6 @@
 #' @param categorical (`character`) Names of specified column subsets considered as categorical.
 #' They will be provided as integer tensors.
 #' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
-#' @param scale (`logical` or `list`) Scale feature columns. Boolean flag or list with `mean` and `sd` values.
 #' @param extras (`list`) List of extra object to be stored inside the ts_dataset object.
 #'
 #' @note
@@ -24,59 +22,65 @@
 #' library(dplyr, warn.conflicts = FALSE)
 #' library(torchts)
 #'
-#' weather_pl_tensor <-
+#' tarnow_temp <-
 #'   weather_pl %>%
-#'   filter(station == "TRN") %>%
-#'   select(-station, -rr_type) %>%
-#'   as_tensor(date)
-#'
-#' # We obtained a matrix (i.e. tabular data in the form of 2-dimensional tensor)
-#' dim(weather_pl_tensor)
+#'   filter(station == 'TRN') %>%
+#'   arrange(date)
 #'
 #' weather_pl_dataset <-
 #'    ts_dataset(
-#'      data = weather_pl_tensor,
+#'      data = tarnow_temp,
 #'      timesteps = 28,
 #'      horizon = 7,
-#'      past_spec = list(x = 2:7),
-#'      future_spec   = list(y = 1),
-#'      scale = TRUE
+#'      past_spec = list(x_num = c('tmax_daily', 'tmin_daily')),
+#'      future_spec   = list(y = 'tmax_daily')
 #'    )
 #'
+#' debugonce(weather_pl_dataset$.getitem)
 #' weather_pl_dataset$.getitem(1)
 #'
 #' @export
 ts_dataset <- torch::dataset(
+
   name = "ts_dataset",
 
-  initialize = function(data, timesteps, horizon, jump = horizon,
+  initialize = function(data, timesteps,
+                        horizon, index,
+                        jump = horizon,
                         past_spec  = list(x = NULL),
-                        future_spec = list(y = NULL), categorical = NULL,
-                        sample_frac = 1, scale = TRUE, extras = NULL, ...) {
+                        future_spec = list(y = NULL),
+                        categorical = NULL,
+                        sample_frac = 1,
+                        extras = NULL, ...) {
 
     # Change unit test where non-tabular data handling is added
-    if (length(dim(data)) > 2)
-      stop("Data tensor has more than two dimensions.
-            Handling of such objects in ts_dataset is not implemented yet.
-            Provide a tabular-like tensor.")
+    if (!inherits(data, "data.frame"))
+      stop("Provided wrong data object - is should inherit the data.frame class")
 
     # TODO: for now scaling system is simplified
-
     # TODO: check data types
     # TODO: check, if jump works correctly
     # TODO: consider adding margin to the last element if length %% horizon > 0
     # TODO: take into account last predicted values when computing scaling values?
     # Real life values, information leak
 
-    # TODO: check col maps!!!!!
-    self$data            <- data
-    self$margin          <- max(timesteps, horizon)
-    self$timesteps       <- timesteps
-    self$horizon         <- horizon
-    self$jump            <- jump
-    self$past_spec <- past_spec
-    self$future_spec   <- future_spec
-    self$extras          <- extras
+    all_vars <- unique(unlist(c(
+        past_spec, future_spec
+    )))
+
+    data.table::setDT(data)
+
+    self$data        <- data[, ..all_vars]
+    self$margin      <- max(timesteps, horizon)
+    self$timesteps   <- timesteps
+    self$horizon     <- horizon
+    self$jump        <- jump
+    self$past_spec   <- past_spec
+    self$future_spec <- future_spec
+    self$extras      <- extras
+
+    # Setting order
+    # setorderv(data, index)
 
     # TODO: for now it doesn't handle keys
     # TODO: Proper length
@@ -111,112 +115,48 @@ ts_dataset <- torch::dataset(
       grepl("y", names(future_spec))
     ]
 
-    # TODO: to be removed
-    self$col_map     <- unique(unlist(past_spec))
-    self$col_map_num <- unique(unlist(self$past_spec_num))
-    self$col_map_cat <- unique(unlist(self$past_spec_cat))
-    self$col_map_out <- unique(unlist(self$future_spec))
-
-    # If scale is a list and contains two values: mean and std
-    # Compare: https://easystats.github.io/datawizard/reference/standardize.html
-    # For now, it always scale
-    if (is.list(scale) & all(c("mean", "sd") %in% names(scale))) {
-      # TODO: additional check - length of scaling vector
-      self$mean    <- as_tensor(scale$mean)
-      self$sd      <- as_tensor(scale$sd)
-      self$scale   <- TRUE
-      self$scale_y <- TRUE
-    } else if (scale) {
-    # Otherwise, if scale is logical and TRUE, compute scaling params from the data
-      # self$mean    <- torch::torch_mean(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
-      # self$sd      <- torch::torch_std(self$data[, self$col_map_num], dim = 1, keepdim = TRUE)
-      self$mean    <- torch::torch_mean(self$data, dim = 1, keepdim = TRUE)
-      self$sd      <- torch::torch_std(self$data, dim = 1, keepdim = TRUE)
-      self$scale   <- TRUE
-      self$scale_y <- TRUE
-    } else {
-      self$scale   <- FALSE
-      self$scale_y <- FALSE
-    }
-
   },
 
   .getitem = function(i) {
 
-    start <- self$starts[i]
-    end   <- start + self$timesteps - 1 # - self$horizon?
+    past_start <- self$starts[i]
+    past_end   <- past_start + self$timesteps - 1 # - self$horizon?
 
-    # Input columns
-    # TODO: Dropping dimension in past and not in future?
-    # It seems to work in the simplest case
+    future_start <- past_end + 1
+    future_end   <- past_end + self$horizon
 
-    if (self$scale) {
-      past_num <-
-        purrr::map(
-          self$past_spec_num,
-          ~ (self$data[start:end, .x, drop = FALSE] - self$mean[.., .x]) /
-            self$sd[.., .x]
-        )
-    } else {
-      past_num <-
-        purrr::map(
-          self$past_spec_num, ~ self$data[start:end, .x, drop = FALSE]
-        )
-    }
+    past_num <- purrr::map(
+      self$past_spec_num,
+      ~ private$get_tensor(self$data, past_start:past_end, .x)
+    )
 
-    # Not scaled past
-    if (length(unlist(self$past_spec_cat)) > 0)
-      past_cat <-
-        purrr::map(
-          self$past_spec_cat, ~ self$data[start:end, .x, drop = FALSE]$to(torch_int())
-        )
-    else
-      past_cat <- NULL
+    past_cat <- purrr::map(
+      self$past_spec_cat,
+      ~ private$get_tensor(self$data, past_start:past_end, .x, is_cat = TRUE)
+    )
 
-    past <- c(past_num, past_cat)
+    future_num <-purrr::map(
+      self$future_spec_num,
+      ~ private$get_tensor(self$data, future_start:future_end, .x)
+    )
 
+    future_cat <-purrr::map(
+      self$future_spec_cat,
+      ~ private$get_tensor(self$data, future_start:future_end, .x, is_cat = TRUE)
+    )
 
-    # Future values
-    if (self$scale) {
-      fut_num <-
-        purrr::map(
-          self$future_spec_num,
-          ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
-             - self$mean[.., .x]) / self$sd[.., .x]
-        )
-    } else {
-      fut_num <-
-        purrr::map(self$future_spec_num,
-                   ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
-    }
+    outcomes <- purrr::map(
+      self$outcomes_spec,
+      ~ private$get_tensor(self$data, future_start:future_end, .x)
+    )
 
-    fut_cat <-
-      purrr::map(self$future_spec_cat,
-                 ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
-
-
-    if (self$scale_y) {
-      y <-
-        purrr::map(
-          self$outcomes_spec,
-          ~ (self$data[(end + 1):(end + self$horizon), .x, drop = FALSE]
-             - self$mean[.., .x]) / self$sd[.., .x]
-        )
-    } else {
-      y <-
-        purrr::map(self$outcomes_spec,
-                   ~ self$data[(end + 1):(end + self$horizon), .x, drop = FALSE])
-    }
-
-
-    future <- c(fut_num, fut_cat, y)
-
-    output <- c(past, future)
-
-    # Resahping for MLP
-    output <- purrr::map(output, ~ .x$reshape(-1))
-
-    output
+    c(
+      past_num,
+      past_cat,
+      future_num,
+      future_cat,
+      outcomes
+    )
 
   },
 
@@ -224,15 +164,16 @@ ts_dataset <- torch::dataset(
     length(self$starts)
   },
 
-  # Active bindings
-  # If there is no such params, returns list with two NULL values
-  active = list(
-    scale_params = function(){
-      if (self$scale)
-        list(mean = self$mean$cpu(), sd = self$sd$cpu())
+  private = list(
+    get_tensor = function(data, idx, cols, is_cat = FALSE){
+      batch <- as.matrix(data[idx, ..cols])
+      if (is_cat)
+        return(torch_tensor(batch, dtype = torch_int()))
       else
-        self$scale
+        return(torch_tensor(batch, dtype = torch_float32()))
     }
+
   )
 
 )
+
