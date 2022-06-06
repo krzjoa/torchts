@@ -5,7 +5,7 @@
 \title{A configurable feed forward network (Multi-Layer Perceptron)
 with embedding}
 \usage{
-model_mlp(..., embedding = NULL, activation = nnf_relu)
+model_mlp(..., horizon, output_size, embedding = NULL, activation = nnf_relu)
 }
 \description{
 A configurable feed forward network (Multi-Layer Perceptron)

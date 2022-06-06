@@ -23,6 +23,8 @@ library(ggplot2)
 library(parsnip)
 library(timetk)
 
+# write.csv(weather_pl, file = "../weather_pl.csv")
+
 devtools::load_all()
 ```
 
@@ -42,7 +44,7 @@ tk_summary_diagnostics(tarnow_temp, date)
 
 tarnow_temp <- 
   tarnow_temp %>% 
-  mutate(year_day = as.numeric(lubridate::yday(date)))
+  mutate(year_day =  as.numeric(lubridate::yday(date)))
 ```
 
 As we can see, this is a time series between 1th of Janury 2001 till the end of 2020 - twenty years.
@@ -52,7 +54,7 @@ In the next step, we'll split our data into two training and testing datasets us
 
 ```{r univariate.ts}
 EPOCHS    <- 10
-HORIZON   <- 2
+HORIZON   <- 7
 TIMESTEPS <- 28
 
 data_split <- 
@@ -63,36 +65,21 @@ data_split <-
     lag     = TIMESTEPS
   )
 
-# rnn_model <- 
-#   torchts_rnn(
-#     tmax_daily ~ date,
-#     data = training(data_split),
-#     timesteps    = TIMESTEPS,
-#     horizon      = HORIZON,
-#     epochs       = EPOCHS,
-#     learn_rate   = 0.001,
-#     hidden_units = 20,
-#     batch_size   = 32,
-#     scale        = TRUE 
-#   )
-
-#Błąd w poleceniu '(function (self, other) ':
-#  mat1 and mat2 shapes cannot be multiplied (896x1 and 28x20)
-#
-rnn_model <-
+mlp_model <-
   torchts_mlp(
-    tmax_daily ~ date,
-    data = training(data_split),
+    tmax_daily ~ date + year_day,
+    data         = training(data_split),
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
+    jump         = 1, 
     epochs       = EPOCHS,
     learn_rate   = 0.001,
-    hidden_units = 20,
+    hidden_units = c(50, 30), 
     batch_size   = 32,
-    scale        = TRUE
+    scale        = TRUE,
+    device       = 'cuda' 
   )
 
-rnn_model
 ```
 
 We want to generate forecast for a full year. To do so, we'll remove the outcome column values
@@ -104,15 +91,19 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 # Ostrzeżenie, jeśli wyczyszczono za dużo danych
 cleared_new_data <- 
   testing(data_split) %>% 
-  clear_outcome(date, tmax_daily, TIMESTEPS)
+  clear_outcome(date, c(tmax_daily), TIMESTEPS)
 
 fcast <-
-  rnn_model %>%
+  mlp_model %>%
   predict(new_data = testing(data_split))
 
 fcast <-
-  rnn_model %>%
+  mlp_model %>%
   predict(new_data = cleared_new_data)
+
+fcast <- tibble(.pred = fcast)
+
+# plot(ts(fcast))
 
 plot_forecast(
   testing(data_split),
@@ -132,6 +123,18 @@ plot_forecast(
 #   geom_line(aes(n, value, col = name)) +
 #   theme_minimal() + 
 #   ggtitle("Forecast vs actual values")
+
+# test_input <- c(
+#   -0.9743, -1.0750, -1.3369, -1.2966, -1.2866, -0.9440, -1.2866, -1.3168,
+#          -0.8634, -0.9138, -1.0548, -0.9440, -0.8231, -1.2160, -1.1757, -0.8634,
+#          -0.6519, -0.5612, -0.8131, -1.2765, -1.1153, -0.6922, -0.3799, -0.5914,
+#          -0.9843
+# )
+# 
+# inp <- torch_tensor(array(test_input, dim = c(1, 28)))$cuda()
+# 
+# 
+# mlp_model$net(x_num = inp)
 ```
 
 
@@ -140,22 +143,35 @@ plot_forecast(
 In the next next, we're adding new predictor: `press_mean_daily`. It means that we extend the autoregressive model we obtained in the previous exercise by providing a variable that could be recognised as **external regressor** (what is a term commonly used in the context of methods like ARIMA etc.).
 
 ```{r multivariate.ts}
-TIMESTEPS <- 20
-HORIZON   <- 1
 
-# Training 
-rnn_model <- 
-  rnn(
+EPOCHS    <- 100
+HORIZON   <- 7
+TIMESTEPS <- 28 * 3
+
+data_split <- 
+  time_series_split(
+    tarnow_temp, date, 
+    initial = "18 years",
+    assess  = "2 years", 
+    lag     = TIMESTEPS
+  )
+
+rnn_model <-
+  torchts_rnn(
+    tmax_daily ~  date + tmax_daily + year_day,
+    data = training(data_split),
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
-    epochs       = 2,
-    hidden_units = 5,
+    jump         = 1, 
+    epochs       = EPOCHS,
+    learn_rate   = 0.001,
+    hidden_units = 30,
     batch_size   = 32,
-    scale        = TRUE 
-  ) %>% 
-  fit(tmax_daily ~ press_mean_daily + tmax_daily + index(date), 
-      data = training(data_split))
+    scale        = TRUE,
+    device       = 'cuda' 
+  )
 ```
+
 ```{r model.forecast.2}
 # Clear outcome variable
 cleared_new_data <- 
@@ -167,85 +183,13 @@ fcast <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
-fcast_vs_true <- 
-  bind_cols(
-    n = 1:nrow(testing(data_split)),
-    actual = testing(data_split)$tmax_daily, 
-    fcast
-  ) %>% 
-  tidyr::pivot_longer(c(actual, .pred))
-  
+fcast <- tibble(.pred = fcast)
 
-ggplot(fcast_vs_true) + 
-  geom_line(aes(n, value, col = name)) +
-  theme_minimal() + 
-  ggtitle("Forecast vs actual values")
-```
-
-
-## Multivariate time series with multiple outcomes
-
-Finally, the most complex example. Here we'd like to forecast future values of 
-two mutually related variables, i.e.: `tmin_daily` and `tmax_daily`. 
-In this model we're dealing with a "double" autoregressive model, similar in some respects to the [vector auregession model (VAR)](https://fable.tidyverts.org/reference/VAR.html).
-
-```{r multivariate.ts.with.multioutput}
-TIMESTEPS <- 20
-HORIZON   <- 1
-
-# Training 
-rnn_model <- 
-  rnn(
-    timesteps    = TIMESTEPS,
-    horizon      = HORIZON,
-    epochs       = 25,
-    hidden_units = 5,
-    batch_size   = 32,
-    scale        = TRUE 
-  ) %>% 
-  fit(tmin_daily + tmax_daily ~ tmin_daily + tmax_daily + index(date), 
-      data = training(data_split))
-```
-
-
-```{r multi.2}
-# Clear outcome variable
-cleared_new_data <- 
-  testing(data_split) %>% 
-  clear_outcome(date, c(tmax_daily, tmin_daily), 20)
-
-# Forecast
-fcast <-
-  rnn_model %>%
-  predict(new_data = cleared_new_data)
-
-tmax_daily <- 
-  bind_cols(
-    n        = 1:nrow(testing(data_split)),
-    actual   = testing(data_split)$tmax_daily, 
-    forecast = fcast$.pred_tmax_daily,
-    variable = "tmax_daily"
-  ) %>% 
-  tidyr::pivot_longer(c(actual, forecast))
-
-tmin_daily <- 
-  bind_cols(
-    n        = 1:nrow(testing(data_split)),
-    actual   = testing(data_split)$tmin_daily, 
-    forecast = fcast$.pred_tmin_daily,
-    variable = "tmin_daily"
-  ) %>% 
-  tidyr::pivot_longer(c(actual, forecast))
-
-fcast_vs_true <- 
-  bind_rows(tmax_daily, tmin_daily)
-  
-ggplot(fcast_vs_true) + 
-  geom_line(aes(n, value, col = name)) +
-  theme_minimal() + 
-  ggtitle("Forecast vs actual values") + 
-  facet_wrap(~variable)
+plot_forecast(
+  testing(data_split),
+  fcast,
+  tmax_daily
+)
 
 ```
-
 

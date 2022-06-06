@@ -92,4 +92,6 @@ set_device.torch_tensor <- function(object, device, ...){
 #                         show_devices
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+show_devices <- function(){
 
+}

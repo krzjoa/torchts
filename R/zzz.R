@@ -5,7 +5,10 @@
     torchts_categoricals = c("logical", "factor", "character", "integer"),
 
     # TODO: tochts_time and so on?
-    torchts_dates        = c("Date", "POSIXt", "POSIXlt", "POSIXct")
+    torchts_dates        = c("Date", "POSIXt", "POSIXlt", "POSIXct"),
+
+    # Default device
+    torchts_device = 'cpu'
   )
 
   # Parsnip models

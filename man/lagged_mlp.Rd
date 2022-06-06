@@ -28,7 +28,7 @@ lagged_mlp(
 
 \item{learn_rate}{(\code{numeric} or \code{\link[dials:learn_rate]{dials::learn_rate}}) Learning rate.}
 
-\item{epochs}{(\code{integer} or \code{\link[dials:epochs]{dials::epochs}}) Number of epochs.}
+\item{epochs}{(\code{integer} or \code{\link[dials:dropout]{dials::epochs}}) Number of epochs.}
 
 \item{hidden_units}{(\code{integer}) Number of hidden units.}
 

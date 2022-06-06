@@ -135,3 +135,4 @@ temperature_pl %>%
 * [PyTorchTS](https://github.com/zalandoresearch/pytorch-ts)
 * [TorchTS](https://rose-stl-lab.github.io/torchTS/)
 * [GluonTS ](https://ts.gluon.ai/)
+* [sktime-dl](https://github.com/sktime/sktime-dl)

@@ -14,7 +14,7 @@
 #' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
 #'
-#' @importFrom recipes recipe step_integer bake prep
+#' @importFrom recipes recipe step_integer step_scale bake prep
 #'
 #' @note
 #' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
@@ -28,6 +28,8 @@
 #' suwalki_temp <-
 #'    weather_pl %>%
 #'    filter(station == "SWK")
+#'
+#' debugonce(as_ts_dataset.data.frame)
 #'
 #' # Splitting on training and test
 #' data_split <- initial_time_split(suwalki_temp)
@@ -54,8 +56,7 @@
 #' train_ds[1]
 #'
 #' @export
-as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
-                          predictors = NULL, outcomes = NULL, categorical = NULL,
+as_ts_dataset <- function(data, formula,
                           timesteps, horizon = 1, sample_frac = 1,
                           scale = TRUE, jump = 1, ...){
   UseMethod("as_ts_dataset")
@@ -63,8 +64,7 @@ as_ts_dataset <- function(data, formula, index = NULL, key = NULL,
 
 
 #'@export
-as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
-                                  predictors = NULL, outcomes = NULL, categorical = NULL,
+as_ts_dataset.default <- function(data, formula,
                                   timesteps, horizon = 1, sample_frac = 1,
                                   scale = TRUE, jump = 1, ...){
   stop(sprintf(
@@ -73,15 +73,12 @@ as_ts_dataset.default <- function(data, formula, index = NULL, key = NULL,
 }
 
 #' @export
-as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
-                                     key = NULL, predictors = NULL,
-                                     outcomes = NULL,
-                                     categorical = NULL,
+as_ts_dataset.data.frame <- function(data, formula = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
                                      scale = TRUE, jump = 1, ...){
 
-  # TODO: remove key, index, outcomes etc. (define only with formula or parsed formula)?
-
+  # TODO: remove key, index, outcomes etc.
+  # (define only with formula or parsed formula)?
   extra_args <- list(...)
 
   if (nrow(data) == 0) {
@@ -95,97 +92,54 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
 
   # Parsing formula
   # TODO: key is not used for now
-  if (!is.null(parsed_formula)) {
+  .past_spec <- list(
 
-    .predictors_columns <- past_spec(
+    # Numeric time-varying variables
+    x_num = get_vars(parsed_formula, "predictor", "numeric"),
 
-      # Numeric time-varying variables
-      x_num = get_vars(parsed_formula, "predictor", "numeric"),
+    # Categorical time-varying variables
+    x_cat = get_vars(parsed_formula, "predictor", "categorical")
+  )
 
-      # Categorical time-varying variables
-      x_cat = get_vars(parsed_formula, "predictor", "categorical")
-    )
+  # Future spec: outcomes + predictors
+  .future_spec <- list(
+    y = vars_with_role(parsed_formula, "outcome"),
+    # Possible predictors from the future (e.g. coming holidays)
+    x_fut_num = get_vars2(parsed_formula, "predictor", "numeric", "lead"),
+    x_fut_cat = get_vars2(parsed_formula, "predictor", "categorical", "lead")
+  )
 
-    # Future spec: outcomes + predictors
-    .future_columns <- future_spec(
-      y = vars_with_role(parsed_formula, "outcome"),
-      # Possible predictors from the future (e.g. coming holidays)
-      x_fut_num = get_vars2(parsed_formula, "predictor", "numeric", "lead"),
-      x_fut_cat = get_vars2(parsed_formula, "predictor", "categorical", "lead")
-    )
+  .index_columns <-
+    parsed_formula[parsed_formula$.role == "index", ]$.var
 
-    .index_columns <-
-      parsed_formula[parsed_formula$.role == "index", ]$.var
+  # Removing NULLs
+  .past_spec   <- remove_nulls(.past_spec)
+  .future_spec <- remove_nulls(.future_spec)
 
-  } else {
+  categorical <-
+    parsed_formula %>%
+    filter(.type == 'categorical') %>%
+    pull(.var)
 
-    # Add future predictors or remove this option
-    .predictors_columns  <- past_spec(
-      x_num = setdiff(predictors, categorical),
-      x_cat = categorical[categorical %in% predictors]
-    )
+  data <-
+    data %>%
+    arrange(!!.index_columns)
 
-    .outcomes_columns    <- list(y = outcomes)
-    .index_columns       <- index
+  ts_recipe <-
+    recipe(data) %>%
+    step_integer(all_of(categorical)) %>%
+    step_scale(all_numeric()) %>%
+    prep()
 
-  }
-
-  if (length(.predictors_columns$x_cat) != 0) {
-
-    # Prep recipe in none is passed
-    if (is.null(extra_args$cat_recipe)) {
-
-      cat_columns <- c(.predictors_columns$x_cat,
-                       .future_columns$x_fut_cat)
-
-      cat_recipe <-
-        recipe(data) %>%
-        step_integer(all_of(cat_columns)) %>%
-        prep()
-    } else {
-      cat_recipe <- extra_args$cat_recipe
-    }
-
-    data <-
-      cat_recipe %>%
-      bake(new_data = data)
-
-  } else {
-    cat_recipe <- NULL
-  }
+  data <-
+    ts_recipe %>%
+    bake(new_data = data)
 
   if (is.null(.index_columns) | length(.index_columns) == 0)
     stop("No time index column defined! Add at least one time-based variable.")
 
-  all_variables <-
-    unique(c(
-      unlist(.predictors_columns),
-      unlist(.future_columns),
-      unlist(.index_columns)
-    ))
-
-  # Filtering unused columns
-  # This step keep also the proper column order
-  data <- select(data, all_of(all_variables))
-
-  # Transforming column names to column number
-  column_order <-
-    head(data, 1) %>%
-    select(!!.index_columns, everything()) %>%
-    select(-!!.index_columns) %>%
-    colnames()
-
-  .past_spec <-
-    purrr::map(.predictors_columns, ~ match(.x, column_order))
-
-  .future_spec <-
-    purrr::map(.future_columns, ~ match(.x, column_order))
-
-  data_tensor <-
-    as_tensor(data, !!.index_columns)
-
   ts_dataset(
-    data         = data_tensor,
+    data         = data,
     timesteps    = timesteps,
     horizon      = horizon,
     past_spec    = .past_spec,
@@ -194,25 +148,29 @@ as_ts_dataset.data.frame <- function(data, formula = NULL, index = NULL,
     sample_frac  = sample_frac,
     scale        = scale,
     jump         = jump,
-    extras       = list(cat_recipe = cat_recipe)
+    extras       = list(recipe = ts_recipe)
   )
+}
+
+remove_nulls <- function(x) {
+  Filter(function(var) !is.null(var) & length(var) != 0, x)
 }
 
 
 #' Predictors specification
 #' It facilitates to keep the same variables in all the specification list
 #' and avoid typos
-past_spec <- function(x_num = NULL, x_cat = NULL){
-  output <- list(x_num = x_num, x_cat = x_cat)
-  Filter(function(var) !is.null(var) & length(var) != 0, output)
-}
-
-future_spec <- function(y, x_fut_num = NULL, x_fut_cat = NULL){
-  output <- list(
-    y         = y,
-    x_fut_num = x_fut_num,
-    x_fut_cat = x_fut_cat
-  )
-  Filter(function(var) !is.null(var) & length(var) != 0, output)
-}
+# past_spec <- function(x_num = NULL, x_cat = NULL){
+#   output <- list(x_num = x_num, x_cat = x_cat)
+#   Filter(function(var) !is.null(var) & length(var) != 0, output)
+# }
+#
+# future_spec <- function(y, x_fut_num = NULL, x_fut_cat = NULL){
+#   output <- list(
+#     y         = y,
+#     x_fut_num = x_fut_num,
+#     x_fut_cat = x_fut_cat
+#   )
+#   Filter(function(var) !is.null(var) & length(var) != 0, output)
+# }
 
