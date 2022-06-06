@@ -14,7 +14,7 @@
 #' @param scale (`logical` or `list`) Scale feature columns. Logical value or two-element list.
 #' with values (mean, std)
 #'
-#' @importFrom recipes recipe step_integer bake prep
+#' @importFrom recipes recipe step_integer step_scale bake prep
 #'
 #' @note
 #' If `scale` is TRUE, only the input variables are scale and not the outcome ones.

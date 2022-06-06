@@ -20,8 +20,8 @@ torchts_mlp(
   epochs = 10,
   shuffle = TRUE,
   scale = TRUE,
-  sample_frac = 0.5,
-  loss_fn = nnf_mae,
+  sample_frac = 1,
+  loss_fn = nn_mse_loss(),
   device = NULL
 )
 }
@@ -106,6 +106,7 @@ cleared_new_data <-
   clear_outcome(date, value, TIMESTEPS)
 
 forecast <-
-  predict(rnn_model, cleared_new_data)
+  mlp_model \%>\%
+  predict(cleared_new_data)
 
 }

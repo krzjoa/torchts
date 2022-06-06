@@ -67,8 +67,8 @@ data_split <-
 
 mlp_model <-
   torchts_mlp(
-    tmax_daily ~  date + year_day,
-    data = training(data_split),
+    tmax_daily ~ date + year_day,
+    data         = training(data_split),
     timesteps    = TIMESTEPS,
     horizon      = HORIZON,
     jump         = 1, 

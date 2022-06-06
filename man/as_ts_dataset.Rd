@@ -7,11 +7,6 @@
 as_ts_dataset(
   data,
   formula,
-  index = NULL,
-  key = NULL,
-  predictors = NULL,
-  outcomes = NULL,
-  categorical = NULL,
   timesteps,
   horizon = 1,
   sample_frac = 1,
@@ -26,6 +21,15 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{formula}{(\code{formula}) A formula describing, how to use the data}
 
+\item{timesteps}{(\code{integer}) The time series chunk length.}
+
+\item{horizon}{(\code{integer}) Forecast horizon.}
+
+\item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
+
+\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
+with values (mean, std)}
+
 \item{index}{(\code{character}) The index column name.}
 
 \item{key}{(\code{character}) The key column name(s). Use only if formula was not specified.}
@@ -35,15 +39,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
 
 \item{categorical}{(\code{character}) Categorical features.}
-
-\item{timesteps}{(\code{integer}) The time series chunk length.}
-
-\item{horizon}{(\code{integer}) Forecast horizon.}
-
-\item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
-
-\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
-with values (mean, std)}
 }
 \description{
 Create a torch dataset for time series data from a \code{data.frame}-like object
@@ -61,12 +56,28 @@ suwalki_temp <-
    weather_pl \%>\%
    filter(station == "SWK")
 
+debugonce(as_ts_dataset.data.frame)
+
 # Splitting on training and test
 data_split <- initial_time_split(suwalki_temp)
 
 train_ds <-
  training(data_split) \%>\%
  as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type,
+               timesteps = 20, horizon = 1)
+
+train_ds[1]
+
+train_ds <-
+ training(data_split) \%>\%
+ as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type + lead(rr_type),
+               timesteps = 20, horizon = 1)
+
+train_ds[1]
+
+train_ds <-
+ training(data_split) \%>\%
+ as_ts_dataset(tmax_daily ~ date + tmax_daily + rr_type + lead(tmin_daily),
                timesteps = 20, horizon = 1)
 
 train_ds[1]

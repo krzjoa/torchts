@@ -1,4 +1,4 @@
-#' General interface to MLP netowrks with lagged variables
+#' General interface to MLP networks with lagged variables
 #'
 #' @param mode (`character`) Model mode, default: 'regression'.
 #' @param timesteps (`integer`) Number of timesteps to look back.
@@ -74,10 +74,7 @@ lagged_mlp <- function(mode = "regression",
                 sample_frac = 1.){
 
   # TODO: add variables
-  # * init_layer (rnn_layer)
-  # * cell_type
   # * validation?
-  # *
 
   args <- list(
     timesteps     = rlang::enquo(timesteps),

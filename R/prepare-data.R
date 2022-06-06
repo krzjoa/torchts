@@ -85,7 +85,7 @@ prepare_categorical <- function(data, categorical){
 
   if (nrow(categorical) > 0) {
 
-    embedded_vars  <- dict_size(data[categorical$.var])
+    embedded_vars  <- dict_size(data[, mget(categorical$.var)])
     embedding_size <- embedding_size_google(embedded_vars)
 
     embedding<-

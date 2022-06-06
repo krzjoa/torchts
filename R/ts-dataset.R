@@ -13,6 +13,8 @@
 #' @param sample_fram (`numeric`) A numeric value > 0. and <= 1 to sample a subset of data.
 #' @param extras (`list`) List of extra object to be stored inside the ts_dataset object.
 #'
+#' @import data.table
+#'
 #' @note
 #' If `scale` is TRUE, only the input variables are scale and not the outcome ones.
 #'
@@ -51,6 +53,7 @@ ts_dataset <- torch::dataset(
                         future_spec = list(y = NULL),
                         categorical = NULL,
                         sample_frac = 1,
+                        device = 'cpu',
                         extras = NULL, ...) {
 
     # Change unit test where non-tabular data handling is added
@@ -68,7 +71,7 @@ ts_dataset <- torch::dataset(
         past_spec, future_spec
     )))
 
-    data.table::setDT(data)
+    setDT(data)
 
     self$data        <- data[, ..all_vars]
     self$margin      <- max(timesteps, horizon)
@@ -78,6 +81,7 @@ ts_dataset <- torch::dataset(
     self$past_spec   <- past_spec
     self$future_spec <- future_spec
     self$extras      <- extras
+    self$device      <- device
 
     # Setting order
     # setorderv(data, index)
@@ -151,11 +155,11 @@ ts_dataset <- torch::dataset(
     )
 
     c(
-      past_num,
-      past_cat,
-      future_num,
-      future_cat,
-      outcomes
+      set_device(past_num, self$device),
+      set_device(past_cat, self$device),
+      set_device(future_num, self$device),
+      set_device(future_cat, self$device),
+      set_device(outcomes, self$device)
     )
 
   },
@@ -166,6 +170,7 @@ ts_dataset <- torch::dataset(
 
   private = list(
     get_tensor = function(data, idx, cols, is_cat = FALSE){
+      setDT(data)
       batch <- as.matrix(data[idx, ..cols])
       if (is_cat)
         return(torch_tensor(batch, dtype = torch_int()))

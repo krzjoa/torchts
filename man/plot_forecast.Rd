@@ -9,7 +9,7 @@ plot_forecast(
   forecast,
   outcome,
   index = NULL,
-  interactive = TRUE,
+  interactive = FALSE,
   title = "Forecast vs actual values",
   ...
 )

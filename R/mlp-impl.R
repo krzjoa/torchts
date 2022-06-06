@@ -65,7 +65,8 @@
 #'   clear_outcome(date, value, TIMESTEPS)
 #'
 #' forecast <-
-#'   predict(rnn_model, cleared_new_data)
+#'   mlp_model %>%
+#'   predict(cleared_new_data)
 #'
 #' @export
 torchts_mlp <- function(formula,
@@ -172,6 +173,8 @@ torchts_mlp <- function(formula,
       model_mlp,
       model_args
     )
+
+  browser()
 
   if (!is.null(device)) {
     net      <- set_device(net, device)
