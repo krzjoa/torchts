@@ -8,7 +8,7 @@
     torchts_dates        = c("Date", "POSIXt", "POSIXlt", "POSIXct"),
 
     # Default device
-    torchts_device = 'cpu'
+    torchts_default_device = 'cpu'
   )
 
   # Parsnip models
