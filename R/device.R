@@ -92,9 +92,39 @@ set_device.torch_tensor <- function(object, device, ...){
 #                         show_devices
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#' Show available devices 
+#' @examples
+#' torchts_show_devices()
+#' @export
 torchts_show_devices <- function(){
   if (cuda_is_available())
     return(c("cpu", "cuda"))
   else
     return("cpu")
 }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#                         default device
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' Set a torch device, which is treated as default for torchts models
+#' in the current R session
+#' @param device Device name
+#' @examples
+#' torchts_set_default_device("cuda")
+#' @export
+torchts_set_default_device <- function(device){
+  options(torchts_default_device = device) 
+}
+
+#' Get a torch device, which is treated as default for torchts models
+#' in the current R session
+#' @param device Device name
+#' @examples
+#' torchts_get_default_device()
+#' @export
+torchts_get_default_device <- function(device){
+  getOption(torchts_default_device, "cpu") 
+}
+
+
