@@ -92,6 +92,9 @@ set_device.torch_tensor <- function(object, device, ...){
 #                         show_devices
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-show_devices <- function(){
-
+torchts_show_devices <- function(){
+  if (cuda_is_available())
+    return(c("cpu", "cuda"))
+  else
+    return("cpu")
 }
