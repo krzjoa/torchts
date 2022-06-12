@@ -10,7 +10,6 @@ as_ts_dataset(
   timesteps,
   horizon = 1,
   sample_frac = 1,
-  scale = TRUE,
   jump = 1,
   ...
 )
@@ -27,9 +26,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 
 \item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
 
-\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
-with values (mean, std)}
-
 \item{index}{(\code{character}) The index column name.}
 
 \item{key}{(\code{character}) The key column name(s). Use only if formula was not specified.}
@@ -39,6 +35,9 @@ with values (mean, std)}
 \item{outcomes}{(\code{character}) Target variable names. Use only if formula was not specified.}
 
 \item{categorical}{(\code{character}) Categorical features.}
+
+\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
+with values (mean, std)}
 }
 \description{
 Create a torch dataset for time series data from a \code{data.frame}-like object

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mlp-parsnip.R
 \name{lagged_mlp}
 \alias{lagged_mlp}
-\title{General interface to MLP netowrks with lagged variables}
+\title{General interface to MLP networks with lagged variables}
 \usage{
 lagged_mlp(
   mode = "regression",
@@ -45,7 +45,7 @@ lagged_mlp(
 \item{sample_frac}{(\code{numeric}) A percent of subsamples used for training.}
 }
 \description{
-General interface to MLP netowrks with lagged variables
+General interface to MLP networks with lagged variables
 }
 \details{
 This is a \code{parsnip} API to the lagged feed-forward networks (aka MLP). For now the only
@@ -82,16 +82,16 @@ tarnow_temp <-
 
 data_split <- initial_time_split(tarnow_temp)
 
-rnn_model <-
-   rnn(
+mlp_model <-
+   lagged_mlp(
      timesteps = 20,
      horizon = 1,
      epochs = 10,
      hidden_units = 32
    )
 
-rnn_model <-
-   rnn_model \%>\%
+mlp_model <-
+   mlp_model \%>\%
    fit(temp ~ date, data = training(data_split))
 
 

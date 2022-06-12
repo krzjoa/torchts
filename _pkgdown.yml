@@ -13,6 +13,7 @@ reference:
 - title: parsnip API
   contents:
   - rnn
+  - lagged_mlp
 - title: Modules
   contents:
   - model_rnn

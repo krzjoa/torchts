@@ -68,7 +68,6 @@ rnn <- function(mode = "regression",
                 hidden_units = NULL,
                 dropout = NULL,
                 batch_size = 32,
-                scale = TRUE,
                 shuffle = FALSE,
                 jump = 1,
                 sample_frac = 1.){
@@ -77,7 +76,6 @@ rnn <- function(mode = "regression",
   # * init_layer (rnn_layer)
   # * cell_type
   # * validation?
-  # *
 
   args <- list(
     timesteps     = rlang::enquo(timesteps),
@@ -182,15 +180,6 @@ make_rnn <- function(){
     parsnip      = "batch_size",
     original     = "batch_size",
     func         = list(pkg = "dials", fun = "batch_size"),
-    has_submodel = FALSE
-  )
-
-  parsnip::set_model_arg(
-    model        = "rnn",
-    eng          = "torchts",
-    parsnip      = "scale",
-    original     = "scale",
-    func         = list(pkg = "torchts", fun = "scale"),
     has_submodel = FALSE
   )
 

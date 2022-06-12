@@ -77,6 +77,16 @@ zeroable <- function(x){
     return(x)
 }
 
+#' Colmap for outcome variable
+col_map_out <- function(dataloader){
+  unlist(dataloader$dataset$outcomes_spec)
+}
+
+# Remove NULLs from a list
+remove_nulls <- function(x) {
+  Filter(function(var) !is.null(var) & length(var) != 0, x)
+}
+
 
 # TODO: key_hierarchy
 

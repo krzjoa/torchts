@@ -20,7 +20,7 @@ test_that("Dataloader basic test", {
     dataloader_next(dataloader_make_iter(train_ds))
 
   expect_equal(dim(batch$x_num), c(32, 20, 1))
-  expect_equal(dim(batch$y), c(32, 1))
+  expect_equal(dim(batch$y), c(32, 1, 1))
 
 })
 

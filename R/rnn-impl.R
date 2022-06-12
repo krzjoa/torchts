@@ -207,7 +207,6 @@ torchts_rnn <- function(formula,
     parsed_formula = parsed_formula,
     horizon        = horizon,
     device         = device,
-    scale          = scale_params(train_dl),
     col_map_out    = col_map_out(train_dl),
     extras         = train_dl$ds$extras
   )
@@ -235,10 +234,10 @@ predict.torchts_rnn <- function(object, new_data){
        timesteps      = object$timesteps,
        horizon        = object$horizon,
        batch_size     = batch_size,
-       scale          = object$scale,
        # Extras
        parsed_formula = object$parsed_formula,
-       cat_recipe     = object$extras$cat_recipe
+       cat_recipe     = object$extras$cat_recipe,
+       shuffle        = FALSE
      )
 
   net <- object$net
@@ -274,8 +273,8 @@ predict.torchts_rnn <- function(object, new_data){
         output <- output$reshape(nrow(output))
 
       # TODO: insert do dataset even after last forecast for consistency?
-      if (dim(new_data_dl$dataset$data[start:end, cols]) == dim(output))
-        new_data_dl$dataset$data[start:end, cols] <- output
+      if (dim(new_data_dl$dataset$data[start:end, mget(object$outcomes)]) == dim(output))
+        new_data_dl$dataset$data[start:end, mget(object$outcomes)] <- output
     }
 
     iter <- iter + 1
@@ -292,14 +291,7 @@ predict.torchts_rnn <- function(object, new_data){
   if (ncol(preds) > 1)
     colnames(preds) <- object$outcomes
   else
-    preds <- as.vector(preds)
-
-  # browser()
-
-  # Revert scaling if used for target
-  preds <- invert_scaling(
-    preds, object$scale, object$col_map_out
-  )
+    preds <- as.vector(t(preds))
 
   preds
 }

@@ -46,16 +46,16 @@
 #'
 #' data_split <- initial_time_split(tarnow_temp)
 #'
-#' rnn_model <-
-#'    rnn(
+#' mlp_model <-
+#'    lagged_mlp(
 #'      timesteps = 20,
 #'      horizon = 1,
 #'      epochs = 10,
 #'      hidden_units = 32
 #'    )
 #'
-#' rnn_model <-
-#'    rnn_model %>%
+#' mlp_model <-
+#'    mlp_model %>%
 #'    fit(temp ~ date, data = training(data_split))
 #'
 #'
@@ -84,7 +84,6 @@ lagged_mlp <- function(mode = "regression",
     hidden_units  = rlang::enquo(hidden_units),
     dropout       = rlang::enquo(dropout),
     batch_size    = rlang::enquo(batch_size),
-    scale         = rlang::enquo(scale),
     shuffle       = rlang::enquo(shuffle),
     jump          = rlang::enquo(jump),
     sample_frac   = rlang::enquo(sample_frac)
@@ -179,15 +178,6 @@ make_lagged_mlp <- function(){
     parsnip      = "batch_size",
     original     = "batch_size",
     func         = list(pkg = "dials", fun = "batch_size"),
-    has_submodel = FALSE
-  )
-
-  parsnip::set_model_arg(
-    model        = "lagged_mlp",
-    eng          = "torchts",
-    parsnip      = "scale",
-    original     = "scale",
-    func         = list(pkg = "torchts", fun = "scale"),
     has_submodel = FALSE
   )
 

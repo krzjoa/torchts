@@ -15,18 +15,16 @@
 #'
 #' # Simple forward pass
 #' net <- nn_mlp(4, 2, 1)
-#' x <- as_tensor(iris[, 1:4])
+#' x <- as_torch_tensor(iris[, 1:4])
 #' net(x)
 #'
 #' # Simple forward pass with identity function
 #' net <- nn_mlp(4, 2, 1, activation = function (x) x)
-#' x <- as_tensor(iris[, 1:4])
+#' x <- as_torch_tensor(iris[, 1:4])
 #' net(x)
 #'
 #' @export
 nn_mlp <- torch::nn_module(
-
-  # debugonce(net)
 
   "nn_mlp",
 

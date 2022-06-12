@@ -13,7 +13,6 @@ rnn(
   hidden_units = NULL,
   dropout = NULL,
   batch_size = 32,
-  scale = TRUE,
   shuffle = FALSE,
   jump = 1,
   sample_frac = 1
@@ -36,13 +35,13 @@ rnn(
 
 \item{batch_size}{(\code{integer}) Batch size.}
 
-\item{scale}{(\code{logical}) Scale input features.}
-
 \item{shuffle}{(\code{logical}) Shuffle examples during the training (default: FALSE).}
 
 \item{jump}{(\code{integer}) Input window shift.}
 
 \item{sample_frac}{(\code{numeric}) A percent of subsamples used for training.}
+
+\item{scale}{(\code{logical}) Scale input features.}
 }
 \description{
 General interface to recurrent neural network models

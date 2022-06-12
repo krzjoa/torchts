@@ -271,6 +271,7 @@ predict.torchts_mlp <- function(object, new_data){
     # print(as.vector(output))
 
     #output <- output$reshape(c(-1, n_outcomes))
+    # TODO: check as.vector!!!
     preds  <- c(preds, as.vector(output$detach()$cpu()))
 
     if (recursive_mode) {
@@ -293,19 +294,6 @@ predict.torchts_mlp <- function(object, new_data){
   # Make sure that forecast has right length
   # TODO: keys!!!
   preds <- head(preds, nrow(new_data))
-
-  # browser()
-
-  # Adding colnames if more than one outcome
-  # if (ncol(preds) > 1)
-  #   colnames(preds) <- object$outcomes
-  # else
-  #   preds <- as.vector(preds)
-
-  # Revert scaling if used for target
-  # preds <- invert_scaling(
-  #   preds, object$scale, object$col_map_out
-  # )
 
   preds
 }

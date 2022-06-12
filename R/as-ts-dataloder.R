@@ -37,7 +37,7 @@ as_ts_dataloader <- function(data, formula, index = NULL,
                              outcomes = NULL,
                              categorical = NULL,
                              timesteps, horizon = 1,
-                             sample_frac = 1, scale = TRUE,
+                             sample_frac = 1,
                              batch_size, shuffle = FALSE,
                              jump = 1, drop_last = TRUE,
                              ...){
@@ -50,7 +50,7 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
                                      key = NULL, predictors = NULL,
                                      outcomes = NULL, categorical = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE, batch_size, shuffle = FALSE,
+                                     batch_size, shuffle = FALSE,
                                      jump = 1, drop_last = TRUE, ...){
   dataloader(
     as_ts_dataset(
@@ -64,7 +64,6 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       timesteps   = timesteps,
       horizon     = horizon,
       sample_frac = sample_frac,
-      scale       = scale,
       jump        = jump,
       # Extra args
       ...),

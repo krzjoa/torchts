@@ -58,7 +58,7 @@
 #' @export
 as_ts_dataset <- function(data, formula,
                           timesteps, horizon = 1, sample_frac = 1,
-                          scale = TRUE, jump = 1, ...){
+                          jump = 1, ...){
   UseMethod("as_ts_dataset")
 }
 
@@ -66,7 +66,7 @@ as_ts_dataset <- function(data, formula,
 #'@export
 as_ts_dataset.default <- function(data, formula,
                                   timesteps, horizon = 1, sample_frac = 1,
-                                  scale = TRUE, jump = 1, ...){
+                                  jump = 1, ...){
   stop(sprintf(
     "Object of class %s in not handled for now.", class(data)
   ))
@@ -75,7 +75,7 @@ as_ts_dataset.default <- function(data, formula,
 #' @export
 as_ts_dataset.data.frame <- function(data, formula = NULL,
                                      timesteps, horizon = 1, sample_frac = 1,
-                                     scale = TRUE, jump = 1, ...){
+                                     jump = 1, ...){
 
   # TODO: remove key, index, outcomes etc.
   # (define only with formula or parsed formula)?
@@ -128,7 +128,6 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
   ts_recipe <-
     recipe(data) %>%
     step_integer(all_of(categorical)) %>%
-    step_scale(all_numeric()) %>%
     prep()
 
   data <-
@@ -146,31 +145,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
     future_spec  = .future_spec,
     categorical  = c("x_cat", "x_fut_cat"),
     sample_frac  = sample_frac,
-    scale        = scale,
     jump         = jump,
     extras       = list(recipe = ts_recipe)
   )
 }
-
-remove_nulls <- function(x) {
-  Filter(function(var) !is.null(var) & length(var) != 0, x)
-}
-
-
-#' Predictors specification
-#' It facilitates to keep the same variables in all the specification list
-#' and avoid typos
-# past_spec <- function(x_num = NULL, x_cat = NULL){
-#   output <- list(x_num = x_num, x_cat = x_cat)
-#   Filter(function(var) !is.null(var) & length(var) != 0, output)
-# }
-#
-# future_spec <- function(y, x_fut_num = NULL, x_fut_cat = NULL){
-#   output <- list(
-#     y         = y,
-#     x_fut_num = x_fut_num,
-#     x_fut_cat = x_fut_cat
-#   )
-#   Filter(function(var) !is.null(var) & length(var) != 0, output)
-# }
-

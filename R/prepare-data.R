@@ -7,7 +7,7 @@ prepare_dl <- function(data, formula, index,
                        timesteps, horizon,
                        categorical = NULL,
                        validation = NULL,
-                       scale = TRUE, sample_frac = 1,
+                       sample_frac = 1,
                        batch_size, shuffle, jump,
                        parsed_formula = NULL, flatten = FALSE, ...){
 

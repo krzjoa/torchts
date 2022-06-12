@@ -60,7 +60,6 @@ ts_dataset <- torch::dataset(
     if (!inherits(data, "data.frame"))
       stop("Provided wrong data object - is should inherit the data.frame class")
 
-    # TODO: for now scaling system is simplified
     # TODO: check data types
     # TODO: check, if jump works correctly
     # TODO: consider adding margin to the last element if length %% horizon > 0
@@ -155,11 +154,11 @@ ts_dataset <- torch::dataset(
     )
 
     c(
-      set_device(past_num, self$device),
-      set_device(past_cat, self$device),
-      set_device(future_num, self$device),
-      set_device(future_cat, self$device),
-      set_device(outcomes, self$device)
+      past_num,
+      past_cat,
+      future_num,
+      future_cat,
+      outcomes
     )
 
   },
@@ -173,9 +172,11 @@ ts_dataset <- torch::dataset(
       setDT(data)
       batch <- as.matrix(data[idx, ..cols])
       if (is_cat)
-        return(torch_tensor(batch, dtype = torch_int()))
+        tensor <- torch_tensor(batch, dtype = torch_int())
       else
-        return(torch_tensor(batch, dtype = torch_float32()))
+        tensor <- torch_tensor(batch, dtype = torch_float32())
+
+      set_device(tensor, device = self$device)
     }
 
   )

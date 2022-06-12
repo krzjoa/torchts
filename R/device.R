@@ -49,13 +49,7 @@ set_device.model_spec <- function(object, device, ...){
 
 #' @export
 set_device.dataloader <- function(object, device, ...){
-  object$dataset$data <- .set_device(object$dataset$data, device, ...)
-
-  if (object$dataset$scale) {
-    object$dataset$mean <- set_device(object$dataset$mean, device, ...)
-    object$dataset$sd   <- set_device(object$dataset$sd, device, ...)
-  }
-
+  object$dataset$device <- device
   object
 }
 
@@ -92,7 +86,7 @@ set_device.torch_tensor <- function(object, device, ...){
 #                         show_devices
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' Show available devices 
+#' Show available devices
 #' @examples
 #' torchts_show_devices()
 #' @export
@@ -114,7 +108,7 @@ torchts_show_devices <- function(){
 #' torchts_set_default_device("cuda")
 #' @export
 torchts_set_default_device <- function(device){
-  options(torchts_default_device = device) 
+  options(torchts_default_device = device)
 }
 
 #' Get a torch device, which is treated as default for torchts models
@@ -124,7 +118,7 @@ torchts_set_default_device <- function(device){
 #' torchts_get_default_device()
 #' @export
 torchts_get_default_device <- function(device){
-  getOption(torchts_default_device, "cpu") 
+  getOption(torchts_default_device, "cpu")
 }
 
 

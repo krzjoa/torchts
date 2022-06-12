@@ -15,7 +15,6 @@ as_ts_dataloader(
   timesteps,
   horizon = 1,
   sample_frac = 1,
-  scale = TRUE,
   batch_size,
   shuffle = FALSE,
   jump = 1,
@@ -44,9 +43,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{horizon}{(\code{integer}) Forecast horizon.}
 
 \item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
-
-\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
-with values (mean, std)}
 
 \item{batch_size}{(\code{numeric}) Batch size.}
 

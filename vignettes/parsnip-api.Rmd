@@ -52,7 +52,7 @@ In the next step, we'll split our data into two training and testing datasets us
 
 ```{r univariate.ts}
 EPOCHS    <- 10
-HORIZON   <- 2
+HORIZON   <- 3
 TIMESTEPS <- 28
 
 data_split <- 
@@ -68,11 +68,10 @@ data_split <-
 # TODO: bind_result() function to bind forecast and ground truth
 # TODO: select loss function
 # TODO: add smoothed series (like a sine)
-# TODO: add torch_scaler objects
 
 devtools::load_all()
-debugonce(torchts_rnn)
-debugonce(as_ts_dataset.data.frame)
+# debugonce(torchts_rnn)
+# debugonce(as_ts_dataset.data.frame)
 
 rnn_model <- 
   rnn(
@@ -81,8 +80,7 @@ rnn_model <-
     epochs       = EPOCHS,
     learn_rate   = 0.001,
     hidden_units = 20,
-    batch_size   = 32,
-    scale        = TRUE 
+    batch_size   = 32
   ) %>% 
   set_device('cuda') %>% 
   fit(tmax_daily ~ date, 
@@ -98,13 +96,13 @@ In this specific case, we have to keep some "history" (in this case: `r TIMESTEP
 ```{r model.forecast.1}
 # Clear outcome variable
 # Ostrzeżenie, jeśli wyczyszczono za dużo danych
+# Są bugi w datasecie 
+
 cleared_new_data <- 
   testing(data_split) %>% 
   clear_outcome(date, tmax_daily, TIMESTEPS)
 
 # Forecast
-# debugonce(predict.torchts_rnn)
-
 fcast <-
   rnn_model %>%
   predict(new_data = testing(data_split))
@@ -118,19 +116,6 @@ plot_forecast(
   fcast,
   tmax_daily
 )
-
-# fcast_vs_true <- 
-#   bind_cols(
-#     n = 1:nrow(testing(data_split)),
-#     actual = testing(data_split)$tmax_daily, 
-#     fcast
-#   ) %>% 
-#   tidyr::pivot_longer(c(actual, .pred))
-#   
-# ggplot(fcast_vs_true) + 
-#   geom_line(aes(n, value, col = name)) +
-#   theme_minimal() + 
-#   ggtitle("Forecast vs actual values")
 ```
 
 

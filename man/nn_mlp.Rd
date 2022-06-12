@@ -25,12 +25,12 @@ nn_mlp(30, 10, 1)
 
 # Simple forward pass
 net <- nn_mlp(4, 2, 1)
-x <- as_tensor(iris[, 1:4])
+x <- as_torch_tensor(iris[, 1:4])
 net(x)
 
 # Simple forward pass with identity function
 net <- nn_mlp(4, 2, 1, activation = function (x) x)
-x <- as_tensor(iris[, 1:4])
+x <- as_torch_tensor(iris[, 1:4])
 net(x)
 
 }

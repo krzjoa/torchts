@@ -12,7 +12,6 @@ prepare_dl(
   horizon,
   categorical = NULL,
   validation = NULL,
-  scale = TRUE,
   sample_frac = 1,
   batch_size,
   shuffle,
@@ -37,9 +36,6 @@ For now only \strong{single} data frames are handled with no categorical feature
 \item{categorical}{(\code{character}) Categorical features.}
 
 \item{validation}{(\code{data.frame} or \code{numeric}) Validation dataset or percent of TODO.}
-
-\item{scale}{(\code{logical} or \code{list}) Scale feature columns. Logical value or two-element list.
-with values (mean, std)}
 
 \item{sample_frac}{(\code{numeric}) Sample a fraction of rows (default: 1, i.e.: all the rows).}
 

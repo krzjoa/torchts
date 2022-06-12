@@ -153,8 +153,6 @@ model_rnn <- torch::nn_module(
 
   forward = function(x_num, x_cat) {
 
-    # browser()
-
     # Transforming categorical features using multiembedding
     if (!missing(x_cat)) {
 
@@ -230,16 +228,5 @@ embedding_spec <- function(num_embeddings, embedding_dim){
       embedding_dim  = embedding_dim
   ))
 }
-
-# make_embedding_spec <- function(data, embeddig_size_fun = embedding_size_google){
-#
-#   .dict_size <- dict_size(data)
-#   .embedding_size <- embeddig_size_fun(.dict_size)
-#
-#   embedding_spec(
-#     num_embeddings = .dict_size,
-#     embedding_dim  = .embedding_size
-#   )
-# }
 
 

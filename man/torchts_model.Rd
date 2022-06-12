@@ -16,7 +16,6 @@ torchts_model(
   parsed_formula,
   horizon,
   device,
-  scale,
   col_map_out,
   extras
 )
