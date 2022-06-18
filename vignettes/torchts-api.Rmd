@@ -146,7 +146,7 @@ In the next next, we're adding new predictor: `press_mean_daily`. It means that 
 
 EPOCHS    <- 10
 HORIZON   <- 7
-TIMESTEPS <- 28 * 3
+TIMESTEPS <- 28
 
 data_split <- 
   time_series_split(
@@ -183,10 +183,8 @@ fcast <-
   rnn_model %>%
   predict(new_data = testing(data_split))
 
-fcast <- tibble(.pred = fcast)
-
 plot_forecast(
-  testing(data_split),
+  head(testing(data_split), nrow(fcast)),
   fcast,
   tmax_daily
 )

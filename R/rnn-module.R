@@ -175,8 +175,6 @@ model_rnn <- torch::nn_module(
     else
       x <- torch_cat(list(x_num, x_cat_transformed), dim = 3)
 
-    # browser()
-
     if (self$is_stateful) {
       hx <- self$hx
       # if (!is.null(self$hx))

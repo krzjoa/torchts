@@ -24,3 +24,26 @@ test_that("Test vars_with_role", {
   )
 
 })
+
+
+test_that("Test empty_rows", {
+
+  EMPTY <- 5
+
+  iris_with_empty_rows <- preprend_empty(iris, EMPTY)
+
+  expect_equal(
+    nrow(iris_with_empty_rows),
+    nrow(iris) + EMPTY
+  )
+
+  expect_true(all(is.na(
+    iris_with_empty_rows[1:EMPTY, ]
+  )))
+
+  expect_false(all(is.na(
+    iris_with_empty_rows[1:(2 * EMPTY), ]
+  )))
+
+})
+

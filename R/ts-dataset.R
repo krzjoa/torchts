@@ -3,10 +3,12 @@
 #' @param data (`data.frame`) An data.frame-like input object.
 #' @param timesteps (`integer`) Number of timesteps for input tensor.
 #' @param horizon (`integer`) Forecast horizon: number of timesteps for output tensor.
+#' @param index Time index
+#' @param key Column or columns, which determine the key for the time series
 #' @param jump (`integer`) Jump length. By default: horizon length.
-#' @param past_spec (`list`) Specification of the variables which values from the past will be available.
+#' @param past (`list`) Specification of the variables which values from the past will be available.
 #' It should be a list with names representing names of tensors served by dataset, and values being feature indices.
-#' @param future_spec (`list`) Specification of the variableswith known values from the future.
+#' @param future (`list`) Specification of the variables with known values from the future.
 #' It should be a list with names representing names of tensors served b
 #' @param categorical (`character`) Names of specified column subsets considered as categorical.
 #' They will be provided as integer tensors.
@@ -34,8 +36,8 @@
 #'      data = tarnow_temp,
 #'      timesteps = 28,
 #'      horizon = 7,
-#'      past_spec = list(x_num = c('tmax_daily', 'tmin_daily')),
-#'      future_spec   = list(y = 'tmax_daily')
+#'      past = list(x_num = c('tmax_daily', 'tmin_daily')),
+#'      future   = list(y = 'tmax_daily')
 #'    )
 #'
 #' debugonce(weather_pl_dataset$.getitem)
@@ -48,9 +50,11 @@ ts_dataset <- torch::dataset(
 
   initialize = function(data, timesteps,
                         horizon, index,
+                        id = NULL,
                         jump = horizon,
-                        past_spec  = list(x = NULL),
-                        future_spec = list(y = NULL),
+                        past  = list(x = NULL),
+                        future = list(y = NULL),
+                        static = NULL,
                         categorical = NULL,
                         sample_frac = 1,
                         device = 'cpu',
@@ -63,22 +67,22 @@ ts_dataset <- torch::dataset(
     # TODO: check data types
     # TODO: check, if jump works correctly
     # TODO: consider adding margin to the last element if length %% horizon > 0
-    # TODO: take into account last predicted values when computing scaling values?
-    # Real life values, information leak
+    # TODO: Real life values, information leak
 
     all_vars <- unique(unlist(c(
-        past_spec, future_spec
+        past, future, static
     )))
 
     setDT(data)
 
+    # TODO: replace with active binding
     self$data        <- data[, ..all_vars]
     self$margin      <- max(timesteps, horizon)
     self$timesteps   <- timesteps
     self$horizon     <- horizon
     self$jump        <- jump
-    self$past_spec   <- past_spec
-    self$future_spec <- future_spec
+    self$past        <- past
+    self$future      <- future
     self$extras      <- extras
     self$device      <- device
 
@@ -95,27 +99,41 @@ ts_dataset <- torch::dataset(
     self$starts <- sort(starts)
 
     # WARNING: columns names are supposed to be in such order
-    self$past_spec_num <- past_spec[
-      !(names(past_spec) %in% categorical)
+
+    # Past variables
+    self$past_num <- past[
+      !(names(past) %in% categorical)
     ]
 
-    self$past_spec_cat <- past_spec[
-      names(past_spec) %in% categorical
+    self$past_cat <- past[
+      names(past) %in% categorical
     ]
 
     # Future variables
-    self$future_spec_cat <- future_spec[
-      names(future_spec) %in% categorical &
-      grepl("x", names(future_spec))
+    self$future_cat <- future[
+      names(future) %in% categorical &
+      grepl("x", names(future))
     ]
 
-    self$future_spec_num <- future_spec[
-      !names(future_spec) %in% categorical &
-      grepl("x", names(future_spec))
+    self$future_num <- future[
+      !names(future) %in% categorical &
+      grepl("x", names(future))
     ]
 
-    self$outcomes_spec<- future_spec[
-      grepl("y", names(future_spec))
+    # Static variables
+    self$static_cat <- static[
+      names(static) %in% categorical &
+        grepl("x", names(static))
+    ]
+
+    self$static_num <- static[
+      !names(static) %in% categorical &
+        grepl("x", names(static))
+    ]
+
+    # Outcomes
+    self$outcomes_spec<- future[
+      grepl("y", names(future))
     ]
 
   },
@@ -129,23 +147,34 @@ ts_dataset <- torch::dataset(
     future_end   <- past_end + self$horizon
 
     past_num <- purrr::map(
-      self$past_spec_num,
+      self$past_num,
       ~ private$get_tensor(self$data, past_start:past_end, .x)
     )
 
     past_cat <- purrr::map(
-      self$past_spec_cat,
+      self$past_cat,
       ~ private$get_tensor(self$data, past_start:past_end, .x, is_cat = TRUE)
     )
 
     future_num <-purrr::map(
-      self$future_spec_num,
+      self$future_num,
       ~ private$get_tensor(self$data, future_start:future_end, .x)
     )
 
     future_cat <-purrr::map(
-      self$future_spec_cat,
+      self$future_cat,
       ~ private$get_tensor(self$data, future_start:future_end, .x, is_cat = TRUE)
+    )
+
+    static_num <-purrr::map(
+      self$static_num,
+      ~ private$get_tensor(self$data, static_start:static_end, .x, is_static = TRUE)
+    )
+
+    static_cat <-purrr::map(
+      self$static_cat,
+      ~ private$get_tensor(self$data, static_start:static_end, .x,
+                           is_cat = TRUE, is_static = TRUE)
     )
 
     outcomes <- purrr::map(
@@ -158,7 +187,9 @@ ts_dataset <- torch::dataset(
       past_cat,
       future_num,
       future_cat,
-      outcomese
+      static_num,
+      static_cat,
+      outcomes
     )
 
   },
@@ -168,9 +199,14 @@ ts_dataset <- torch::dataset(
   },
 
   private = list(
-    get_tensor = function(data, idx, cols, is_cat = FALSE){
+    get_tensor = function(data, idx, cols, is_cat = FALSE, is_static = FALSE){
       setDT(data)
-      batch <- as.matrix(data[idx, ..cols])
+
+      if (is_static)
+        batch <- as.matrix(unique(data[, ..cols]))
+      else
+        batch <- as.matrix(data[idx, ..cols])
+
       if (is_cat)
         tensor <- torch_tensor(batch, dtype = torch_int())
       else

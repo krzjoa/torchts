@@ -88,6 +88,14 @@ remove_nulls <- function(x) {
 }
 
 
+preprend_empty <- function(df, n){
+  empty_rows <- matrix(NA, nrow = n, ncol = ncol(df))
+  colnames(empty_rows) <- colnames(df)
+  empty_rows <- as_tibble(empty_rows)
+  rbind(empty_rows, df)
+}
+
+
 # TODO: key_hierarchy
 
 

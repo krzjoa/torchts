@@ -92,7 +92,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
 
   # Parsing formula
   # TODO: key is not used for now
-  .past_spec <- list(
+  .past <- list(
 
     # Numeric time-varying variables
     x_num = get_vars(parsed_formula, "predictor", "numeric"),
@@ -102,7 +102,7 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
   )
 
   # Future spec: outcomes + predictors
-  .future_spec <- list(
+  .future <- list(
     y = vars_with_role(parsed_formula, "outcome"),
     # Possible predictors from the future (e.g. coming holidays)
     x_fut_num = get_vars2(parsed_formula, "predictor", "numeric", "lead"),
@@ -113,8 +113,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
     parsed_formula[parsed_formula$.role == "index", ]$.var
 
   # Removing NULLs
-  .past_spec   <- remove_nulls(.past_spec)
-  .future_spec <- remove_nulls(.future_spec)
+  .past   <- remove_nulls(.past)
+  .future <- remove_nulls(.future)
 
   categorical <-
     parsed_formula %>%
@@ -141,8 +141,8 @@ as_ts_dataset.data.frame <- function(data, formula = NULL,
     data         = data,
     timesteps    = timesteps,
     horizon      = horizon,
-    past_spec    = .past_spec,
-    future_spec  = .future_spec,
+    past         = .past,
+    future       = .future,
     categorical  = c("x_cat", "x_fut_cat"),
     sample_frac  = sample_frac,
     jump         = jump,

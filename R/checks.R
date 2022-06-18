@@ -2,7 +2,6 @@
 check_recursion <- function(object, new_data){
 
   # TODO: check, if this procedure is sufficient
-
   recursive_mode <- FALSE
 
   # Check, if outcome is predictor
@@ -52,8 +51,18 @@ check_is_new_data_complete <- function(object, new_data){
 
 }
 
-check_length_vs_horizon <- function(length, horizon){
-  last <- length %% horizon
+check_length_vs_horizon <- function(object, new_data){
+  # TODO: adapt to multiple keys
+
+  len <- nrow(new_data)
+  modulo <- len %% object$horizon
+
+  if (modulo != 0)
+    message(glue(
+      "new_data length ({len}) is not a multiple of horizon {object$horizon}.
+       Forecast output will be shorter by {modulo} timesteps."
+    ))
+
 }
 
 

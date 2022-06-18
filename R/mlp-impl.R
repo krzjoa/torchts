@@ -71,11 +71,11 @@
 #' @export
 torchts_mlp <- function(formula,
                         data,
+                        timesteps = 20,
+                        horizon = 1,
                         learn_rate = 0.001,
                         hidden_units,
                         dropout = FALSE,
-                        timesteps = 20,
-                        horizon = 1,
                         jump = horizon,
                         optim = optim_adam(),
                         validation = NULL,
@@ -83,10 +83,9 @@ torchts_mlp <- function(formula,
                         batch_size = 1,
                         epochs = 10,
                         shuffle = TRUE,
-                        scale = TRUE,
                         sample_frac = 1.,
                         loss_fn = nn_mse_loss(),
-                        device = NULL){
+                        device = NULL, ...){
 
   # Checks
   check_is_complete(data)
@@ -209,7 +208,6 @@ torchts_mlp <- function(formula,
     parsed_formula = parsed_formula,
     horizon        = horizon,
     device         = device,
-    scale          = scale_params(train_dl),
     col_map_out    = col_map_out(train_dl),
     extras         = train_dl$ds$extras
   )
@@ -217,87 +215,6 @@ torchts_mlp <- function(formula,
 }
 
 #' @export
-predict.torchts_mlp <- function(object, new_data){
-
-  # WARNING: Cannot be used parallely for now
-
-  # For now we suppose it's continuous
-  # Check more conditions
-  n_outcomes <- length(object$outcomes)
-  batch_size <- 1
-
-  # Checks
-  check_is_new_data_complete(object, new_data)
-  recursive_mode <- check_recursion(object, new_data)
-
-  # Preparing dataloader
-  new_data_dl <-
-    as_ts_dataloader(
-      new_data,
-      timesteps      = object$timesteps,
-      horizon        = object$horizon,
-      batch_size     = batch_size,
-      scale          = object$scale,
-      # jump           = object$horizon,
-      # Extras
-      parsed_formula = object$parsed_formula,
-      cat_recipe     = object$extras$cat_recipe
-    )
-
-  net <- object$net
-
-  if (!is.null(object$device)) {
-    net         <- set_device(net, object$device)
-    new_data_dl <- set_device(new_data_dl, object$device)
-  }
-
-  net$eval()
-
-  # preds <- matrix(nrow = object$timesteps,
-  #                 ncol = length(object$outcomes))
-  preds <-rep(NA, object$timesteps)
-  iter  <- 0
-
-  coro::loop(for (b in new_data_dl) {
-
-    # print(get_x(b))
-
-    output <- do.call(net, get_x(b))
-
-    # browser()
-
-    # print(get_x(b))
-    # print(output)
-    # print(as.vector(output))
-
-    #output <- output$reshape(c(-1, n_outcomes))
-    # TODO: check as.vector!!!
-    preds  <- c(preds, as.vector(output$detach()$cpu()))
-
-    if (recursive_mode) {
-      start <- object$timesteps + iter * object$horizon + 1
-      end   <- object$timesteps + iter * object$horizon + object$horizon
-      cols  <- unlist(new_data_dl$dataset$outcomes_spec)
-
-      if (length(cols) == 1)
-        output <- output$reshape(nrow(output))
-
-      # TODO: insert do dataset even after last forecast for consistency?
-      if (dim(new_data_dl$dataset$data[start:end, cols]) == dim(output))
-        new_data_dl$dataset$data[start:end, cols] <- output
-    }
-
-    iter <- iter + 1
-
-  })
-
-  # Make sure that forecast has right length
-  # TODO: keys!!!
-  preds <- head(preds, nrow(new_data))
-
-  preds
-}
-
-
+predict.torchts_mlp <- torchts_predict
 
 #
