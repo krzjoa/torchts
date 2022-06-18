@@ -171,7 +171,7 @@ ggplot(fcast_vs_true) +
 
 Finally, the most complex example. Here we'd like to forecast future values of 
 two mutually related variables, i.e.: `tmin_daily` and `tmax_daily`. 
-In this model we're dealing with a "double" autoregressive model, similar in some respects to the [vector auregession model (VAR)](https://fable.tidyverts.org/reference/VAR.html).
+In this model we're dealing with a "double" autoregressive model, similar in some respects to the [vector autoregession model (VAR)](https://fable.tidyverts.org/reference/VAR.html).
 
 ```{r multivariate.ts.with.multioutput}
 TIMESTEPS <- 20

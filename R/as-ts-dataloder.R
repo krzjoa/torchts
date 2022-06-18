@@ -68,7 +68,7 @@ as_ts_dataloader.data.frame <- function(data, formula = NULL, index = NULL,
       # Extra args
       ...),
 
-    # Dataloade args
+    # Dataloader args
     batch_size = batch_size,
     shuffle    = shuffle,
     drop_last  = drop_last

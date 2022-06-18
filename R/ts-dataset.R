@@ -158,7 +158,7 @@ ts_dataset <- torch::dataset(
       past_cat,
       future_num,
       future_cat,
-      outcomes
+      outcomese
     )
 
   },

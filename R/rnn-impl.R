@@ -234,6 +234,7 @@ predict.torchts_rnn <- function(object, new_data){
        timesteps      = object$timesteps,
        horizon        = object$horizon,
        batch_size     = batch_size,
+       jump           = object$horizon,
        # Extras
        parsed_formula = object$parsed_formula,
        cat_recipe     = object$extras$cat_recipe,
@@ -249,8 +250,16 @@ predict.torchts_rnn <- function(object, new_data){
 
   net$eval()
 
-  preds <- matrix(nrow = object$timesteps,
-                  ncol = length(object$outcomes))
+  # Tu jest problem, powinno być
+  # np. batches x horizon
+  # Najprostsze rozwiązanie - iniicjalizować array n_samples x horizon x outcomes
+  # preds <- matrix(nrow = object$timesteps,
+  #                 ncol = length(object$outcomes))
+
+  output_shape <-
+    c(length(new_data_dl$dataset), object$horizon, length(object$outcomes))
+
+  preds <- array(0, dim = output_shape)
   iter  <- 0
 
   net$is_stateful <- FALSE
@@ -261,8 +270,10 @@ predict.torchts_rnn <- function(object, new_data){
   coro::loop(for (b in new_data_dl) {
 
     output <- do.call(net, get_x(b))
-    output <- output$reshape(c(-1, n_outcomes))
-    preds  <- rbind(preds, as_array(output$cpu()))
+    preds[iter+1,,] <- as_array(output$cpu())
+
+    # output <- output$reshape(c(-1, n_outcomes))
+    # preds  <- rbind(preds, as_array(output$cpu()))
 
     if (recursive_mode) {
       start <- object$timesteps + iter * object$horizon + 1
@@ -285,13 +296,15 @@ predict.torchts_rnn <- function(object, new_data){
 
   # Make sure that forecast has right length
   # TODO: keys!!!
-  preds <- head(preds, nrow(new_data))
+
+  # browser()
+  preds <-
+    array(preds, dim = c(output_shape[1] * output_shape[2], output_shape[3]))
+  # preds <- head(preds, nrow(new_data))
 
   # Adding colnames if more than one outcome
   if (ncol(preds) > 1)
     colnames(preds) <- object$outcomes
-  else
-    preds <- as.vector(t(preds))
 
   preds
 }
